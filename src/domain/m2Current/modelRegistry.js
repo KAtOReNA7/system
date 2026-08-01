@@ -410,6 +410,30 @@ export function compareM2ModelRegistryEntries(registry, leftId, rightId) {
 }
 
 export function renderM2ModelCatalog(registry) {
+  const auditedModels = (registry.models ?? []).filter(
+    (model) => model.rootCauseAudit !== undefined
+  );
+  const rootCauseAuditSection = auditedModels.length === 0
+    ? []
+    : [
+      "## 模型根因审计与未来设计状态",
+      "",
+      "根因审计是冻结模型的证据治理，不是新模型、实验臂或成绩行；未来设计状态也不自动授予实现或评价权限。",
+      "",
+      "| 冻结模型（稳定 ID） | 审计活动 | 根因类别（机器状态） | 未来设计状态 |",
+      "|---|---|---|---|",
+      ...auditedModels.map((model) => (
+        `| ${escapeTable(model.displayNameZh)}（${code(model.stableModelId)}）`
+        + ` | ${code(model.rootCauseAudit.auditId)}`
+        + ` | 估计器尺度收缩已确认，但实现正确（${
+          code(model.rootCauseAudit.category)
+        }）`
+        + ` | 有证据支持另行预注册设计，但未授权（${
+          code(model.rootCauseAudit.psc02DesignStatus)
+        }） |`
+      )),
+      ""
+    ];
   const lines = [
     "<!-- 由 config/m2-model-registry.v1.json 确定性生成；请勿手工改写成绩或角色。 -->",
     "# M2 模型目录与成绩总账 v1",
@@ -449,7 +473,10 @@ export function renderM2ModelCatalog(registry) {
         ? `已执行失败、且属于当前 M2 范围外组合研究（${
           code(model.currentRole)
         }；${code(model.currentM2ScopeStatus)}）`
-        : `${roleZh(model.currentRole)}（${code(model.currentRole)}）`;
+        : `${roleZh(model.currentRole)}（${code(model.currentRole)}）`
+          + (model.rootCauseAudit === undefined
+            ? ""
+            : `；根因已审计（${code(model.rootCauseAudit.category)}）`);
       return `| ${capabilityZh(model.capability)}（${model.capability}）`
         + ` | ${entityTypeZh(model.entityType)}（${model.entityType}）`
         + ` | ${escapeTable(model.displayNameZh)}（${escapeTable(model.displayNameEn)}，`
@@ -458,6 +485,7 @@ export function renderM2ModelCatalog(registry) {
         + ` | ${lineage} |`;
     }),
     "",
+    ...rootCauseAuditSection,
     "## 实验、实验臂与检查点",
     "",
     "实验 ID 只组织评价活动；实验臂、消融和检查点不是新的模型身份。",

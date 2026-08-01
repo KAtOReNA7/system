@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 35);
   assert.equal(validation.counts.experimentCount, 22);
-  assert.equal(validation.counts.nonModelIdentifierCount, 125);
+  assert.equal(validation.counts.nonModelIdentifierCount, 128);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
@@ -228,7 +228,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.54.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -829,6 +829,14 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
+  assert.match(
+    catalog,
+    /ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT/u
+  );
+  assert.match(
+    catalog,
+    /PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED/u
+  );
   assert.match(catalog, /M2-PORT-LRC01/u);
   assert.match(catalog, /M2_LAYERED_REVENUE_COMPOSITION_FAIL/u);
   assert.match(catalog, /TAIL_INTERFERENCE_NOT_CONFIRMED/u);

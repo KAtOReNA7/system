@@ -46,7 +46,7 @@
 | 作品点预测（WORK） | 模型（model） | 生命周期五状态模型（Lifecycle-Aware Five-State Model，`M2-WORK-LC01`） | `M2-lifecycle-aware-revenue-forecast-challenger-v0.1`、`lifecycle-aware v0.1`、`five-state lifecycle` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；无后续 |
 | 渠道预测（CHAN） | 模型（model） | 渠道倍率专家模型（Channel Scalar Experts v0.1，`M2-CHAN-SCL01`） | `M2-current-channel-mechanism-hierarchical-challenger-v0.1`、`channelExperts v0.1`、`channel scalar experts` | 已执行失败渠道模型（`failed_channel_development_model`） | 前序 `M2-WORK-LG01`；后续 `M2-CHAN-GEN02` |
 | 渠道预测（CHAN） | 模型族（model_family） | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core，`M2-CHAN-GEN02`） | `M2-current-channel-generative-v0.2`、`channelGenerative v0.2`、`channel generative core` | 阻断且无候选结果（`blocked_model_family_no_candidate_outcome`） | 前序 `M2-WORK-LG01`、`M2-CHAN-SCL01`；后续 `M2-CHAN-PSC01` |
-| 渠道预测（CHAN） | 模型修订（model_revision） | 出版行业适配的渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | `M2-current-publishing-scale-channel-v0.1`、`publishing-scale channel core`、`publishing scale occurrence amount core` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-CHAN-GEN02`；无后续 |
+| 渠道预测（CHAN） | 模型修订（model_revision） | 出版行业适配的渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | `M2-current-publishing-scale-channel-v0.1`、`publishing-scale channel core`、`publishing scale occurrence amount core` | 已执行失败候选（`failed_development_candidate`）；根因已审计（`ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`） | 前序 `M2-CHAN-GEN02`；无后续 |
 | 作品点预测（WORK） | 模型（model） | C1 透明组合模型（C1 Transparent Ensemble，`M2-WORK-C1TE01`） | `C1`、`C1 transparent ensemble` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-B4`；无后续 |
 | 作品点预测（WORK） | 模型（model） | 旧买断收入路由模型（Legacy C2-R Revenue Route，`M2-WORK-C2R01`） | `legacy C2-R`、`C2-R`、`legacy C2R` | 仅历史审计且已失败（`archive_only_failed_model`） | 无前序；后续 `M2-WORK-C2R101` |
 | 作品点预测（WORK） | 模型（model） | 正式现金路由分治模型（Formal-Cash Route-Specific Model C2-R.1，`M2-WORK-C2R101`） | `C2-R.1`、`C2R1`、`formal cash C2R1` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-C2R01`；后续 `M2-WORK-C2IM01` |
@@ -57,6 +57,14 @@
 | 作品点预测（WORK） | 模型（model） | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | `LG01 head-cash residual calibration`、`head-cash protected residual blend` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`；后续 `M2-WORK-HPSR01` |
 | 作品点预测（WORK） | 模型（model） | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | `LG01 head-protected segmented router`、`HPSR01` | 原合同不支持保持，科学解释修订为证据不足（`contract_unsupported_scientifically_inconclusive_interpretation_amended`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`、`M2-WORK-HCRC01`；后续 `M2-WORK-HPSR02` |
 | 作品点预测（WORK） | 模型（model） | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`） | `LG01 head-protected tail-band correction`、`HPSR02` | 首个独立起点证据不足，现金相邻研究结束且未激活（`first_independent_inconclusive_cash_only_research_ended_not_active`） | 前序 `M2-WORK-HPSR01`、`M2-WORK-LG01`、`M2-WORK-CHAM01`；无后续 |
+
+## 模型根因审计与未来设计状态
+
+根因审计是冻结模型的证据治理，不是新模型、实验臂或成绩行；未来设计状态也不自动授予实现或评价权限。
+
+| 冻结模型（稳定 ID） | 审计活动 | 根因类别（机器状态） | 未来设计状态 |
+|---|---|---|---|
+| 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | `M2-AUDIT-PSC01-AMOUNT-SCALE-ROOT-CAUSE-01` | 估计器尺度收缩已确认，但实现正确（`ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`） | 有证据支持另行预注册设计，但未授权（`PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED`） |
 
 ## 实验、实验臂与检查点
 

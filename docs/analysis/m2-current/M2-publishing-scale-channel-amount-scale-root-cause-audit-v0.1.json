@@ -1,0 +1,3092 @@
+{
+  "schema": "m2.current.publishing_scale_channel_amount_scale_root_cause_audit.v0.1",
+  "auditId": "M2-AUDIT-PSC01-AMOUNT-SCALE-ROOT-CAUSE-01",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+  "candidateId": "M2-CHAN-PSC01-RAW",
+  "objectType": "FROZEN_MODEL_ROOT_CAUSE_AUDIT",
+  "status": "M2_PSC01_AMOUNT_SCALE_ROOT_CAUSE_AUDIT_COMPLETE_ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED",
+  "rootCause": {
+    "category": "ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT",
+    "firstMaterialCollapseStage": "originVisibleEmpiricalParent",
+    "implementationOrUnitTransformDefectConfirmed": false,
+    "comparatorIntegrityDefectConfirmed": false,
+    "estimatorScaleShrinkageConfirmed": true,
+    "multipleUnresolvedFactors": false,
+    "frozenPrivateEvidenceMissing": false,
+    "explanation": [
+      "The work-balanced log1p empirical parent begins far below cash mass before learned hierarchy refinements.",
+      "Conditional-amount error dominates the frozen oracle decomposition while occurrence error is small.",
+      "Log-scale ridge estimation and log-scale hierarchical blending preserve a geometric-center objective that contracts heavy-tailed cash scale.",
+      "Mechanism and named-platform layers recover some local error but do not restore the missing cash scale."
+    ]
+  },
+  "frozenEvidence": {
+    "uniqueCompletedReceipt": true,
+    "receiptStatus": "COMPLETED",
+    "evaluationRowCount": 3318819,
+    "evaluationDigestMatchesManifest": true,
+    "evaluationDigestMatchesReceipt": true,
+    "evaluationRowCountMatches": true,
+    "comparatorRowCount": 395904,
+    "comparatorDigestMatchesPreparedReceipt": true,
+    "comparatorDigestMatchesManifest": true,
+    "comparatorRowCountMatchesManifest": true,
+    "publicCandidateFreezeMatches": true,
+    "rawCandidatePreserved": true,
+    "fallbackOverwroteRaw": false,
+    "predictionGeneratedAfterFreezeCount": 0,
+    "predictionModifiedAfterFreezeCount": 0
+  },
+  "implementationTrace": {
+    "status": "IMPLEMENTATION_PATH_STATIC_AUDIT_PASS",
+    "monthlyTargetUnit": "cash_amount_per_work_channel_future_month",
+    "monthlyUniqueKey": "standardWorkId|channelUid|origin|futureMonthIndex",
+    "duplicateMonthlyKeyGuardPresent": true,
+    "horizonAggregation": "sum_each_month_once_into_each_included_horizon",
+    "occurrenceAmountFormula": "positivePoint = occurrenceProbability * conditionalPositiveAmount",
+    "conditionalTargetTransform": "log1p(actualPositive)",
+    "inverseTransform": "exp(linear) * DuanSmearing - 1",
+    "jensenCorrectionPresent": true,
+    "occurrenceMultipliedOnce": true,
+    "exposureOrOffsetPathPresent": false,
+    "conditionalLogClip": 30,
+    "nonnegativeFloorPresent": true,
+    "workBalancedTrainingWeight": "equal_total_weight_per_standard_work",
+    "ridgePenaltyAppliedToNonInterceptOnly": true,
+    "hierarchicalAmountBlendScale": "log1p",
+    "taxonomyRole": "REPORT_ONLY",
+    "taxonomyParametersEstimated": false,
+    "lg01TokensPresentInCandidateCore": [],
+    "candidateFitCallReceivesLg01Rows": false,
+    "comparatorParsedOnlyAfterCandidateFreeze": true,
+    "packedRowExpansionReceivesFrozenComparator": false,
+    "packedRowSchemaCanCarryG0ButCandidateFeatureOrderExcludesIt": true,
+    "predictionAndEvaluationCallChain": [
+      "applyM2DevelopmentModelableRestatementToPackedRows",
+      "expandM2ChannelGenerativePackedRows",
+      "crossFitM2PublishingScaleChannel/strictRollingM2PublishingScaleChannel",
+      "fitM2PublishingScaleChannelCore",
+      "predictM2PublishingScaleChannelMonthly",
+      "scoreM2ChannelGenerativeG1Predictions"
+    ]
+  },
+  "comparatorIntegrity": {
+    "status": "EXACT_SAME_CASE_CURRENT_ACTUAL_RESCORING_VERIFIED",
+    "counts": {
+      "workRows": 86359,
+      "channelRows": 309545,
+      "missingCandidateWorkCases": 0,
+      "missingCandidateChannelCases": 0,
+      "duplicateWorkCases": 0,
+      "duplicateChannelCases": 0,
+      "frozenVsCurrentWorkActualMismatchCount": 193,
+      "frozenVsCurrentChannelActualMismatchCount": 194,
+      "missingComparatorWorkCases": 0,
+      "missingComparatorChannelCases": 26909,
+      "missingComparatorFutureFirstChannelCases": 26909,
+      "missingComparatorObservedChannelCases": 0
+    },
+    "semantics": {
+      "scoringGrain": "work_origin_horizon",
+      "sameCase": true,
+      "sameOrigin": true,
+      "sameHorizon": true,
+      "sameTarget": true,
+      "sameActualDefinition": true,
+      "actualUsedForBothScores": "PSC01_CURRENT_DEVELOPMENT_MODELABLE_RESTATEMENT_ACTUAL",
+      "frozenComparatorActualUsedForScoring": false,
+      "frozenComparatorPredictionField": "ablationPoints.A1",
+      "frozenActualMismatchIsHistoricalLabelRestatementDiagnosticOnly": true,
+      "workChannelRowsAreSupplementalDiagnosticsNotComparatorScore": true,
+      "channelCoverageCompleteForOriginVisibleCases": true,
+      "missingChannelCasesAreFutureFirstOnly": true
+    },
+    "scores": {
+      "primary": {
+        "candidate": {
+          "caseCount": 12039,
+          "absoluteError": 416029696.40677136,
+          "signedError": -400360605.9819091,
+          "actualDenominator": 450206377.48779917,
+          "actualTotal": 450206377.48779917,
+          "predictionTotal": 49845771.505891085,
+          "predictionToActualRatio": 0.11071760418862998,
+          "wape": 0.9240866349523136,
+          "signedBias": -0.8892823958113723
+        },
+        "frozenLg01": {
+          "caseCount": 12039,
+          "absoluteError": 199486666.85484383,
+          "signedError": -54768376.91293321,
+          "actualDenominator": 450206377.48779917,
+          "actualTotal": 450206377.48779917,
+          "predictionTotal": 395438000.5748671,
+          "predictionToActualRatio": 0.8783482872487378,
+          "wape": 0.4431004908637706,
+          "signedBias": -0.12165171275126474
+        }
+      },
+      "strict": {
+        "candidate": {
+          "caseCount": 74320,
+          "absoluteError": 458012200.67225134,
+          "signedError": -427375631.12821585,
+          "actualDenominator": 500377466.08459866,
+          "actualTotal": 500377466.08459866,
+          "predictionTotal": 73001834.95638503,
+          "predictionToActualRatio": 0.1458935301935492,
+          "wape": 0.9153333867253234,
+          "signedBias": -0.8541064698064552
+        },
+        "frozenLg01": {
+          "caseCount": 74320,
+          "absoluteError": 206562161.35431662,
+          "signedError": -18944293.743932646,
+          "actualDenominator": 500377466.08459866,
+          "actualTotal": 500377466.08459866,
+          "predictionTotal": 481433172.3406712,
+          "predictionToActualRatio": 0.9621399942484129,
+          "wape": 0.4128126771388087,
+          "signedBias": -0.03786000575159742
+        }
+      }
+    }
+  },
+  "frozenScoreReconciliation": {
+    "status": "PUBLIC_SUMMARY_EXACTLY_RECONCILED_FROM_FROZEN_ROWS",
+    "primary": {
+      "rawCandidate": {
+        "caseCount": 12039,
+        "absoluteError": 416029696.40677136,
+        "signedError": -400360605.9819091,
+        "actualDenominator": 450206377.48779917,
+        "actualTotal": 450206377.48779917,
+        "predictionTotal": 49845771.505891085,
+        "predictionToActualRatio": 0.11071760418862998,
+        "wape": 0.9240866349523136,
+        "signedBias": -0.8892823958113723
+      },
+      "frozenLg01": {
+        "caseCount": 12039,
+        "absoluteError": 199486666.85484383,
+        "signedError": -54768376.91293321,
+        "actualDenominator": 450206377.48779917,
+        "actualTotal": 450206377.48779917,
+        "predictionTotal": 395438000.5748671,
+        "predictionToActualRatio": 0.8783482872487378,
+        "wape": 0.4431004908637706,
+        "signedBias": -0.12165171275126474
+      },
+      "globalParent": {
+        "caseCount": 12039,
+        "absoluteError": 437920425.4007558,
+        "signedError": -430723279.53326285,
+        "actualDenominator": 450206377.48779917,
+        "actualTotal": 450206377.48779917,
+        "predictionTotal": 19483097.954534203,
+        "predictionToActualRatio": 0.04327592617246344,
+        "wape": 0.9727103997157919,
+        "signedBias": -0.9567240738275319
+      },
+      "mechanismTimeAbsoluteErrorGain": 21890728.99398446,
+      "mechanismTimeRelativeErrorGain": 0.049987914982388665,
+      "oracle": {
+        "ORACLE_OCCURRENCE_ONLY": {
+          "absoluteError": 415155435.14326215,
+          "maximumRemovableError": 874261.2635092139,
+          "removableErrorShare": 0.0021014395632335064,
+          "wape": 0.9221447227377695,
+          "predictionTotal": 48948141.45269211,
+          "actualTotal": 450206377.48779917
+        },
+        "ORACLE_AMOUNT_ONLY": {
+          "absoluteError": 90843861.01184434,
+          "maximumRemovableError": 325185835.394927,
+          "removableErrorShare": 0.7816409217984716,
+          "wape": 0.20178270578653953,
+          "predictionTotal": 359362516.475956,
+          "actualTotal": 450206377.48779917
+        },
+        "ORACLE_BOTH": {
+          "absoluteError": 0,
+          "maximumRemovableError": 416029696.40677136,
+          "removableErrorShare": 1,
+          "wape": 0,
+          "predictionTotal": 450206377.48779917,
+          "actualTotal": 450206377.48779917
+        },
+        "FUTURE_FIRST_ENTRY_CEILING": {
+          "absoluteError": 368798849.4795758,
+          "maximumRemovableError": 47230846.92719555,
+          "removableErrorShare": 0.1135275854948003,
+          "wape": 0.8191773104981624,
+          "predictionTotal": 101530084.99639109,
+          "actualTotal": 450206377.48779917
+        }
+      }
+    },
+    "strict": {
+      "rawCandidate": {
+        "caseCount": 74320,
+        "absoluteError": 458012200.67225134,
+        "signedError": -427375631.12821585,
+        "actualDenominator": 500377466.08459866,
+        "actualTotal": 500377466.08459866,
+        "predictionTotal": 73001834.95638503,
+        "predictionToActualRatio": 0.1458935301935492,
+        "wape": 0.9153333867253234,
+        "signedBias": -0.8541064698064552
+      },
+      "frozenLg01": {
+        "caseCount": 74320,
+        "absoluteError": 206562161.35431662,
+        "signedError": -18944293.743932646,
+        "actualDenominator": 500377466.08459866,
+        "actualTotal": 500377466.08459866,
+        "predictionTotal": 481433172.3406712,
+        "predictionToActualRatio": 0.9621399942484129,
+        "wape": 0.4128126771388087,
+        "signedBias": -0.03786000575159742
+      },
+      "globalParent": {
+        "caseCount": 74320,
+        "absoluteError": 483437159.90784764,
+        "signedError": -466793683.0496753,
+        "actualDenominator": 500377466.08459866,
+        "actualTotal": 500377466.08459866,
+        "predictionTotal": 33583783.03492277,
+        "predictionToActualRatio": 0.06711689736492804,
+        "wape": 0.9661449459159159,
+        "signedBias": -0.9328831026350708
+      },
+      "mechanismTimeAbsoluteErrorGain": 25424959.2355963,
+      "mechanismTimeRelativeErrorGain": 0.052592066444463605,
+      "oracle": {
+        "ORACLE_OCCURRENCE_ONLY": {
+          "absoluteError": 455380532.7502514,
+          "maximumRemovableError": 2631667.9219999313,
+          "removableErrorShare": 0.005745846765953567,
+          "wape": 0.9100740213454384,
+          "predictionTotal": 69136128.07348686,
+          "actualTotal": 500377466.08459866
+        },
+        "ORACLE_AMOUNT_ONLY": {
+          "absoluteError": 91632547.56701013,
+          "maximumRemovableError": 366379653.1052412,
+          "removableErrorShare": 0.7999342649988019,
+          "wape": 0.1831268467863376,
+          "predictionTotal": 408744918.5175884,
+          "actualTotal": 500377466.08459866
+        },
+        "ORACLE_BOTH": {
+          "absoluteError": 0,
+          "maximumRemovableError": 458012200.67225134,
+          "removableErrorShare": 1,
+          "wape": 0,
+          "predictionTotal": 500377466.08459866,
+          "actualTotal": 500377466.08459866
+        },
+        "FUTURE_FIRST_ENTRY_CEILING": {
+          "absoluteError": 431586360.7289127,
+          "maximumRemovableError": 26425839.943338633,
+          "removableErrorShare": 0.057696803501199045,
+          "wape": 0.8625215761733454,
+          "predictionTotal": 104792750.02218457,
+          "actualTotal": 500377466.08459866
+        }
+      }
+    },
+    "rawCandidatePreserved": true,
+    "fallbackOverwroteRaw": false
+  },
+  "scaleEvidence": {
+    "invariantStatus": "PASS",
+    "invariantFailures": {
+      "identity": 0,
+      "cashConservation": 0,
+      "postingCashConservation": 0,
+      "pointEstimateAlias": 0,
+      "occurrenceAmountProduct": 0,
+      "layerOccurrenceAmountProduct": 0,
+      "nonfinite": 0,
+      "negativePrediction": 0,
+      "futureFirstNonzeroPrediction": 0,
+      "taxonomyFeatureUsed": 0,
+      "authorizationBackfillUsed": 0,
+      "rawCandidateNotPreserved": 0,
+      "fallbackOverwroteRaw": 0,
+      "caseMetadataDrift": 0
+    },
+    "evaluationRowCount": 3318819,
+    "channelCaseCount": 336454,
+    "workCaseCount": 86359,
+    "rowDiagnostics": {
+      "observedAtOriginRowCount": 1849944,
+      "futureFirstRowCount": 1468875,
+      "zeroFinalPredictionRowCount": 1468875,
+      "fallbackReasonRowCount": 1520457,
+      "conditionalAmountAtOrAboveExp30RowCount": 0,
+      "minimumOccurrenceProbability": 0,
+      "maximumOccurrenceProbability": 0.9686819787027888,
+      "minimumConditionalPositiveAmount": 0,
+      "maximumConditionalPositiveAmount": 14401.290970397298,
+      "occurrenceShrinkageWeight": {
+        "count": 3318819,
+        "minimum": 0,
+        "maximum": 0.990862014566406,
+        "mean": 0.5334317190911342
+      },
+      "conditionalAmountShrinkageWeight": {
+        "count": 3318819,
+        "minimum": 0,
+        "maximum": 0.6960124719245532,
+        "mean": 0.1433080823505951
+      }
+    },
+    "primaryConditionalAmountOracleRemovableErrorShare": 0.7816409217984716,
+    "primaryOccurrenceOracleRemovableErrorShare": 0.0021014395632335064,
+    "strictConditionalAmountOracleRemovableErrorShare": 0.7999342649988019,
+    "strictOccurrenceOracleRemovableErrorShare": 0.005745846765953567,
+    "primaryMechanismTimeRelativeErrorGain": 0.049987914982388665,
+    "strictMechanismTimeRelativeErrorGain": 0.052592066444463605
+  },
+  "privacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "suppressedStatus": "SUPPRESSED_PRIVACY_THRESHOLD"
+  },
+  "aggregates": {
+    "horizon": [
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "caseCount": 12039,
+        "workCount": 1125,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 2123496,
+          "actualNetTotal": 450206377.48779917,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0185933736090274,
+            "globalPooledParent": 0.04327592617246344,
+            "mechanism": 0.07267483763520434,
+            "namedPlatform": 0.11071760418862998,
+            "final": 0.11071760418862998
+          },
+          "finalWape": 0.9240866349523136,
+          "finalConditionalAmountMassRatio": 0.12282416928620422,
+          "finalObservedOccurrenceMassRatio": 1.1528181244790465
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "caseCount": 15028,
+        "workCount": 2461,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 678636,
+          "actualNetTotal": 123696952.28390023,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.042621696288020046,
+            "globalPooledParent": 0.06470174409655978,
+            "mechanism": 0.09753781493383011,
+            "namedPlatform": 0.1448273755714825,
+            "final": 0.1448273755714825
+          },
+          "finalWape": 0.9138203952594468,
+          "finalConditionalAmountMassRatio": 0.14753828397765753,
+          "finalObservedOccurrenceMassRatio": 1.220321786446803
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "caseCount": 10269,
+        "workCount": 2158,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 720180,
+          "actualNetTotal": 134529095.0290996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04727061710713385,
+            "globalPooledParent": 0.07172560009858714,
+            "mechanism": 0.10669586148715307,
+            "namedPlatform": 0.1496692671340552,
+            "final": 0.1496692671340552
+          },
+          "finalWape": 0.9149715555075802,
+          "finalConditionalAmountMassRatio": 0.1505106421691203,
+          "finalObservedOccurrenceMassRatio": 1.261573137704591
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "caseCount": 6063,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 585840,
+          "actualNetTotal": 115557722.68589996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05032695064468277,
+            "globalPooledParent": 0.07651251927495482,
+            "mechanism": 0.11346367966031003,
+            "namedPlatform": 0.1571116586793989,
+            "final": 0.1571116586793989
+          },
+          "finalWape": 0.9164329115085685,
+          "finalConditionalAmountMassRatio": 0.1577226117997428,
+          "finalObservedOccurrenceMassRatio": 1.3108650940679807
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "caseCount": 22805,
+        "workCount": 2650,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 248001,
+          "actualNetTotal": 45698713.89540002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.035582756615194396,
+            "globalPooledParent": 0.05384062404489301,
+            "mechanism": 0.08185281420077697,
+            "namedPlatform": 0.12897856951408335,
+            "final": 0.12897856951408335
+          },
+          "finalWape": 0.9175277607779031,
+          "finalConditionalAmountMassRatio": 0.13210905503492798,
+          "finalObservedOccurrenceMassRatio": 1.1526770228026888
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "caseCount": 20155,
+        "workCount": 2602,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 442968,
+          "actualNetTotal": 80894982.19029969,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03772324561978417,
+            "globalPooledParent": 0.05722400236891942,
+            "mechanism": 0.08690958075298438,
+            "namedPlatform": 0.13477521600535514,
+            "final": 0.13477521600535514
+          },
+          "finalWape": 0.9154383451196373,
+          "finalConditionalAmountMassRatio": 0.137925357237811,
+          "finalObservedOccurrenceMassRatio": 1.1763526442225483
+        }
+      }
+    ],
+    "strictTimeBlocks": [
+      {
+        "family": "strict",
+        "origin": "2023-03",
+        "horizonMonths": 12,
+        "caseCount": 1191,
+        "workCount": 1191,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 61260,
+          "actualNetTotal": 16858493.71790002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04190683652673173,
+            "globalPooledParent": 0.05881497955441223,
+            "mechanism": 0.08416677224942376,
+            "namedPlatform": 0.11611784173492126,
+            "final": 0.11611784173492126
+          },
+          "finalWape": 0.9240077494094725,
+          "finalConditionalAmountMassRatio": 0.11434360695833003,
+          "finalObservedOccurrenceMassRatio": 1.2037811069370405
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-03",
+        "horizonMonths": 18,
+        "caseCount": 1191,
+        "workCount": 1191,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 91890,
+          "actualNetTotal": 23944014.39219996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04425862735990083,
+            "globalPooledParent": 0.06209162510664156,
+            "mechanism": 0.08887768992754007,
+            "namedPlatform": 0.12267271900535731,
+            "final": 0.12267271900535731
+          },
+          "finalWape": 0.9226235385928253,
+          "finalConditionalAmountMassRatio": 0.12098928375877481,
+          "finalObservedOccurrenceMassRatio": 1.244241663344346
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-03",
+        "horizonMonths": 24,
+        "caseCount": 1191,
+        "workCount": 1191,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 122520,
+          "actualNetTotal": 30061414.50099996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04700285412713826,
+            "globalPooledParent": 0.06591607584402367,
+            "mechanism": 0.09436729137692072,
+            "namedPlatform": 0.1302987374463928,
+            "final": 0.1302987374463928
+          },
+          "finalWape": 0.9212086301452992,
+          "finalConditionalAmountMassRatio": 0.12807639007870095,
+          "finalObservedOccurrenceMassRatio": 1.2831765233012162
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-03",
+        "horizonMonths": 3,
+        "caseCount": 1191,
+        "workCount": 1191,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 15315,
+          "actualNetTotal": 4216002.288000002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04189313074697801,
+            "globalPooledParent": 0.05882987111983701,
+            "mechanism": 0.08411487665454953,
+            "namedPlatform": 0.11590664983402199,
+            "final": 0.11590664983402199
+          },
+          "finalWape": 0.9228362624015979,
+          "finalConditionalAmountMassRatio": 0.11057693893631217,
+          "finalObservedOccurrenceMassRatio": 1.1272914123440787
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-03",
+        "horizonMonths": 6,
+        "caseCount": 1191,
+        "workCount": 1191,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 30630,
+          "actualNetTotal": 9065809.998300012,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.038964314300401606,
+            "globalPooledParent": 0.05470639683732986,
+            "mechanism": 0.07825182279936636,
+            "namedPlatform": 0.10788569872085803,
+            "final": 0.10788569872085803
+          },
+          "finalWape": 0.9274175378076799,
+          "finalConditionalAmountMassRatio": 0.10545681296908116,
+          "finalObservedOccurrenceMassRatio": 1.1676148577629926
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-06",
+        "horizonMonths": 12,
+        "caseCount": 1399,
+        "workCount": 1399,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 70788,
+          "actualNetTotal": 16602191.33839997,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.041910664611575894,
+            "globalPooledParent": 0.0650225808865966,
+            "mechanism": 0.09671516960357379,
+            "namedPlatform": 0.13431228273281198,
+            "final": 0.13431228273281198
+          },
+          "finalWape": 0.9225800008595515,
+          "finalConditionalAmountMassRatio": 0.13336799781614894,
+          "finalObservedOccurrenceMassRatio": 1.2162937427184193
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-06",
+        "horizonMonths": 18,
+        "caseCount": 1399,
+        "workCount": 1399,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 106182,
+          "actualNetTotal": 23396618.399200007,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0446095795423604,
+            "globalPooledParent": 0.06917258535671046,
+            "mechanism": 0.10289988051928005,
+            "namedPlatform": 0.14295315553258217,
+            "final": 0.14295315553258217
+          },
+          "finalWape": 0.9218993282998657,
+          "finalConditionalAmountMassRatio": 0.14204539669063643,
+          "finalObservedOccurrenceMassRatio": 1.260132281267939
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-06",
+        "horizonMonths": 24,
+        "caseCount": 1399,
+        "workCount": 1399,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 141576,
+          "actualNetTotal": 29233581.371799983,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04760339584475953,
+            "globalPooledParent": 0.07377514392415309,
+            "mechanism": 0.10975255375976944,
+            "namedPlatform": 0.15252423518586902,
+            "final": 0.15252423518586902
+          },
+          "finalWape": 0.9218543600409165,
+          "finalConditionalAmountMassRatio": 0.15137408237203678,
+          "finalObservedOccurrenceMassRatio": 1.311366506488684
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-06",
+        "horizonMonths": 3,
+        "caseCount": 1399,
+        "workCount": 1399,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 17697,
+          "actualNetTotal": 4943800.304700003,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03518593137446286,
+            "globalPooledParent": 0.05463355118201542,
+            "mechanism": 0.08122544962951721,
+            "namedPlatform": 0.11272123367369641,
+            "final": 0.11272123367369641
+          },
+          "finalWape": 0.930390469365033,
+          "finalConditionalAmountMassRatio": 0.11156495820703038,
+          "finalObservedOccurrenceMassRatio": 1.164154563608258
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-06",
+        "horizonMonths": 6,
+        "caseCount": 1399,
+        "workCount": 1399,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 35394,
+          "actualNetTotal": 9259078.503699996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03757441265471727,
+            "globalPooledParent": 0.05832646615107557,
+            "mechanism": 0.08673479350393996,
+            "namedPlatform": 0.12040026035330643,
+            "final": 0.12040026035330643
+          },
+          "finalWape": 0.9257941651949024,
+          "finalConditionalAmountMassRatio": 0.11972059363934587,
+          "finalObservedOccurrenceMassRatio": 1.1720595028123482
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-09",
+        "horizonMonths": 12,
+        "caseCount": 1656,
+        "workCount": 1656,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 76980,
+          "actualNetTotal": 16229309.73119998,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04730451459684337,
+            "globalPooledParent": 0.07196199410607941,
+            "mechanism": 0.10732558829958455,
+            "namedPlatform": 0.15002326752238127,
+            "final": 0.15002326752238127
+          },
+          "finalWape": 0.9185932090301353,
+          "finalConditionalAmountMassRatio": 0.15692128547871628,
+          "finalObservedOccurrenceMassRatio": 1.19783806860759
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-09",
+        "horizonMonths": 18,
+        "caseCount": 1656,
+        "workCount": 1656,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 115470,
+          "actualNetTotal": 22666702.083999928,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05080489540766672,
+            "globalPooledParent": 0.07723993606167322,
+            "mechanism": 0.11519130300526433,
+            "namedPlatform": 0.16104674634977037,
+            "final": 0.16104674634977037
+          },
+          "finalWape": 0.9175358273768386,
+          "finalConditionalAmountMassRatio": 0.16737685257451476,
+          "finalObservedOccurrenceMassRatio": 1.2445579591124405
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-09",
+        "horizonMonths": 24,
+        "caseCount": 1656,
+        "workCount": 1656,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 153960,
+          "actualNetTotal": 28647120.26849994,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05359838000334139,
+            "globalPooledParent": 0.08143737800626805,
+            "mechanism": 0.12144629125672653,
+            "namedPlatform": 0.16983024847952202,
+            "final": 0.16983024847952202
+          },
+          "finalWape": 0.916640266778577,
+          "finalConditionalAmountMassRatio": 0.17849003816390507,
+          "finalObservedOccurrenceMassRatio": 1.3065737080861908
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-09",
+        "horizonMonths": 3,
+        "caseCount": 1656,
+        "workCount": 1656,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 19245,
+          "actualNetTotal": 4744406.191699999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04045393606998239,
+            "globalPooledParent": 0.061596753271978284,
+            "mechanism": 0.09189860819962585,
+            "namedPlatform": 0.12847570781723883,
+            "final": 0.12847570781723883
+          },
+          "finalWape": 0.92313987571687,
+          "finalConditionalAmountMassRatio": 0.1332668722288741,
+          "finalObservedOccurrenceMassRatio": 1.1106768224601875
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-09",
+        "horizonMonths": 6,
+        "caseCount": 1656,
+        "workCount": 1656,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 38490,
+          "actualNetTotal": 8706186.563099992,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04409046449395644,
+            "globalPooledParent": 0.06711344899564597,
+            "mechanism": 0.1001095025649098,
+            "namedPlatform": 0.13993358524316005,
+            "final": 0.13993358524316005
+          },
+          "finalWape": 0.9207708347524862,
+          "finalConditionalAmountMassRatio": 0.14630787849159985,
+          "finalObservedOccurrenceMassRatio": 1.1448056614220772
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-12",
+        "horizonMonths": 12,
+        "caseCount": 1817,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 83892,
+          "actualNetTotal": 15663896.51529999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04710317576420585,
+            "globalPooledParent": 0.07574171987985458,
+            "mechanism": 0.11459633420145196,
+            "namedPlatform": 0.15691113089299497,
+            "final": 0.15691113089299497
+          },
+          "finalWape": 0.9093926156886348,
+          "finalConditionalAmountMassRatio": 0.1539306007747073,
+          "finalObservedOccurrenceMassRatio": 1.201760751412293
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-12",
+        "horizonMonths": 18,
+        "caseCount": 1817,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 125838,
+          "actualNetTotal": 21991684.880400047,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05032488015755027,
+            "globalPooledParent": 0.08088132413316214,
+            "mechanism": 0.12238719393677508,
+            "namedPlatform": 0.1676213598107945,
+            "final": 0.1676213598107945
+          },
+          "finalWape": 0.9086754579183048,
+          "finalConditionalAmountMassRatio": 0.16383322859470922,
+          "finalObservedOccurrenceMassRatio": 1.2523755701940715
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-12",
+        "horizonMonths": 24,
+        "caseCount": 1817,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 167784,
+          "actualNetTotal": 27615606.544600036,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05343494951095183,
+            "globalPooledParent": 0.0858363899087325,
+            "mechanism": 0.12989913652638208,
+            "namedPlatform": 0.17796183209758137,
+            "final": 0.17796183209758137
+          },
+          "finalWape": 0.9052800387602083,
+          "finalConditionalAmountMassRatio": 0.1745374029269663,
+          "finalObservedOccurrenceMassRatio": 1.3338294494707705
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-12",
+        "horizonMonths": 3,
+        "caseCount": 1817,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 20973,
+          "actualNetTotal": 4109277.1646999926,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04488741213726169,
+            "globalPooledParent": 0.07223351708066884,
+            "mechanism": 0.10928028520803543,
+            "namedPlatform": 0.14962026152144475,
+            "final": 0.14962026152144475
+          },
+          "finalWape": 0.9125264453301057,
+          "finalConditionalAmountMassRatio": 0.1468939607717817,
+          "finalObservedOccurrenceMassRatio": 1.1429970420615645
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2023-12",
+        "horizonMonths": 6,
+        "caseCount": 1817,
+        "workCount": 1817,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 41946,
+          "actualNetTotal": 8258206.1423999965,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.044671885031080265,
+            "globalPooledParent": 0.07186852479374184,
+            "mechanism": 0.10872680777041882,
+            "namedPlatform": 0.14885431643612348,
+            "final": 0.14885431643612348
+          },
+          "finalWape": 0.9109867643927813,
+          "finalConditionalAmountMassRatio": 0.14642068630919547,
+          "finalObservedOccurrenceMassRatio": 1.1608519083432058
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-03",
+        "horizonMonths": 12,
+        "caseCount": 2048,
+        "workCount": 2048,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 91812,
+          "actualNetTotal": 15246623.14249999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04672041574670581,
+            "globalPooledParent": 0.06955771396731059,
+            "mechanism": 0.10104529148827288,
+            "namedPlatform": 0.13437589908282416,
+            "final": 0.13437589908282416
+          },
+          "finalWape": 0.9182153393827697,
+          "finalConditionalAmountMassRatio": 0.13218265631401316,
+          "finalObservedOccurrenceMassRatio": 1.1770828234309176
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-03",
+        "horizonMonths": 18,
+        "caseCount": 2048,
+        "workCount": 2048,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 137718,
+          "actualNetTotal": 21790033.922400016,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04903585105611142,
+            "globalPooledParent": 0.0729581981019336,
+            "mechanism": 0.10598060190969641,
+            "namedPlatform": 0.14096058689924118,
+            "final": 0.14096058689924118
+          },
+          "finalWape": 0.916866899640537,
+          "finalConditionalAmountMassRatio": 0.13988004039756577,
+          "finalObservedOccurrenceMassRatio": 1.249839582285128
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-03",
+        "horizonMonths": 3,
+        "caseCount": 2048,
+        "workCount": 2048,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 22953,
+          "actualNetTotal": 4328641.74719999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.041140420803576556,
+            "globalPooledParent": 0.061309064661478035,
+            "mechanism": 0.08912137019989658,
+            "namedPlatform": 0.11857966377722472,
+            "final": 0.11857966377722472
+          },
+          "finalWape": 0.9220387461911922,
+          "finalConditionalAmountMassRatio": 0.11842860864316049,
+          "finalObservedOccurrenceMassRatio": 1.1083085609359231
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-03",
+        "horizonMonths": 6,
+        "caseCount": 2048,
+        "workCount": 2048,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 45906,
+          "actualNetTotal": 8253917.883900007,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.043150936438343133,
+            "globalPooledParent": 0.06428461720434192,
+            "mechanism": 0.09341050841317704,
+            "namedPlatform": 0.12424067312170685,
+            "final": 0.12424067312170685
+          },
+          "finalWape": 0.9201829923465409,
+          "finalConditionalAmountMassRatio": 0.12339194553685996,
+          "finalObservedOccurrenceMassRatio": 1.1368141875410729
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-06",
+        "horizonMonths": 12,
+        "caseCount": 2158,
+        "workCount": 2158,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 95388,
+          "actualNetTotal": 14635966.554999987,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.042317197378253193,
+            "globalPooledParent": 0.06494302023672044,
+            "mechanism": 0.10055840471353898,
+            "namedPlatform": 0.1569517014728822,
+            "final": 0.1569517014728822
+          },
+          "finalWape": 0.9060769207639394,
+          "finalConditionalAmountMassRatio": 0.15962621531641139,
+          "finalObservedOccurrenceMassRatio": 1.1946702901598611
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-06",
+        "horizonMonths": 18,
+        "caseCount": 2158,
+        "workCount": 2158,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 143082,
+          "actualNetTotal": 20740041.350900028,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.044794010415693704,
+            "globalPooledParent": 0.06869802594936286,
+            "mechanism": 0.10637738209943624,
+            "namedPlatform": 0.16609236736960187,
+            "final": 0.16609236736960187
+          },
+          "finalWape": 0.9002046102718954,
+          "finalConditionalAmountMassRatio": 0.17171601227983407,
+          "finalObservedOccurrenceMassRatio": 1.306558750673748
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-06",
+        "horizonMonths": 3,
+        "caseCount": 2158,
+        "workCount": 2158,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 23847,
+          "actualNetTotal": 4009838.9036999997,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03861458654598013,
+            "globalPooledParent": 0.05932037896310595,
+            "mechanism": 0.09187196620647493,
+            "namedPlatform": 0.14339221176476136,
+            "final": 0.14339221176476136
+          },
+          "finalWape": 0.9065194521232988,
+          "finalConditionalAmountMassRatio": 0.1448777362442866,
+          "finalObservedOccurrenceMassRatio": 1.1223652674117917
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-06",
+        "horizonMonths": 6,
+        "caseCount": 2158,
+        "workCount": 2158,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 47694,
+          "actualNetTotal": 7844415.682000002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.039477324420136885,
+            "globalPooledParent": 0.060625395731921904,
+            "mechanism": 0.0938784372357924,
+            "namedPlatform": 0.14650460142210814,
+            "final": 0.14650460142210814
+          },
+          "finalWape": 0.9055375978582965,
+          "finalConditionalAmountMassRatio": 0.14798574946538134,
+          "finalObservedOccurrenceMassRatio": 1.1293827607957811
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-09",
+        "horizonMonths": 12,
+        "caseCount": 2298,
+        "workCount": 2298,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 97476,
+          "actualNetTotal": 14065196.011499992,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0396335566352557,
+            "globalPooledParent": 0.057921209045845294,
+            "mechanism": 0.09092068174950473,
+            "namedPlatform": 0.1569690332763894,
+            "final": 0.1569690332763894
+          },
+          "finalWape": 0.9034041707044188,
+          "finalConditionalAmountMassRatio": 0.16252906396502845,
+          "finalObservedOccurrenceMassRatio": 1.2235053582003779
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-09",
+        "horizonMonths": 3,
+        "caseCount": 2298,
+        "workCount": 2298,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 24369,
+          "actualNetTotal": 3931350.9144999967,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03544924854276564,
+            "globalPooledParent": 0.05186198789295697,
+            "mechanism": 0.08146663262349511,
+            "namedPlatform": 0.14064898113806132,
+            "final": 0.14064898113806132
+          },
+          "finalWape": 0.9081695194828202,
+          "finalConditionalAmountMassRatio": 0.14148760402065036,
+          "finalObservedOccurrenceMassRatio": 1.0892584564511845
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-09",
+        "horizonMonths": 6,
+        "caseCount": 2298,
+        "workCount": 2298,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 48738,
+          "actualNetTotal": 7288656.719400007,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03824118518464445,
+            "globalPooledParent": 0.05592649616723497,
+            "mechanism": 0.08781682666126257,
+            "namedPlatform": 0.15158198725238733,
+            "final": 0.15158198725238733
+          },
+          "finalWape": 0.9052862420936368,
+          "finalConditionalAmountMassRatio": 0.15074633440756013,
+          "finalObservedOccurrenceMassRatio": 1.1258619037874753
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-12",
+        "horizonMonths": 12,
+        "caseCount": 2461,
+        "workCount": 2461,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 101040,
+          "actualNetTotal": 14395275.272100028,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03301115259799085,
+            "globalPooledParent": 0.052264233229377184,
+            "mechanism": 0.08422834518933578,
+            "namedPlatform": 0.15844936904383178,
+            "final": 0.15844936904383178
+          },
+          "finalWape": 0.9046198856046647,
+          "finalConditionalAmountMassRatio": 0.17455135976692512,
+          "finalObservedOccurrenceMassRatio": 1.3318451821623107
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-12",
+        "horizonMonths": 3,
+        "caseCount": 2461,
+        "workCount": 2461,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 25260,
+          "actualNetTotal": 3747110.184699994,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03170474080517496,
+            "globalPooledParent": 0.05025822936682452,
+            "mechanism": 0.0809688951216618,
+            "namedPlatform": 0.15202722231222227,
+            "final": 0.15202722231222227
+          },
+          "finalWape": 0.9126155720787924,
+          "finalConditionalAmountMassRatio": 0.15994151694263267,
+          "finalObservedOccurrenceMassRatio": 1.129339840566387
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2024-12",
+        "horizonMonths": 6,
+        "caseCount": 2461,
+        "workCount": 2461,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 50520,
+          "actualNetTotal": 7635353.720800018,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03111870425877187,
+            "globalPooledParent": 0.04930883905713272,
+            "mechanism": 0.07945038633155195,
+            "namedPlatform": 0.14926984297737858,
+            "final": 0.14926984297737858
+          },
+          "finalWape": 0.9149217033767402,
+          "finalConditionalAmountMassRatio": 0.16208479506927453,
+          "finalObservedOccurrenceMassRatio": 1.186060854101708
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2025-03",
+        "horizonMonths": 3,
+        "caseCount": 2525,
+        "workCount": 2525,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 25542,
+          "actualNetTotal": 3998633.579600003,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.02633282204084952,
+            "globalPooledParent": 0.03899466756098283,
+            "mechanism": 0.06155479649664279,
+            "namedPlatform": 0.1193473582058819,
+            "final": 0.1193473582058819
+          },
+          "finalWape": 0.9259198666400207,
+          "finalConditionalAmountMassRatio": 0.129519177340634,
+          "finalObservedOccurrenceMassRatio": 1.1881807249559757
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2025-03",
+        "horizonMonths": 6,
+        "caseCount": 2525,
+        "workCount": 2525,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 51084,
+          "actualNetTotal": 7627114.342199985,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.027610784822140303,
+            "globalPooledParent": 0.040869092300100045,
+            "mechanism": 0.06449954406469925,
+            "namedPlatform": 0.1251359950545986,
+            "final": 0.1251359950545986
+          },
+          "finalWape": 0.9172472459715609,
+          "finalConditionalAmountMassRatio": 0.13699955782982837,
+          "finalObservedOccurrenceMassRatio": 1.2474453139747
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2025-06",
+        "horizonMonths": 3,
+        "caseCount": 2602,
+        "workCount": 2602,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 26283,
+          "actualNetTotal": 3673299.404099998,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.02789640607952992,
+            "globalPooledParent": 0.04266935556552898,
+            "mechanism": 0.06842747783486405,
+            "namedPlatform": 0.13448018600297984,
+            "final": 0.13448018600297984
+          },
+          "finalWape": 0.9067586826864525,
+          "finalConditionalAmountMassRatio": 0.1438723791213318,
+          "finalObservedOccurrenceMassRatio": 1.1706739989188297
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2025-06",
+        "horizonMonths": 6,
+        "caseCount": 2602,
+        "workCount": 2602,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 52566,
+          "actualNetTotal": 6956242.634499993,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.029461839447707642,
+            "globalPooledParent": 0.04504109234876073,
+            "mechanism": 0.07224016480705373,
+            "namedPlatform": 0.14210480308179563,
+            "final": 0.14210480308179563
+          },
+          "finalWape": 0.8994091280845298,
+          "finalConditionalAmountMassRatio": 0.1500763387070692,
+          "finalObservedOccurrenceMassRatio": 1.2735862348811962
+        }
+      },
+      {
+        "family": "strict",
+        "origin": "2025-09",
+        "horizonMonths": 3,
+        "caseCount": 2650,
+        "workCount": 2650,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 26517,
+          "actualNetTotal": 3996353.2125000004,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.025091769307949544,
+            "globalPooledParent": 0.03631606769246028,
+            "mechanism": 0.05604631385605777,
+            "namedPlatform": 0.11054192115046778,
+            "final": 0.11054192115046778
+          },
+          "finalWape": 0.9159682289601347,
+          "finalConditionalAmountMassRatio": 0.12183177624113412,
+          "finalObservedOccurrenceMassRatio": 1.3062230688275838
+        }
+      }
+    ],
+    "mechanisms": [
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "mechanism": "advertising",
+        "caseCount": 3540,
+        "workCount": 430,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 127440,
+          "actualNetTotal": 50521899.10299988,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.021922413706273517,
+            "globalPooledParent": 0.05797225866715908,
+            "mechanism": 0.11593585557210093,
+            "namedPlatform": 0.1945866937909418,
+            "final": 0.1945866937909418
+          },
+          "finalWape": 0.877245485557124,
+          "finalConditionalAmountMassRatio": 0.17502461541869752,
+          "finalObservedOccurrenceMassRatio": 1.0008924226002964
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 32247,
+        "workCount": 529,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 1160892,
+          "actualNetTotal": 51684313.490500055,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "mechanism": "membership",
+        "caseCount": 22498,
+        "workCount": 1078,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 809928,
+          "actualNetTotal": 339097988.28220016,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.020771704858023748,
+            "globalPooledParent": 0.04740881166161075,
+            "mechanism": 0.07770606841967526,
+            "namedPlatform": 0.11649576007607824,
+            "final": 0.11649576007607824
+          },
+          "finalWape": 0.9466119555628456,
+          "finalConditionalAmountMassRatio": 0.11738948099066404,
+          "finalObservedOccurrenceMassRatio": 1.1760107342574375
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "mechanism": "other",
+        "caseCount": 279,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 10044,
+          "actualNetTotal": 23608.818099999993,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 3.7174047511647212,
+            "globalPooledParent": 3.9717490378281552,
+            "mechanism": 3.9717490378281552,
+            "namedPlatform": 3.9717490378281552,
+            "final": 3.9717490378281552
+          },
+          "finalWape": 3.422776616350935,
+          "finalConditionalAmountMassRatio": 0.48454508986379485,
+          "finalObservedOccurrenceMassRatio": 8.274601545107698
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "mechanism": "transactional",
+        "caseCount": 422,
+        "workCount": 46,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 15192,
+          "actualNetTotal": 8878567.79399999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.014854483783182104,
+            "globalPooledParent": 0.043275942518993846,
+            "mechanism": 0.04703866877089479,
+            "namedPlatform": 0.04703866877089479,
+            "final": 0.04703866877089479
+          },
+          "finalWape": 0.9692592534674905,
+          "finalConditionalAmountMassRatio": 0.032391384773571896,
+          "finalObservedOccurrenceMassRatio": 1.7977101304083072
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "mechanism": "advertising",
+        "caseCount": 5065,
+        "workCount": 668,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 60780,
+          "actualNetTotal": 13781629.121999977,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04774967188553751,
+            "globalPooledParent": 0.08301627670592995,
+            "mechanism": 0.18218434181455764,
+            "namedPlatform": 0.3269929631947176,
+            "final": 0.3269929631947176
+          },
+          "finalWape": 0.8415373068382201,
+          "finalConditionalAmountMassRatio": 0.2993285680007563,
+          "finalObservedOccurrenceMassRatio": 1.051322254001125
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 14753,
+        "workCount": 911,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 177036,
+          "actualNetTotal": 7045992.348400048,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "mechanism": "membership",
+        "caseCount": 35999,
+        "workCount": 2434,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 431988,
+          "actualNetTotal": 92470974.58050075,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04882715714976281,
+            "globalPooledParent": 0.07150208330992747,
+            "mechanism": 0.1011592528661911,
+            "namedPlatform": 0.1428358527903948,
+            "final": 0.1428358527903948
+          },
+          "finalWape": 0.9496912184297908,
+          "finalConditionalAmountMassRatio": 0.13964705513501205,
+          "finalObservedOccurrenceMassRatio": 1.253579820031755
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "mechanism": "other",
+        "caseCount": 176,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 2112,
+          "actualNetTotal": 0,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": null,
+            "globalPooledParent": null,
+            "mechanism": null,
+            "namedPlatform": null,
+            "final": null
+          },
+          "finalWape": null,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "mechanism": "transactional",
+        "caseCount": 560,
+        "workCount": 67,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 6720,
+          "actualNetTotal": 10398356.232999997,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0071638535303049245,
+            "globalPooledParent": 0.02287108971687251,
+            "mechanism": 0.018312390473501756,
+            "namedPlatform": 0.018312390473501756,
+            "final": 0.018312390473501756
+          },
+          "finalWape": 0.9848000965605487,
+          "finalConditionalAmountMassRatio": 0.016536061463949276,
+          "finalObservedOccurrenceMassRatio": 1.383755673995748
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "mechanism": "advertising",
+        "caseCount": 3485,
+        "workCount": 552,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 62730,
+          "actualNetTotal": 14813383.913899997,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.054589525916735146,
+            "globalPooledParent": 0.09543109478431228,
+            "mechanism": 0.1931223120021249,
+            "namedPlatform": 0.32884455669107737,
+            "final": 0.32884455669107737
+          },
+          "finalWape": 0.8368312836471425,
+          "finalConditionalAmountMassRatio": 0.29273737906255176,
+          "finalObservedOccurrenceMassRatio": 1.0596626091846941
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 11966,
+        "workCount": 816,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 215388,
+          "actualNetTotal": 9370499.098900018,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "mechanism": "membership",
+        "caseCount": 24025,
+        "workCount": 2129,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 432450,
+          "actualNetTotal": 99546774.2162993,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05449602258499841,
+            "globalPooledParent": 0.07959266235995593,
+            "mechanism": 0.11287631465732886,
+            "namedPlatform": 0.1507546656681752,
+            "final": 0.1507546656681752
+          },
+          "finalWape": 0.9569552295009544,
+          "finalConditionalAmountMassRatio": 0.14357459755747146,
+          "finalObservedOccurrenceMassRatio": 1.3025611491554623
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "mechanism": "other",
+        "caseCount": 132,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 2376,
+          "actualNetTotal": 0,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": null,
+            "globalPooledParent": null,
+            "mechanism": null,
+            "namedPlatform": null,
+            "final": null
+          },
+          "finalWape": null,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "mechanism": "transactional",
+        "caseCount": 402,
+        "workCount": 63,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 7236,
+          "actualNetTotal": 10798437.799999999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.00869652200603044,
+            "globalPooledParent": 0.027736388445553515,
+            "mechanism": 0.022559703678318294,
+            "namedPlatform": 0.022559703678318294,
+            "final": 0.022559703678318294
+          },
+          "finalWape": 0.9813281630624077,
+          "finalConditionalAmountMassRatio": 0.019343670080477573,
+          "finalObservedOccurrenceMassRatio": 1.5031633703055323
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "mechanism": "advertising",
+        "caseCount": 2137,
+        "workCount": 513,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 51288,
+          "actualNetTotal": 12631225.752699953,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.061344045385132696,
+            "globalPooledParent": 0.10825720306017383,
+            "mechanism": 0.20901260785603643,
+            "namedPlatform": 0.34507052237748237,
+            "final": 0.34507052237748237
+          },
+          "finalWape": 0.8355746604508635,
+          "finalConditionalAmountMassRatio": 0.3019584048066007,
+          "finalObservedOccurrenceMassRatio": 1.0647188238836633
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 8243,
+        "workCount": 658,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 197832,
+          "actualNetTotal": 11075219.334600054,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "mechanism": "membership",
+        "caseCount": 13690,
+        "workCount": 1767,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 328560,
+          "actualNetTotal": 83192219.98859946,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05910210766643296,
+            "globalPooledParent": 0.0862918459035064,
+            "mechanism": 0.12288195329350028,
+            "namedPlatform": 0.1628530325841072,
+            "final": 0.1628530325841072
+          },
+          "finalWape": 0.9642754343079494,
+          "finalConditionalAmountMassRatio": 0.14989966458607637,
+          "finalObservedOccurrenceMassRatio": 1.36564065733625
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "mechanism": "other",
+        "caseCount": 88,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 2112,
+          "actualNetTotal": 0,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": null,
+            "globalPooledParent": null,
+            "mechanism": null,
+            "namedPlatform": null,
+            "final": null
+          },
+          "finalWape": null,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "mechanism": "transactional",
+        "caseCount": 252,
+        "workCount": 59,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 6048,
+          "actualNetTotal": 8659057.609999998,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.010564948150408947,
+            "globalPooledParent": 0.0324892205501513,
+            "mechanism": 0.027097804469360214,
+            "namedPlatform": 0.027097804469360214,
+            "final": 0.027097804469360214
+          },
+          "finalWape": 0.9774267598858719,
+          "finalConditionalAmountMassRatio": 0.02248081410362172,
+          "finalObservedOccurrenceMassRatio": 1.6243933968876096
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "mechanism": "advertising",
+        "caseCount": 7965,
+        "workCount": 860,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 23895,
+          "actualNetTotal": 5112878.712899953,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0393520324884786,
+            "globalPooledParent": 0.06764871737056295,
+            "mechanism": 0.15683034857232397,
+            "namedPlatform": 0.2865619319912777,
+            "final": 0.2865619319912777
+          },
+          "finalWape": 0.8496718828767793,
+          "finalConditionalAmountMassRatio": 0.26233019381795447,
+          "finalObservedOccurrenceMassRatio": 1.0481548670319687
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 16415,
+        "workCount": 1002,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 49245,
+          "actualNetTotal": 1199682.882799999,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "mechanism": "membership",
+        "caseCount": 57237,
+        "workCount": 2615,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 171711,
+          "actualNetTotal": 34424227.713199906,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04055728637284208,
+            "globalPooledParent": 0.05928770700068618,
+            "mechanism": 0.08363458535483712,
+            "namedPlatform": 0.1269263207665923,
+            "final": 0.1269263207665923
+          },
+          "finalWape": 0.9452060040321856,
+          "finalConditionalAmountMassRatio": 0.1302244558839647,
+          "finalObservedOccurrenceMassRatio": 1.1720409921074684
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "mechanism": "other",
+        "caseCount": 242,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 726,
+          "actualNetTotal": 0,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": null,
+            "globalPooledParent": null,
+            "mechanism": null,
+            "namedPlatform": null,
+            "final": null
+          },
+          "finalWape": null,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "mechanism": "transactional",
+        "caseCount": 808,
+        "workCount": 70,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 2424,
+          "actualNetTotal": 4961924.5865,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.00438629817231453,
+            "globalPooledParent": 0.014297332443551306,
+            "mechanism": 0.011480626030313327,
+            "namedPlatform": 0.011480626030313327,
+            "final": 0.011480626030313327
+          },
+          "finalWape": 0.99035787575742,
+          "finalConditionalAmountMassRatio": 0.011001003580981454,
+          "finalObservedOccurrenceMassRatio": 1.2462020461373466
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "mechanism": "advertising",
+        "caseCount": 6978,
+        "workCount": 851,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 41868,
+          "actualNetTotal": 9180918.504999962,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04136534080961099,
+            "globalPooledParent": 0.07156656962656346,
+            "mechanism": 0.16362145031632902,
+            "namedPlatform": 0.2979441094375587,
+            "final": 0.2979441094375587
+          },
+          "finalWape": 0.8491980919210951,
+          "finalConditionalAmountMassRatio": 0.2738293161856166,
+          "finalObservedOccurrenceMassRatio": 1.0524217806616318
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "mechanism": "future_first_seen_label_only",
+        "caseCount": 16322,
+        "workCount": 990,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 97932,
+          "actualNetTotal": 3099521.401100005,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "mechanism": "membership",
+        "caseCount": 49584,
+        "workCount": 2555,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 297504,
+          "actualNetTotal": 60914740.141200356,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04295870805319301,
+            "globalPooledParent": 0.06290647915428939,
+            "mechanism": 0.08890867648901289,
+            "namedPlatform": 0.13222962505390942,
+            "final": 0.13222962505390942
+          },
+          "finalWape": 0.945820577861195,
+          "finalConditionalAmountMassRatio": 0.13321202506446572,
+          "finalObservedOccurrenceMassRatio": 1.2001172574674235
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "mechanism": "other",
+        "caseCount": 220,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 1320,
+          "actualNetTotal": 0,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": null,
+            "globalPooledParent": null,
+            "mechanism": null,
+            "namedPlatform": null,
+            "final": null
+          },
+          "finalWape": null,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "mechanism": "transactional",
+        "caseCount": 724,
+        "workCount": 68,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 4344,
+          "actualNetTotal": 7699802.143000007,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.00540309857088992,
+            "globalPooledParent": 0.017525233965577217,
+            "mechanism": 0.013934087577163993,
+            "namedPlatform": 0.013934087577163993,
+            "final": 0.013934087577163993
+          },
+          "finalWape": 0.9882227024760644,
+          "finalConditionalAmountMassRatio": 0.013167376548457193,
+          "finalObservedOccurrenceMassRatio": 1.2809786470539
+        }
+      }
+    ],
+    "namedPlatforms": [
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 5051,
+        "workCount": 459,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 181836,
+          "actualNetTotal": 55721203.66259994,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.01987684939595028,
+            "globalPooledParent": 0.05256290981957156,
+            "mechanism": 0.10511796609959213,
+            "namedPlatform": 0.17642995241128978,
+            "final": 0.17642995241128978
+          },
+          "finalWape": 0.8886996190772635,
+          "finalConditionalAmountMassRatio": 0.17502461541869752,
+          "finalObservedOccurrenceMassRatio": 1.0008924226002964
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 62,
+        "workCount": 7,
+        "status": "SUPPRESSED_PRIVACY_THRESHOLD",
+        "metrics": null
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 532,
+        "workCount": 48,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 19152,
+          "actualNetTotal": 9690520.11999998,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.012155744285493462,
+            "globalPooledParent": 0.0357805497633448,
+            "mechanism": 0.03873548812013141,
+            "namedPlatform": 0.03873548812013141,
+            "final": 0.03873548812013141
+          },
+          "finalWape": 0.9755837808566744,
+          "finalConditionalAmountMassRatio": 0.03108659546434877,
+          "finalObservedOccurrenceMassRatio": 1.9892240576804752
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 4021,
+        "workCount": 381,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 144756,
+          "actualNetTotal": 22573617.92459992,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0,
+            "globalPooledParent": 0,
+            "mechanism": 0,
+            "namedPlatform": 0,
+            "final": 0
+          },
+          "finalWape": 1,
+          "finalConditionalAmountMassRatio": null,
+          "finalObservedOccurrenceMassRatio": null
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 11113,
+        "workCount": 1045,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 400068,
+          "actualNetTotal": 337960498.5858988,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.009787689779339305,
+            "globalPooledParent": 0.030868259835564415,
+            "mechanism": 0.05595380787213517,
+            "namedPlatform": 0.0948740558354635,
+            "final": 0.0948740558354635
+          },
+          "finalWape": 0.9426365169691245,
+          "finalConditionalAmountMassRatio": 0.1046211718903763,
+          "finalObservedOccurrenceMassRatio": 1.0073187057141277
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 5101,
+        "workCount": 809,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 61212,
+          "actualNetTotal": 14012838.84189997,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04125467640920089,
+            "globalPooledParent": 0.07638868478781138,
+            "mechanism": 0.17226704515313152,
+            "namedPlatform": 0.3146863461988352,
+            "final": 0.3146863461988352
+          },
+          "finalWape": 0.8404721188774025,
+          "finalConditionalAmountMassRatio": 0.293246125160285,
+          "finalObservedOccurrenceMassRatio": 1.0390752378593116
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 122,
+        "workCount": 21,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 1464,
+          "actualNetTotal": 1983560.6099999994,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.00694413138336648,
+            "globalPooledParent": 0.029863998064707877,
+            "mechanism": 0.022725010244644024,
+            "namedPlatform": 0.022725010244644024,
+            "final": 0.022725010244644024
+          },
+          "finalWape": 0.9793422091410571,
+          "finalConditionalAmountMassRatio": 0.02462683575977121,
+          "finalObservedOccurrenceMassRatio": 0.9570528855212755
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 444,
+        "workCount": 59,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 5328,
+          "actualNetTotal": 9014271.900000002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.006702354941967363,
+            "globalPooledParent": 0.01959863297678355,
+            "mechanism": 0.01595175146200456,
+            "namedPlatform": 0.01595175146200456,
+            "final": 0.01595175146200456
+          },
+          "finalWape": 0.9871837534704507,
+          "finalConditionalAmountMassRatio": 0.014664127235657647,
+          "finalObservedOccurrenceMassRatio": 1.6133918284127113
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 4051,
+        "workCount": 621,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 48612,
+          "actualNetTotal": 11349597.46270002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.016219944739078698,
+            "globalPooledParent": 0.04222709988300701,
+            "mechanism": 0.06936284905058383,
+            "namedPlatform": 0.16393582777212798,
+            "final": 0.16393582777212798
+          },
+          "finalWape": 0.8818271515242765,
+          "finalConditionalAmountMassRatio": 0.25078622437141834,
+          "finalObservedOccurrenceMassRatio": 1.0952653154137424
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 13957,
+        "workCount": 2255,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 167484,
+          "actualNetTotal": 79713294.66560034,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.022080957528534374,
+            "globalPooledParent": 0.04206016216672113,
+            "mechanism": 0.06396403292016867,
+            "namedPlatform": 0.0988454235905598,
+            "final": 0.0988454235905598
+          },
+          "finalWape": 0.9530557494816854,
+          "finalConditionalAmountMassRatio": 0.10352862749303579,
+          "finalObservedOccurrenceMassRatio": 1.0735998727880183
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 3532,
+        "workCount": 731,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 63576,
+          "actualNetTotal": 15111606.530500017,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.047503294640547665,
+            "globalPooledParent": 0.08796123660978403,
+            "mechanism": 0.18263354919572275,
+            "namedPlatform": 0.3156773597380302,
+            "final": 0.3156773597380302
+          },
+          "finalWape": 0.8364034963699083,
+          "finalConditionalAmountMassRatio": 0.28686024173369795,
+          "finalObservedOccurrenceMassRatio": 1.0471143746648441
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 82,
+        "workCount": 19,
+        "status": "SUPPRESSED_PRIVACY_THRESHOLD",
+        "metrics": null
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 328,
+        "workCount": 57,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 5904,
+          "actualNetTotal": 9298267.529999996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.008350190788018269,
+            "globalPooledParent": 0.024842480977318553,
+            "mechanism": 0.02054667297776939,
+            "namedPlatform": 0.02054667297776939,
+            "final": 0.02054667297776939
+          },
+          "finalWape": 0.9833226307921225,
+          "finalConditionalAmountMassRatio": 0.01694213467085963,
+          "finalObservedOccurrenceMassRatio": 1.742920093817558
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 2839,
+        "workCount": 586,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 51102,
+          "actualNetTotal": 12283138.522799991,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.013145934786034822,
+            "globalPooledParent": 0.03399010890959181,
+            "mechanism": 0.056443691920765905,
+            "namedPlatform": 0.07950116030300519,
+            "final": 0.07950116030300519
+          },
+          "finalWape": 0.934232158350935,
+          "finalConditionalAmountMassRatio": 0.16239734769257466,
+          "finalObservedOccurrenceMassRatio": 1.0439091232707227
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 9541,
+        "workCount": 2030,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 171738,
+          "actualNetTotal": 88204495.77909976,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.024315451415619284,
+            "globalPooledParent": 0.04679101863843505,
+            "mechanism": 0.0717243987650796,
+            "namedPlatform": 0.11126262804505135,
+            "final": 0.11126262804505135
+          },
+          "finalWape": 0.9520321966170215,
+          "finalConditionalAmountMassRatio": 0.11527894679243753,
+          "finalObservedOccurrenceMassRatio": 1.0994452141636966
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 2084,
+        "workCount": 597,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 50016,
+          "actualNetTotal": 12942986.927699968,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05490450453731037,
+            "globalPooledParent": 0.10078764090821886,
+            "mechanism": 0.19869236271808557,
+            "namedPlatform": 0.33147301399757606,
+            "final": 0.33147301399757606
+          },
+          "finalWape": 0.8365594480307513,
+          "finalConditionalAmountMassRatio": 0.2974118142597713,
+          "finalObservedOccurrenceMassRatio": 1.0542092102663496
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 46,
+        "workCount": 15,
+        "status": "SUPPRESSED_PRIVACY_THRESHOLD",
+        "metrics": null
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 214,
+        "workCount": 57,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 5136,
+          "actualNetTotal": 8258378.309999998,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.009427005466396373,
+            "globalPooledParent": 0.0278757939524274,
+            "mechanism": 0.023714760333052826,
+            "namedPlatform": 0.023714760333052826,
+            "final": 0.023714760333052826
+          },
+          "finalWape": 0.9801166637267095,
+          "finalConditionalAmountMassRatio": 0.01896578315414032,
+          "finalObservedOccurrenceMassRatio": 1.8474413838727959
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 1700,
+        "workCount": 494,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 40800,
+          "actualNetTotal": 10153662.461899988,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0065966108834185555,
+            "globalPooledParent": 0.01817863680330082,
+            "mechanism": 0.03126126832885181,
+            "namedPlatform": 0.03126126832885181,
+            "final": 0.03126126832885181
+          },
+          "finalWape": 0.9749591435792558,
+          "finalConditionalAmountMassRatio": 0.12282432044174486,
+          "finalObservedOccurrenceMassRatio": 1.122026431726729
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 5593,
+        "workCount": 1693,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 134232,
+          "actualNetTotal": 76827324.53769992,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.02577783310976697,
+            "globalPooledParent": 0.05002431543900135,
+            "mechanism": 0.07744308868602715,
+            "namedPlatform": 0.12072564266712013,
+            "final": 0.12072564266712013
+          },
+          "finalWape": 0.9515524474956268,
+          "finalConditionalAmountMassRatio": 0.12374675967669238,
+          "finalObservedOccurrenceMassRatio": 1.1188083160321856
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 7658,
+        "workCount": 862,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 22974,
+          "actualNetTotal": 5108898.952899953,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03450899954783846,
+            "globalPooledParent": 0.06317271631514125,
+            "mechanism": 0.15055927050813606,
+            "namedPlatform": 0.28039191299503985,
+            "final": 0.28039191299503985
+          },
+          "finalWape": 0.8460196136546353,
+          "finalConditionalAmountMassRatio": 0.25684003964157537,
+          "finalObservedOccurrenceMassRatio": 1.0304495895464263
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 186,
+        "workCount": 22,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 558,
+          "actualNetTotal": 1382258.3099999991,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.003077301440091837,
+            "globalPooledParent": 0.013921981633535852,
+            "mechanism": 0.010807165947448393,
+            "namedPlatform": 0.010807165947448393,
+            "final": 0.010807165947448393
+          },
+          "finalWape": 0.989904097328213,
+          "finalConditionalAmountMassRatio": 0.011451043402345035,
+          "finalObservedOccurrenceMassRatio": 0.9213574158165221
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 622,
+        "workCount": 60,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 1866,
+          "actualNetTotal": 3774557.2700000023,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0045990714208376015,
+            "globalPooledParent": 0.013492526630073835,
+            "mechanism": 0.010973216834047778,
+            "namedPlatform": 0.010973216834047778,
+            "final": 0.010973216834047778
+          },
+          "finalWape": 0.991161633932265,
+          "finalConditionalAmountMassRatio": 0.010694101282776206,
+          "finalObservedOccurrenceMassRatio": 1.4315077217010073
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 6069,
+        "workCount": 701,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 18207,
+          "actualNetTotal": 3964974.8776000137,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.017701692807714855,
+            "globalPooledParent": 0.045979833458721524,
+            "mechanism": 0.0752399912267348,
+            "namedPlatform": 0.24670980502857762,
+            "final": 0.24670980502857762
+          },
+          "finalWape": 0.8275146254968869,
+          "finalConditionalAmountMassRatio": 0.29878042234535584,
+          "finalObservedOccurrenceMassRatio": 1.0611424448942748
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 20976,
+        "workCount": 2391,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 62928,
+          "actualNetTotal": 28352558.22700003,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.018621929665362025,
+            "globalPooledParent": 0.03498087119850952,
+            "mechanism": 0.05280572648480725,
+            "namedPlatform": 0.08138907502903187,
+            "final": 0.08138907502903187
+          },
+          "finalWape": 0.9559854688386091,
+          "finalConditionalAmountMassRatio": 0.08657054145882574,
+          "finalObservedOccurrenceMassRatio": 1.0256906383474411
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "caseCount": 6796,
+        "workCount": 856,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 40776,
+          "actualNetTotal": 9284951.241599968,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.03585710988201561,
+            "globalPooledParent": 0.06603629704715144,
+            "mechanism": 0.15519822255591445,
+            "namedPlatform": 0.28801587067039214,
+            "final": 0.28801587067039214
+          },
+          "finalWape": 0.8472527700130738,
+          "finalConditionalAmountMassRatio": 0.26811112647439067,
+          "finalObservedOccurrenceMassRatio": 1.0363847912635311
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "caseCount": 164,
+        "workCount": 21,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 984,
+          "actualNetTotal": 1589706.1700000009,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.005034123682525695,
+            "globalPooledParent": 0.022428430281066624,
+            "mechanism": 0.017015421642047533,
+            "namedPlatform": 0.017015421642047533,
+            "final": 0.017015421642047533
+          },
+          "finalWape": 0.984036119800469,
+          "finalConditionalAmountMassRatio": 0.018657829697041554,
+          "finalObservedOccurrenceMassRatio": 0.9295204307679462
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "caseCount": 562,
+        "workCount": 59,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 3372,
+          "actualNetTotal": 6480847.600000001,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.005144864095078791,
+            "globalPooledParent": 0.015097922238813438,
+            "mechanism": 0.012205657668515252,
+            "namedPlatform": 0.012205657668515252,
+            "final": 0.012205657668515252
+          },
+          "finalWape": 0.9900873647105541,
+          "finalConditionalAmountMassRatio": 0.01171520017589202,
+          "finalObservedOccurrenceMassRatio": 1.479967178576207
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "caseCount": 5368,
+        "workCount": 685,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 32208,
+          "actualNetTotal": 7122062.701900015,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.01749776831257762,
+            "globalPooledParent": 0.04564193981168346,
+            "mechanism": 0.07489909001313574,
+            "namedPlatform": 0.22718822357989052,
+            "final": 0.22718822357989052
+          },
+          "finalWape": 0.8414008957584855,
+          "finalConditionalAmountMassRatio": 0.29349672088905193,
+          "finalObservedOccurrenceMassRatio": 1.083159929950804
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "caseCount": 18585,
+        "workCount": 2350,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 111510,
+          "actualNetTotal": 51080428.04330003,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.01960495887966764,
+            "globalPooledParent": 0.03701794635198832,
+            "mechanism": 0.05605399574116506,
+            "namedPlatform": 0.08648192334394215,
+            "final": 0.08648192334394215
+          },
+          "finalWape": 0.9547377491183168,
+          "finalConditionalAmountMassRatio": 0.09153231596679495,
+          "finalObservedOccurrenceMassRatio": 1.0411430220314488
+        }
+      }
+    ],
+    "supportTiers": [
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 32669,
+        "workCount": 534,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 1176084,
+          "actualNetTotal": 60562881.284500115,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0021776794385707262,
+            "globalPooledParent": 0.006344288471005578,
+            "mechanism": 0.0068959072085757155,
+            "namedPlatform": 0.0068959072085757155,
+            "final": 0.0068959072085757155
+          },
+          "finalWape": 0.9954933814848582,
+          "finalConditionalAmountMassRatio": 0.032391384773571896,
+          "finalObservedOccurrenceMassRatio": 1.7977101304083072
+        }
+      },
+      {
+        "family": "primary",
+        "horizonMonths": 36,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 26317,
+        "workCount": 1122,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 947412,
+          "actualNetTotal": 389643496.20330095,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.02114488992313696,
+            "globalPooledParent": 0.04901626679549447,
+            "mechanism": 0.08289895684485912,
+            "namedPlatform": 0.1268547684688668,
+            "final": 0.1268547684688668
+          },
+          "finalWape": 0.9377678031227841,
+          "finalConditionalAmountMassRatio": 0.12488480578063851,
+          "finalObservedOccurrenceMassRatio": 1.150243868412297
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 15833,
+        "workCount": 931,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 189996,
+          "actualNetTotal": 20337634.91220002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.0071290461095165686,
+            "globalPooledParent": 0.020764141562042194,
+            "mechanism": 0.024756969782169142,
+            "namedPlatform": 0.024756969782169142,
+            "final": 0.024756969782169142
+          },
+          "finalWape": 0.9797474209929267,
+          "finalConditionalAmountMassRatio": 0.03689902561148681,
+          "finalObservedOccurrenceMassRatio": 1.1285724351663438
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 12,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 40720,
+        "workCount": 2454,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 488640,
+          "actualNetTotal": 103359317.37170117,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04960545527320471,
+            "globalPooledParent": 0.07334718547511272,
+            "mechanism": 0.11185863568744087,
+            "namedPlatform": 0.1684531902420723,
+            "final": 0.1684531902420723
+          },
+          "finalWape": 0.9364109516250491,
+          "finalConditionalAmountMassRatio": 0.161766101199383,
+          "finalObservedOccurrenceMassRatio": 1.2222343495064099
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 12892,
+        "workCount": 835,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 232056,
+          "actualNetTotal": 24261949.442800075,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.008247660603354707,
+            "globalPooledParent": 0.0238621249411293,
+            "mechanism": 0.029490375314512013,
+            "namedPlatform": 0.029490375314512013,
+            "final": 0.029490375314512013
+          },
+          "finalWape": 0.9758654631106642,
+          "finalConditionalAmountMassRatio": 0.04578016680926556,
+          "finalObservedOccurrenceMassRatio": 1.1506751434013285
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 18,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 27118,
+        "workCount": 2152,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 488124,
+          "actualNetTotal": 110267145.58629912,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.05585679200782677,
+            "globalPooledParent": 0.08225694384791946,
+            "mechanism": 0.12368329316744,
+            "namedPlatform": 0.176112086361071,
+            "final": 0.176112086361071
+          },
+          "finalWape": 0.9428179224384148,
+          "finalConditionalAmountMassRatio": 0.16465437160930937,
+          "finalObservedOccurrenceMassRatio": 1.2647753673249311
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 8720,
+        "workCount": 677,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 209280,
+          "actualNetTotal": 22244443.683800086,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.00712367804006652,
+            "globalPooledParent": 0.020944815756630906,
+            "mechanism": 0.02481778481827339,
+            "namedPlatform": 0.02481778481827339,
+            "final": 0.02481778481827339
+          },
+          "finalWape": 0.9797828438940342,
+          "finalConditionalAmountMassRatio": 0.045031971124897104,
+          "finalObservedOccurrenceMassRatio": 1.2281559523093348
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 24,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 15690,
+        "workCount": 1809,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 376560,
+          "actualNetTotal": 93313279.00209975,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.06062594318558138,
+            "globalPooledParent": 0.0897590010701522,
+            "mechanism": 0.13459549108844954,
+            "namedPlatform": 0.1886484737853106,
+            "final": 0.1886484737853106
+          },
+          "finalWape": 0.9487684056809543,
+          "finalConditionalAmountMassRatio": 0.17121122843836883,
+          "finalObservedOccurrenceMassRatio": 1.3127711852954693
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 17737,
+        "workCount": 1024,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 53211,
+          "actualNetTotal": 6906100.642900002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.005692406094899383,
+            "globalPooledParent": 0.016913638168703914,
+            "mechanism": 0.019551149480153227,
+            "namedPlatform": 0.019551149480153227,
+            "final": 0.019551149480153227
+          },
+          "finalWape": 0.9857753114131301,
+          "finalConditionalAmountMassRatio": 0.02309660566057522,
+          "finalObservedOccurrenceMassRatio": 1.1773755777530073
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 3,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 64930,
+        "workCount": 2641,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 194790,
+          "actualNetTotal": 38792613.25249996,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.040904021455009314,
+            "globalPooledParent": 0.060414594177814265,
+            "mechanism": 0.09294414140733229,
+            "namedPlatform": 0.1484595147891094,
+            "final": 0.1484595147891094
+          },
+          "finalWape": 0.9329314322162937,
+          "finalConditionalAmountMassRatio": 0.14814485476651013,
+          "finalObservedOccurrenceMassRatio": 1.15234000980284
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "supportTier": "POOLED_PARENT",
+        "caseCount": 17562,
+        "workCount": 1010,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 105372,
+          "actualNetTotal": 12261605.37600002,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.006258915217221284,
+            "globalPooledParent": 0.018492443891083524,
+            "mechanism": 0.02148812302669845,
+            "namedPlatform": 0.02148812302669845,
+            "final": 0.02148812302669845
+          },
+          "finalWape": 0.9834172806746947,
+          "finalConditionalAmountMassRatio": 0.02804992710899865,
+          "finalObservedOccurrenceMassRatio": 1.1533827348537375
+        }
+      },
+      {
+        "family": "strict",
+        "horizonMonths": 6,
+        "supportTier": "SHRUNK_FIT",
+        "caseCount": 56266,
+        "workCount": 2595,
+        "status": "REPORTED",
+        "metrics": {
+          "monthlyRowCount": 337596,
+          "actualNetTotal": 68633376.81430055,
+          "stagePredictionToActualNetRatio": {
+            "originVisibleEmpiricalParent": 0.04334446405206006,
+            "globalPooledParent": 0.06414353784416744,
+            "mechanism": 0.09859736496230369,
+            "namedPlatform": 0.1550143721240594,
+            "final": 0.1550143721240594
+          },
+          "finalWape": 0.9334585792338681,
+          "finalConditionalAmountMassRatio": 0.1525929718058957,
+          "finalObservedOccurrenceMassRatio": 1.1767119416844936
+        }
+      }
+    ]
+  },
+  "normalizedChannelComposition": [
+    {
+      "family": "primary",
+      "horizonMonths": 36,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 450206377.48779917,
+        "rawPredictionTotal": 49845771.505891085,
+        "actualDerivedGlobalScalar": 9.03198734589936,
+        "rawWorkChannelWape": 0.9455331914518706,
+        "globallyNormalizedWorkChannelWape": 1.293696837148266,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.40960104935042074,
+        "perWorkScalarIncludedWorkCount": 11676,
+        "perWorkScalarExcludedWorkCount": 363,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    },
+    {
+      "family": "strict",
+      "horizonMonths": 12,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 123696952.28390023,
+        "rawPredictionTotal": 17914704.96546817,
+        "actualDerivedGlobalScalar": 6.904771946975106,
+        "rawWorkChannelWape": 0.9435361174122028,
+        "globallyNormalizedWorkChannelWape": 1.2963383385915128,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.3711133661512168,
+        "perWorkScalarIncludedWorkCount": 13882,
+        "perWorkScalarExcludedWorkCount": 1146,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    },
+    {
+      "family": "strict",
+      "horizonMonths": 18,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 134529095.0290996,
+        "rawPredictionTotal": 20134871.06121301,
+        "actualDerivedGlobalScalar": 6.681398386913485,
+        "rawWorkChannelWape": 0.9487779548078112,
+        "globallyNormalizedWorkChannelWape": 1.312756891603249,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.3577294557126082,
+        "perWorkScalarIncludedWorkCount": 9550,
+        "perWorkScalarExcludedWorkCount": 719,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    },
+    {
+      "family": "strict",
+      "horizonMonths": 24,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 115557722.68589996,
+        "rawPredictionTotal": 18155465.484395746,
+        "actualDerivedGlobalScalar": 6.364900023368691,
+        "rawWorkChannelWape": 0.95473857286823,
+        "globallyNormalizedWorkChannelWape": 1.3462748307538994,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.35949725422759515,
+        "perWorkScalarIncludedWorkCount": 5644,
+        "perWorkScalarExcludedWorkCount": 419,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    },
+    {
+      "family": "strict",
+      "horizonMonths": 3,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 45698713.89540002,
+        "rawPredictionTotal": 5894154.746862058,
+        "actualDerivedGlobalScalar": 7.753226010859181,
+        "rawWorkChannelWape": 0.9409173275946563,
+        "globallyNormalizedWorkChannelWape": 1.2744762152061615,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.37798427267796897,
+        "perWorkScalarIncludedWorkCount": 19637,
+        "perWorkScalarExcludedWorkCount": 3168,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    },
+    {
+      "family": "strict",
+      "horizonMonths": 6,
+      "status": "REPORTED",
+      "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+      "metrics": {
+        "actualTotal": 80894982.19029969,
+        "rawPredictionTotal": 10902638.698446997,
+        "actualDerivedGlobalScalar": 7.419761805169477,
+        "rawWorkChannelWape": 0.941031037569093,
+        "globallyNormalizedWorkChannelWape": 1.2830407097399659,
+        "perWorkActualDerivedScalarWorkChannelWape": 0.3804809297323137,
+        "perWorkScalarIncludedWorkCount": 18091,
+        "perWorkScalarExcludedWorkCount": 2064,
+        "participatesInTraining": false,
+        "participatesInSelection": false,
+        "participatesInGate": false,
+        "registeredAsCandidateScore": false
+      }
+    }
+  ],
+  "normalizedChannelCompositionPolicy": {
+    "diagnosticLabel": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE",
+    "actualDerivedScalarUsed": true,
+    "participatesInTraining": false,
+    "participatesInSelection": false,
+    "participatesInGate": false,
+    "registeredAsCandidateScore": false
+  },
+  "psc02DesignDecision": {
+    "status": "PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED",
+    "supportedForSeparatePreregistration": true,
+    "implementationAuthorized": false,
+    "fittingAuthorized": false,
+    "evaluationAuthorized": false,
+    "requiredDesignFocus": [
+      "cash-scale-aligned conditional amount estimator",
+      "origin-safe calibration without evaluation-actual scalars",
+      "preserved raw candidate and same-case comparator",
+      "separate channel-composition diagnostics"
+    ]
+  },
+  "authorizationBoundaries": {
+    "psc02Created": false,
+    "candidateFitExecuted": false,
+    "candidatePredictionGenerated": false,
+    "laterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "productionModified": false,
+    "routeModified": false,
+    "apiModified": false,
+    "databaseConnected": false,
+    "providerConnected": false
+  },
+  "publication": {
+    "privateRowsIncluded": false,
+    "workIdentitiesIncluded": false,
+    "channelUidsIncluded": false,
+    "privatePathsIncluded": false,
+    "digestsIncluded": false
+  }
+}

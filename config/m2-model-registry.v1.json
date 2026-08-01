@@ -74,7 +74,7 @@
     "activeCandidate": null,
     "blockedExperiment": null,
     "pendingExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.54.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -259,6 +259,13 @@
         "source": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json",
         "assertion": "hpsr02_first_independent_complete_result_frozen_inconclusive_and_cash_only_adjacent_research_ended",
         "scope": "first_independent_later_origin_dynamic_core80_three_month_work_total",
+        "historicalAssertion": false,
+        "currentAuthority": true
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json",
+        "assertion": "publishing_scale_amount_collapse_is_estimator_scale_shrinkage_with_implementation_and_comparator_integrity_verified",
+        "scope": "frozen_publishing_scale_channel_raw_candidate_root_cause_audit",
         "historicalAssertion": false,
         "currentAuthority": true
       }
@@ -2917,7 +2924,9 @@
         "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json",
         "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md",
         "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json",
-        "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json"
+        "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md"
       ],
       "predecessorIds": [
         "M2-CHAN-GEN02"
@@ -2935,9 +2944,20 @@
         "三级分类与授权关系为 REPORT_ONLY",
         "相对同人口冻结研究基线的 primary 与 strict WAPE 均显著恶化",
         "条件正金额严重低估是主要误差来源",
+        "根因审计确认 work-balanced log1p 估计器与层级收缩造成现金尺度塌缩，未确认实现、单位变换或比较器缺陷",
         "第一份有效原始候选结果已冻结，不授权 outcome-driven 调参或第二参数版本",
         "不具备自动化、生产或发布权限"
       ],
+      "rootCauseAudit": {
+        "auditId": "M2-AUDIT-PSC01-AMOUNT-SCALE-ROOT-CAUSE-01",
+        "status": "M2_PSC01_AMOUNT_SCALE_ROOT_CAUSE_AUDIT_COMPLETE_ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED",
+        "category": "ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT",
+        "psc02DesignStatus": "PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED",
+        "reportRefs": [
+          "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json",
+          "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md"
+        ]
+      },
       "registryReviewRequired": false,
       "evaluations": [
         {
@@ -4410,7 +4430,9 @@
         "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
         "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json",
         "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json",
-        "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"
+        "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md"
       ]
     },
     {
@@ -4980,6 +5002,9 @@
     {"identifier": "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_PREREGISTERED_AWAITING_INDEPENDENT_DATA", "namespace": "M2-WORKFLOW-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02", "type": "workflow_completion_status_code", "displayNameZh": "HPSR01 解释已修订且 HPSR02 已预注册，等待独立数据", "meaningZh": "HPSR01 原合同不支持结论保留、科学解释修订为证据不足；HPSR02 在独立结果打开前完成预注册，未执行真实评价。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md"},
     {"identifier": "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02", "type": "independent_evaluation_result_status_code", "displayNameZh": "首个独立起点证据不足且现金相邻研究结束", "meaningZh": "候选点估计仅小幅改善，未达到预注册支持门限且 bootstrap 区间跨零；结果冻结，不授权后继现金模型、第二起点、留出、自动化或生产。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json"},
     {"identifier": "M2_HPSR02_FIRST_INDEPENDENT_COMPLETE_RESULT_FROZEN_CASH_ONLY_RESEARCH_ENDED", "namespace": "M2-WORKFLOW-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02", "type": "workflow_completion_status_code", "displayNameZh": "首个独立完整结果已冻结且现金相邻研究结束", "meaningZh": "唯一授权评价完成后立即冻结并停止；前瞻最终留出和第二独立起点未打开。", "mayAppearAloneInUserReport": false, "evidenceRef": "config/m2-current-head-protected-tail-band-correction.v0.2.json"},
+    {"identifier": "M2_PSC01_AMOUNT_SCALE_ROOT_CAUSE_AUDIT_COMPLETE_ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01", "type": "root_cause_audit_status_code", "displayNameZh": "出版行业渠道条件金额尺度根因审计完成并确认估计器收缩", "meaningZh": "冻结原始候选、比较器和实现路径核验确认尺度塌缩从 work-balanced log1p 经验父层开始；实现与比较器完整，模型仍为冻结失败候选。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json"},
+    {"identifier": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE", "namespace": "M2-EVIDENCE-CLASS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01", "type": "evidence_classification", "displayNameZh": "事后诊断而非模型证据", "meaningZh": "使用评价 actual 形成的归一化 scalar 只用于区分总额尺度与渠道构成误差；不参加训练、选模、门禁或候选成绩登记。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json"},
+    {"identifier": "PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED", "namespace": "M2-DESIGN-DECISION", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01", "type": "future_design_decision_status", "displayNameZh": "下一渠道修订的独立预注册设计有证据支持但未授权", "meaningZh": "现有根因证据支持另行设计现金尺度对齐的条件金额估计器；没有创建模型 ID，也不授权实现、拟合、调参、private evaluation 或 holdout。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],
