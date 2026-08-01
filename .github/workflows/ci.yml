@@ -109,6 +109,15 @@ jobs:
       - name: Admin E2E
         run: npm run test:e2e
 
+      - name: Upload Admin E2E failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: admin-e2e-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/admin-mobile-table-readiness/
+          if-no-files-found: ignore
+          retention-days: 7
+
   verify-windows:
     runs-on: windows-latest
     env:
@@ -202,3 +211,12 @@ jobs:
 
       - name: Admin E2E
         run: npm run test:e2e
+
+      - name: Upload Admin E2E failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: admin-e2e-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/admin-mobile-table-readiness/
+          if-no-files-found: ignore
+          retention-days: 7
