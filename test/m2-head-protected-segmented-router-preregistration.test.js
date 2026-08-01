@@ -34,6 +34,7 @@ import {
 } from "../src/domain/m2Current/headProtectedSegmentedRouter.js";
 import {
   computeHpsrFrozenParameterPayloadDigest,
+  projectImmutableParameterInferenceState,
   validateImmutableHpsrFrozenParameterArtifact
 } from "../scripts/m2-current/hpsr_frozen_parameter_authority_private.mjs";
 import {
@@ -715,6 +716,12 @@ test("controlled parameter artifact is immutable and exactly three-valued", () =
     laterOriginOutcomeUsed: false,
     prospectiveFinalHoldoutOutcomeUsed: false,
     publicParameterValuesPublished: false,
+    lineageBindings: {
+      historicalParameterLineageInput: {
+        path: "data/private-output/example-private-lineage.ndjson",
+        sha256: "b".repeat(64)
+      }
+    },
     parameterPayloadSha256: null
   };
   artifact.parameterPayloadSha256 =
@@ -723,6 +730,21 @@ test("controlled parameter artifact is immutable and exactly three-valued", () =
     hpsr01Config: config,
     boundProof: residualBoundProvenance
   }).valid, true);
+  const inferenceState = projectImmutableParameterInferenceState(
+    artifact
+  );
+  assert.deepEqual(Object.keys(inferenceState).sort(), [
+    "artifactClass",
+    "laterOriginOutcomeUsed",
+    "parameterValues",
+    "prospectiveFinalHoldoutOutcomeUsed",
+    "sourceClass",
+    "status"
+  ]);
+  assert.doesNotMatch(
+    JSON.stringify(inferenceState),
+    /data[\\/]+private-(?:input|output)/iu
+  );
   assert.throws(
     () => validateImmutableHpsrFrozenParameterArtifact({
       ...artifact,

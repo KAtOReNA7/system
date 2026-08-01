@@ -94,7 +94,7 @@ export async function loadOrRecoverHpsrImmutableFrozenParameters({
       boundProof
     });
     return Object.freeze({
-      boundState: Object.freeze(artifact),
+      boundState: projectImmutableParameterInferenceState(artifact),
       parameterArtifact: Object.freeze(artifact),
       parameterAuthorityStatus:
         "IMMUTABLE_FROZEN_MODEL_PARAMETER_VALIDATED",
@@ -153,7 +153,9 @@ export async function loadOrRecoverHpsrImmutableFrozenParameters({
       boundProof
     });
     return Object.freeze({
-      boundState: Object.freeze(rebuiltArtifact),
+      boundState: projectImmutableParameterInferenceState(
+        rebuiltArtifact
+      ),
       parameterArtifact: Object.freeze(rebuiltArtifact),
       parameterAuthorityStatus:
         "IMMUTABLE_FROZEN_MODEL_PARAMETER_VALIDATED",
@@ -205,7 +207,9 @@ export async function loadOrRecoverHpsrImmutableFrozenParameters({
     boundProof
   });
   return Object.freeze({
-    boundState: Object.freeze(reconstruction.artifact),
+    boundState: projectImmutableParameterInferenceState(
+      reconstruction.artifact
+    ),
     parameterArtifact: Object.freeze(reconstruction.artifact),
     parameterAuthorityStatus:
       "IMMUTABLE_FROZEN_MODEL_PARAMETER_VALIDATED",
@@ -289,6 +293,50 @@ export function validateImmutableHpsrFrozenParameterArtifact(
   return Object.freeze({
     valid: true,
     parameterPayloadSha256: payloadDigest
+  });
+}
+
+export function projectImmutableParameterInferenceState(artifact) {
+  const parameterValues = artifact?.parameterValues;
+  if (
+    artifact?.artifactClass !== "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+    || artifact?.status !== FROZEN_SOURCE_CLASS
+    || artifact?.sourceClass !== FROZEN_SOURCE_CLASS
+    || JSON.stringify(Object.keys(parameterValues ?? {}).sort())
+      !== JSON.stringify([
+        "frozenDevelopmentPositiveBaseFloor",
+        "frozenDevelopmentQ05",
+        "frozenDevelopmentQ95"
+      ])
+    || !Number.isFinite(
+      parameterValues?.frozenDevelopmentPositiveBaseFloor
+    )
+    || parameterValues.frozenDevelopmentPositiveBaseFloor <= 0
+    || !Number.isFinite(parameterValues?.frozenDevelopmentQ05)
+    || !Number.isFinite(parameterValues?.frozenDevelopmentQ95)
+    || parameterValues.frozenDevelopmentQ05
+      > parameterValues.frozenDevelopmentQ95
+    || artifact?.laterOriginOutcomeUsed !== false
+    || artifact?.prospectiveFinalHoldoutOutcomeUsed !== false
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_immutable_parameter_inference_projection_invalid"
+    );
+  }
+  return Object.freeze({
+    artifactClass: "IMMUTABLE_FROZEN_MODEL_PARAMETER",
+    status: FROZEN_SOURCE_CLASS,
+    sourceClass: FROZEN_SOURCE_CLASS,
+    parameterValues: Object.freeze({
+      frozenDevelopmentPositiveBaseFloor:
+        parameterValues.frozenDevelopmentPositiveBaseFloor,
+      frozenDevelopmentQ05:
+        parameterValues.frozenDevelopmentQ05,
+      frozenDevelopmentQ95:
+        parameterValues.frozenDevelopmentQ95
+    }),
+    laterOriginOutcomeUsed: false,
+    prospectiveFinalHoldoutOutcomeUsed: false
   });
 }
 
