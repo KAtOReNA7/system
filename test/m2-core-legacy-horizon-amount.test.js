@@ -23,6 +23,7 @@ import {
 import {
   classifyM2CoreHorizonAmountFailure,
   runM2CoreLegacyHorizonAmountPublicDiagnostic,
+  selectM2HpsrHistoricalSupportOrigins,
   validateM2CoreHorizonAmountRecoveryPolicy
 } from "../scripts/m2-current/core_legacy_horizon_amount_mode.mjs";
 
@@ -37,6 +38,20 @@ const recoveryPolicy = JSON.parse(await readFile(path.join(
   "config",
   "m2-current-core-legacy-horizon-amount-recovery.v0.1.json"
 ), "utf8"));
+
+test("HPSR cache rebuild partitions requested origins from historical support", () => {
+  const historical = selectM2HpsrHistoricalSupportOrigins({
+    candidateOrigins: [
+      "2023-02",
+      "2023-03",
+      "2024-01",
+      "2025-09",
+      "2026-03"
+    ],
+    requestedOrigins: ["2023-03", "2025-09", "2026-03"]
+  });
+  assert.deepEqual(historical, ["2023-02", "2024-01"]);
+});
 
 test("CHAM01 preregistration freezes scope, B0-B3 and no promotion", () => {
   const validation = validateM2CoreLegacyHorizonAmountConfig(config);

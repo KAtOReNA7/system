@@ -19,6 +19,48 @@ const CONTRACT_PATH = path.join(
 
 async function main() {
   const contract = readJson(CONTRACT_PATH);
+  if (process.argv.includes("--source-authority-reconciliation")) {
+    const {
+      reconcileHpsr02SourceAuthorityPrivate
+    } = await import("./head_protected_segmented_router_private.mjs");
+    const result = await reconcileHpsr02SourceAuthorityPrivate({
+      root: ROOT
+    });
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    return;
+  }
+  if (
+    process.argv.includes("--hpsr02-parameter-authority")
+    || process.argv.includes("--hpsr02-bound-reconciliation")
+  ) {
+    const {
+      reconcileHpsr02ImmutableFrozenParameterPrivate
+    } = await import("./head_protected_segmented_router_private.mjs");
+    const result = await reconcileHpsr02ImmutableFrozenParameterPrivate({
+      root: ROOT
+    });
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    return;
+  }
+  if (process.argv.includes("--hpsr02-independent")) {
+    const {
+      runHpsr02IndependentPrivate
+    } = await import("./head_protected_segmented_router_private.mjs");
+    const result = await runHpsr02IndependentPrivate({ root: ROOT });
+    process.stdout.write(`${JSON.stringify({
+      status: result.status,
+      origin: result.origin,
+      caseCount: result.caseCount,
+      completeIndependentResultProduced:
+        result.completeIndependentResultProduced,
+      resultFrozen: result.resultFrozen,
+      secondIndependentOriginExecuted:
+        result.secondIndependentOriginExecuted,
+      prospectiveFinalHoldoutOpened:
+        result.prospectiveFinalHoldoutOpened
+    })}\n`);
+    return;
+  }
   const availability = readJson(path.join(
     ROOT,
     contract.publicOutputs.availabilityJson
@@ -62,8 +104,13 @@ if (
   && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   main().catch((error) => {
+    const safeReason = typeof error?.parameterBlockerReason === "string"
+      && /^hpsr02_[a-z0-9_]+$/u.test(error.parameterBlockerReason)
+      ? ` reason=${error.parameterBlockerReason}`
+      : "";
     process.stderr.write(
-      `[M2_HPSR_CONTROLLED_EXECUTE_DENIED] ${error.message}\n`
+      `[M2_HPSR_CONTROLLED_EXECUTE_DENIED] ${error.message}`
+        + `${safeReason}\n`
     );
     process.exitCode = 1;
   });

@@ -2056,8 +2056,19 @@ function normalizeHpsrBoundState(value, executionMode) {
   }
   if (
     executionMode === "CONTROLLED_LATER_ORIGIN"
-    && sourceClass
-      !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+    && (
+      sourceClass
+        !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+      || value?.status
+        !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+      || value?.artifactClass !== "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+      || JSON.stringify(Object.keys(value?.parameterValues ?? {}).sort())
+        !== JSON.stringify([
+          "frozenDevelopmentPositiveBaseFloor",
+          "frozenDevelopmentQ05",
+          "frozenDevelopmentQ95"
+        ])
+    )
   ) {
     throw new Error("hpsr_controlled_bound_provenance_invalid");
   }
@@ -2390,7 +2401,7 @@ function uniqueWorkIndex(rows, armId) {
   return output;
 }
 
-function scoreHpsrEvaluationRows(
+export function scoreHpsrEvaluationRows(
   rows,
   predictionField,
   nullReason = "NO_EVALUATION_ROWS"
@@ -2489,7 +2500,7 @@ function scoreHpsrEvaluationRows(
   });
 }
 
-function pairedFva(candidate, baseline) {
+export function pairedFva(candidate, baseline) {
   if (
     candidate?.wape === null
     || baseline?.wape === null
@@ -2500,7 +2511,7 @@ function pairedFva(candidate, baseline) {
   return (baseline.wape - candidate.wape) / baseline.wape;
 }
 
-function bootstrapHpsrFva(rows, {
+export function bootstrapHpsrFva(rows, {
   candidateField,
   baselineField,
   iterations,

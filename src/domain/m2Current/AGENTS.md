@@ -119,21 +119,33 @@ This directory is the only implementation home for current M2 model logic.
   head-protected segmentation direction fails. Any L20-only aggregate
   arithmetic is `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`; it is not
   a row-level rescore, model evaluation, or leaderboard entry.
+- For `M2-WORK-HPSR01` and `M2-WORK-HPSR02`, the outcome-preceding positive
+  base floor, q05, and q95 are exactly three
+  `IMMUTABLE_FROZEN_MODEL_PARAMETER` values. Current manually reviewed bills
+  remain `SOURCE_AUTHORITY` for current origin-visible input and WORK_TOTAL
+  actual; they must never be used to re-derive those parameters. Digest-bound
+  historical rows are only a `PARAMETER_LINEAGE_SNAPSHOT` and may support
+  deterministic `FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`;
+  they do not replace current actual or become project-wide bill authority.
+  Missing historical provenance is only a warning when the immutable artifact
+  and minimal lineage snapshot validate. Preserve channel split drift as
+  `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED` without
+  changing the frozen values or activating WORK_CHANNEL.
 - `M2-WORK-HPSR02` is a
   `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED` independent-evaluation
-  candidate, not an active candidate. Its only allowed structure keeps frozen
+  model, not an active candidate. Its only allowed structure keeps frozen
   LG01 rowwise in H50 and M30 and applies the already frozen HPSR01 bounded
   residual correction only in L20. Public synthetic code may verify
-  invariants, but must consume no outcome or private data. Do not run a real
-  evaluation, bootstrap, training, alpha search, bound re-estimation, or K2
-  without a later explicit authorization and dynamically complete bills. The
-  prospective final holdout remains unopened, and the production loader,
-  route, API, and current runtime composition must not import HPSR02.
-- If the first legal independent evaluation of `M2-WORK-HPSR02` is
-  `NOT_SUPPORTED` or `INCONCLUSIVE`, end cash-only adjacent-model work and do
-  not create HPSR03. Only `SUPPORTED` may permit at most one second independent
-  origin confirmation after separate user authorization; no result
-  automatically authorizes production.
+  invariants, but must consume no outcome or private data. Its unique legal
+  `2026-03` independent evaluation is frozen as
+  `M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`; do not
+  rerun the model, evaluation, or bootstrap. The prospective final holdout
+  remains unopened, and the production loader, route, API, and current runtime
+  composition must not import HPSR02.
+- Because `M2-WORK-HPSR02`'s first legal independent evaluation is
+  `INCONCLUSIVE`, cash-only adjacent-model work is closed. Do not create
+  HPSR03 or execute a second independent origin; no result authorizes
+  production.
 - Historical company portfolio, future-new-work, and existing-work
   future-channel studies are `FUTURE_PHASE` references only. Preserve their
   mutually exclusive, amount-conserving audit identities, but do not treat

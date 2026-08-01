@@ -1,11 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import {
-  mkdtemp,
-  readFile,
-  rm
-} from "node:fs/promises";
-import os from "node:os";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -38,8 +33,10 @@ import {
   validateHpsrSelectionAttribution
 } from "../src/domain/m2Current/headProtectedSegmentedRouter.js";
 import {
-  loadOrRebuildHpsrResidualBoundCache
-} from "../scripts/m2-current/materialize_head_protected_segmented_router_bounds.mjs";
+  computeHpsrFrozenParameterPayloadDigest,
+  projectImmutableParameterInferenceState,
+  validateImmutableHpsrFrozenParameterArtifact
+} from "../scripts/m2-current/hpsr_frozen_parameter_authority_private.mjs";
 import {
   runHpsrSyntheticFixture
 } from "../scripts/m2-current/run_m2_head_protected_segmented_router_synthetic.mjs";
@@ -489,10 +486,9 @@ test("raw B3 diagnostics and raw HPSR rows remain separate", () => {
 test("one-origin retrospective produces a real mixed result rather than no result", () => {
   const controlled = runHeadProtectedSegmentedRouter({
     ...synthetic.input,
-    residualBoundState: {
-      ...synthetic.input.residualBoundState,
-      sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
-    },
+    residualBoundState: controlledFrozenParameterState(
+      synthetic.input.residualBoundState
+    ),
     executionMode: "CONTROLLED_LATER_ORIGIN"
   });
   const candidateByWork = new Map(
@@ -536,10 +532,9 @@ test("clear one-origin degradation stops before independent K2", () => {
         supportRangeExtrapolation: true
       }
     })),
-    residualBoundState: {
-      ...synthetic.input.residualBoundState,
-      sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
-    },
+    residualBoundState: controlledFrozenParameterState(
+      synthetic.input.residualBoundState
+    ),
     executionMode: "CONTROLLED_LATER_ORIGIN"
   };
   const controlled = runHeadProtectedSegmentedRouter(extremeInput);
@@ -688,52 +683,81 @@ test("q10 q05 and q95 derive only from old development rows", () => {
   );
 });
 
-test("missing private bound cache is rebuilt without a historical receipt", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "hpsr-bound-"));
-  const cachePath = path.join(directory, "bound.json");
-  let rebuildCount = 0;
+test("controlled parameter artifact is immutable and exactly three-valued", () => {
   const artifact = {
-    schema:
-      "m2.current.head_protected_segmented_router."
-        + "residual_bounds.private.v0.1",
-    artifactClass: "PRIVATE_DERIVED_CACHE",
+    schema: "m2.current.hpsr.immutable_frozen_parameters.private.v0.2",
+    artifactClass: "IMMUTABLE_FROZEN_MODEL_PARAMETER",
     experimentId: HPSR_EXPERIMENT_ID,
-    modelId: HPSR_MODEL_ID,
+    modelIds: [HPSR_MODEL_ID, "M2-WORK-HPSR02"],
     status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
     sourcePopulation:
       "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+    derivationOriginRange: { from: "2023-03", through: "2025-09" },
+    maximumOpenedDevelopmentOrigin: "2026-02",
+    inputRowCount: 577,
+    finiteSupportRowCount: 577,
+    excludedNonfiniteRowCount: 0,
+    positiveBaseSupportRowCount: 577,
+    quantileMethod: "LINEAR_INTERPOLATION_N_MINUS_ONE",
+    quantiles: { positiveBase: 0.1, lower: 0.05, upper: 0.95 },
     parameterValues: {
       frozenDevelopmentPositiveBaseFloor: 10,
       frozenDevelopmentQ05: -1,
       frozenDevelopmentQ95: 1
     },
-    newLaterOriginActualValueRead: false,
+    lineageSnapshotSha256: "a".repeat(64),
+    recoveryIdentity:
+      "FROZEN_PARAMETER_RECONSTRUCTION_FROM_"
+        + "DIGEST_BOUND_LINEAGE_SNAPSHOT",
+    recoveryAlgorithmVersion: "M2_HPSR_FROZEN_PARAMETER_RECOVERY_V0_2",
+    actualFieldConsumedForBoundDerivation: false,
+    currentBillSourceUsedForParameterDerivation: false,
     laterOriginOutcomeUsed: false,
     prospectiveFinalHoldoutOutcomeUsed: false,
     publicParameterValuesPublished: false,
-    privateDigestIsCrossComputerGate: false
+    lineageBindings: {
+      historicalParameterLineageInput: {
+        path: "data/private-output/example-private-lineage.ndjson",
+        sha256: "b".repeat(64)
+      }
+    },
+    parameterPayloadSha256: null
   };
-  try {
-    const rebuilt = await loadOrRebuildHpsrResidualBoundCache({
-      cachePath,
-      rebuild: async () => {
-        rebuildCount += 1;
-        return artifact;
+  artifact.parameterPayloadSha256 =
+    computeHpsrFrozenParameterPayloadDigest(artifact);
+  assert.equal(validateImmutableHpsrFrozenParameterArtifact(artifact, {
+    hpsr01Config: config,
+    boundProof: residualBoundProvenance
+  }).valid, true);
+  const inferenceState = projectImmutableParameterInferenceState(
+    artifact
+  );
+  assert.deepEqual(Object.keys(inferenceState).sort(), [
+    "artifactClass",
+    "laterOriginOutcomeUsed",
+    "parameterValues",
+    "prospectiveFinalHoldoutOutcomeUsed",
+    "sourceClass",
+    "status"
+  ]);
+  assert.doesNotMatch(
+    JSON.stringify(inferenceState),
+    /data[\\/]+private-(?:input|output)/iu
+  );
+  assert.throws(
+    () => validateImmutableHpsrFrozenParameterArtifact({
+      ...artifact,
+      parameterValues: {
+        ...artifact.parameterValues,
+        unexpectedFourthValue: 0
       }
-    });
-    const cached = await loadOrRebuildHpsrResidualBoundCache({
-      cachePath,
-      rebuild: async () => {
-        rebuildCount += 1;
-        return artifact;
-      }
-    });
-    assert.equal(rebuilt.cacheStatus, "CACHE_MISS_REBUILT");
-    assert.equal(cached.cacheStatus, "CACHE_HIT");
-    assert.equal(rebuildCount, 1);
-  } finally {
-    await rm(directory, { recursive: true, force: true });
-  }
+    }, {
+      hpsr01Config: config,
+      boundProof: residualBoundProvenance
+    }),
+    /M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER/u
+  );
 });
 
 test("numeric and reporting contracts separate raw router from fallback", () => {
@@ -1005,6 +1029,22 @@ test("portable cache classification never turns cache or receipt into authority"
   );
   assert.equal(config.execution.fixedExecutionShaInContractAllowed, false);
 });
+
+function controlledFrozenParameterState(syntheticState) {
+  return {
+    artifactClass: "IMMUTABLE_FROZEN_MODEL_PARAMETER",
+    status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    parameterValues: {
+      frozenDevelopmentPositiveBaseFloor:
+        syntheticState.frozenDevelopmentPositiveBaseFloor,
+      frozenDevelopmentQ05: syntheticState.frozenDevelopmentQ05,
+      frozenDevelopmentQ95: syntheticState.frozenDevelopmentQ95
+    },
+    laterOriginOutcomeUsed: false,
+    prospectiveFinalHoldoutOutcomeUsed: false
+  };
+}
 
 async function readJson(repositoryRelativePath) {
   return JSON.parse(await readText(repositoryRelativePath));

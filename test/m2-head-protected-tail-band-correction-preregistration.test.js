@@ -5,9 +5,14 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  runHeadProtectedSegmentedRouter
+} from "../src/domain/m2Current/headProtectedSegmentedRouter.js";
+import {
   classifyHpsr02IndependentEvidence,
+  evaluateHpsr02IndependentEvaluation,
   HPSR02_ARM_IDS,
   HPSR02_EXPERIMENT_ID,
+  HPSR02_FINAL_STATUSES,
   HPSR02_MODEL_ID,
   HPSR02_PREREGISTERED_STATUS,
   HPSR02_WORKFLOW_STATUS,
@@ -36,6 +41,31 @@ const attributionReport = await readText(
   config.publicOutputs.cashBandAttributionReport
 );
 const synthetic = await runHpsr02SyntheticFixture();
+const independentEvaluation = await readJson(
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.json"
+);
+const independentEvaluationReport = await readText(
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.md"
+);
+const dateAuditSource = await readText(
+  "scripts/m2-current/audit_head_protected_segmented_router_dates.py"
+);
+const privateRunnerSource = await readText(
+  "scripts/m2-current/head_protected_segmented_router_private.mjs"
+);
+const parameterAuthoritySource = await readText(
+  "scripts/m2-current/hpsr_frozen_parameter_authority_private.mjs"
+);
+const coreRevenuePrivateSource = await readText(
+  "scripts/m2-current/core_revenue_manual_private.mjs"
+);
+const controlledSource = await readText(
+  "scripts/m2-current/run_m2_head_protected_segmented_router_controlled.mjs"
+);
 
 test("HPSR02 stable identity and preregistration contract validate", () => {
   const validation = validateHeadProtectedTailBandCorrectionContract(
@@ -59,7 +89,282 @@ test("HPSR02 stable identity and preregistration contract validate", () => {
   );
   assert.equal(config.inspiration.postHocArithmeticIsModelEvidence, false);
   assert.equal(config.experiment.primaryCandidateArmId, "R2");
-  assert.equal(config.experiment.independentK2Executed, false);
+  assert.equal(config.experiment.independentK2Executed, true);
+  assert.equal(
+    config.currentExecutionStatus,
+    HPSR02_FINAL_STATUSES.MIXED
+  );
+  assert.equal(config.authorization.authorizationConsumed, true);
+});
+
+test("first independent result is frozen and preserves all prior gates", () => {
+  const readyStatus =
+    "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
+      + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION";
+  const recoveryStatus =
+    "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED";
+  const sourceDecisionStatus =
+    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED";
+  const parameterPendingStatus =
+    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+      + "PENDING_PRIVATE_INTEGRITY_GATE";
+  const missingImmutableParameterStatus =
+    "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER";
+  assert.ok([
+    readyStatus,
+    recoveryStatus,
+    sourceDecisionStatus,
+    parameterPendingStatus,
+    missingImmutableParameterStatus,
+    ...Object.values(HPSR02_FINAL_STATUSES)
+  ].includes(independentEvaluation.status));
+  assert.equal(
+    independentEvaluation.status,
+    HPSR02_FINAL_STATUSES.MIXED
+  );
+  assert.equal(
+    independentEvaluation.model.stableModelId,
+    "M2-WORK-HPSR02"
+  );
+  assert.equal(
+    independentEvaluation.experiment.stableExperimentId,
+    "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
+  );
+  assert.equal(
+    independentEvaluation.priorBlockedAttempt.status,
+    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
+  );
+  assert.equal(independentEvaluation.priorBlockedAttempt.historyRewritten, false);
+  const source = independentEvaluation.sourceAuthorityReconciliation;
+  assert.equal(
+    source.sourceAuthorityStatus,
+    "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
+  );
+  assert.equal(
+    source.workTotalCanonicalMappingStatus,
+    "WORK_TOTAL_CANONICAL_MAPPING_WARNING_"
+      + "WORK_CHANNEL_REMAINS_PARTIAL"
+  );
+  assert.equal(
+    source.metadataDifferenceStatus,
+    "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING"
+  );
+  assert.equal(source.workTotalScopeRelevantDifferenceRowCount, 0);
+  assert.equal(source.workChannelGateStatus, "PARTIAL_NOT_ACTIVE");
+  assert.equal(independentEvaluation.governance.activeCandidate, null);
+  assert.equal(independentEvaluation.governance.approvedForAutomation, null);
+  assert.equal(independentEvaluation.governance.productionReady, false);
+  assert.equal(independentEvaluation.governance.finalHoldoutOpened, false);
+  assert.equal(
+    independentEvaluation.preResultEngineeringRecovery.attemptCount,
+    7
+  );
+  assert.deepEqual(
+    independentEvaluation.preResultEngineeringRecovery.attempts.map(
+      (attempt) => attempt.errorCode
+    ),
+    [
+      "m2_hpsr_rebuilt_work_case_duplicate",
+      "hpsr02_residual_bound_rebuild_not_reconciled",
+      "m2_core_revenue_manual_command_failed:node.exe",
+      "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+      "hpsr02_parameter_lineage_snapshot_invalid",
+      "hpsr02_private_or_absolute_path_forbidden",
+      "hpsr02_independent_source_gate_invalid"
+    ]
+  );
+  assert.equal(
+    independentEvaluation.evaluation.numeric.historicalR1.rawCoverage,
+    1
+  );
+  assert.equal(
+    independentEvaluation.reportingAmendments
+      .frozenPrivateResultDigestVerified,
+    true
+  );
+  assert.equal(
+    independentEvaluation.reportingAmendments.scientificEvaluationRerun,
+    false
+  );
+  assert.equal(
+    independentEvaluation.frozenParameterAuthority
+      .encryptedBackupMechanismStatus,
+    "NOT_AVAILABLE_FOR_THIS_CAPABILITY_NO_UNENCRYPTED_BACKUP_CREATED"
+  );
+  if (independentEvaluation.status === readyStatus) {
+    assert.equal(
+      independentEvaluation.executionLedger.actualAmountRowsReadForOutcome,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  } else if (independentEvaluation.status === recoveryStatus) {
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.status,
+      "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery
+        .completeIndependentResultProduced,
+      false
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.attemptCount,
+      3
+    );
+    assert.deepEqual(
+      independentEvaluation.preResultEngineeringRecovery.attempts.map(
+        (attempt) => attempt.errorCode
+      ),
+      [
+        "m2_hpsr_rebuilt_work_case_duplicate",
+        "hpsr02_residual_bound_rebuild_not_reconciled",
+        "m2_core_revenue_manual_command_failed:node.exe"
+      ]
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.preResultEngineeringAttempts,
+      3
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.bootstrapRuns,
+      0
+    );
+  } else if (independentEvaluation.status === sourceDecisionStatus) {
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation.status,
+      "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT"
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .historicalOnlyRowCount,
+      732
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .currentOnlyRowCount,
+      732
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .workMonthAmountTotalEqual,
+      true
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.retryAllowed,
+      false
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+    assert.equal(
+      independentEvaluation.governance.sourceAuthorityDecisionRequired,
+      true
+    );
+  } else if (independentEvaluation.status === parameterPendingStatus) {
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision.artifactClass,
+      "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+    );
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision
+        .lineageArtifactClass,
+      "PARAMETER_LINEAGE_SNAPSHOT"
+    );
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision
+        .currentBillsMayDeriveFrozenParameters,
+      false
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+    assert.equal(
+      independentEvaluation.governance.currentTaskResumeAuthorized,
+      true
+    );
+    assert.equal(
+      independentEvaluation.governance.sourceAuthorityDecisionRequired,
+      false
+    );
+  } else if (independentEvaluation.status === missingImmutableParameterStatus) {
+    assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  } else {
+    assert.equal(
+      independentEvaluation.execution
+        .firstIndependentEvaluationActuallyExecuted,
+      true
+    );
+    assert.equal(independentEvaluation.evaluation.bootstrapExecutionCount, 1);
+    assert.equal(
+      independentEvaluation.evaluation.structure.workChannelStatus,
+      "PARTIAL_NOT_ACTIVE"
+    );
+  }
+  assert.match(independentEvaluationReport, /来源权威/u);
+  assert.match(
+    independentEvaluationReport,
+    /M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /IMMUTABLE_FROZEN_MODEL_PARAMETER/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /冻结结果的报告修订/u
+  );
+});
+
+test("source readiness separates WORK_TOTAL from WORK_CHANNEL", () => {
+  assert.match(
+    dateAuditSource,
+    /WORK_TOTAL_CANONICAL_MAPPING_WARNING_/u
+  );
+  assert.match(dateAuditSource, /WORK_CHANNEL_REMAINS_PARTIAL/u);
+  assert.match(dateAuditSource, /PARTIAL_NOT_ACTIVE/u);
+  assert.match(
+    dateAuditSource,
+    /OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING/u
+  );
+  assert.match(
+    dateAuditSource,
+    /SOURCE_AUTHORITY_VALIDITY_EQUALITY_AND_SIGN_ONLY/u
+  );
+  assert.match(dateAuditSource, /amountValuesPublished/u);
+  assert.doesNotMatch(
+    dateAuditSource,
+    /canonicalMappingGuessedOrBackfilled": True/u
+  );
 });
 
 test("HPSR01 mechanical result stays frozen while interpretation is inconclusive", () => {
@@ -123,6 +428,83 @@ test("only L20 receives the frozen bounded correction", () => {
     l20Rows.every((row) => Number.isFinite(row.pointEstimate)),
     true
   );
+});
+
+test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
+  const { result } = synthetic;
+  const historicalSynthetic = runHeadProtectedSegmentedRouter({
+    origin: synthetic.fixture.origin,
+    horizonMonths: 3,
+    originVisibleWorkCashRows: synthetic.fixture.works.map((work) => ({
+      standardWorkId: work.standardWorkId,
+      trailing12Cash: work.monthlySalesShareCash * 12
+    })),
+    predictionRows: synthetic.fixture.works.map((work) => ({
+      standardWorkId: work.standardWorkId,
+      origin: synthetic.fixture.origin,
+      horizonMonths: 3,
+      lg01Prediction: work.lg01Prediction,
+      cham01B3Prediction: work.cham01B3Prediction,
+      cham01Diagnostics: work.cham01Diagnostics
+    })),
+    residualBoundState: synthetic.fixture.residualBoundState,
+    executionMode: "SYNTHETIC_FIXTURE"
+  });
+  const r2ByWork = new Map(result.r2Rows.map((row) => [
+    row.standardWorkId,
+    row
+  ]));
+  const actualRows = result.r0Rows.map((row) => ({
+    standardWorkId: row.standardWorkId,
+    origin: "2026-03",
+    horizonMonths: 3,
+    actual: row.cashBandId === "L20"
+      ? r2ByWork.get(row.standardWorkId).pointEstimate
+      : row.pointEstimate + 1
+  }));
+  const evaluation = evaluateHpsr02IndependentEvaluation({
+    routerResult: {
+      ...result,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    },
+    historicalRouterResult: {
+      ...historicalSynthetic,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    },
+    actualRows,
+    eligibleActualRows: actualRows,
+    sourceGate: {
+      sourceAuthorityStatus:
+        "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
+      workTotalSourceAuthorityChecksPass: true,
+      workChannelGateStatus: "PARTIAL_NOT_ACTIVE",
+      newFutureActualOutcomeOpened: false
+    },
+    bootstrap: {
+      iterations: 2000,
+      seed: 20260801
+    }
+  });
+  assert.ok(Object.values(HPSR02_FINAL_STATUSES).includes(
+    evaluation.status
+  ));
+  assert.equal(evaluation.workCount, 10);
+  assert.equal(evaluation.structure.H50M30RowwiseExactLg01, true);
+  assert.equal(evaluation.structure.workChannelStatus, "PARTIAL_NOT_ACTIVE");
+  assert.equal(evaluation.metrics.bootstrapFva95.iterations, 2000);
+  assert.equal(evaluation.metrics.r1BootstrapFva95.iterations, 2000);
+  assert.equal(evaluation.bootstrapExecutionCount, 1);
+  assert.equal(evaluation.bootstrapComparisonCount, 2);
+  assert.equal(evaluation.historicalComparatorEvaluationCount, 1);
+  assert.equal(evaluation.structure.historicalR1SameCasePass, true);
+  assert.equal(
+    evaluation.numeric.historicalR1.rawCoverage,
+    historicalSynthetic.d1RawDiagnosticRows.filter(
+      (row) => row.rawPredictionFinite === true
+    ).length / historicalSynthetic.d1RawDiagnosticRows.length
+  );
+  assert.equal(evaluation.rawCandidateEvaluationCount, 1);
+  assert.equal(evaluation.privateRows.length, 10);
 });
 
 test("synthetic contract has no global alpha or cross-band dependency", () => {
@@ -297,8 +679,146 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.governance.productionReady, false);
   assert.equal(config.governance.finalHoldoutOpened, false);
   assert.equal(config.auditBoundary.hpsr01Rerun, false);
-  assert.equal(config.auditBoundary.newActualRead, false);
-  assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
+  assert.equal(config.auditBoundary.newActualRead, true);
+  assert.equal(config.experiment.completeIndependentResultProduced, true);
+  assert.equal(config.experiment.completeIndependentResultCount, 1);
+  assert.equal(config.experiment.preResultEngineeringAttemptCount, 7);
+  assert.deepEqual(config.experiment.preResultEngineeringErrorCodes, [
+    "m2_hpsr_rebuilt_work_case_duplicate",
+    "hpsr02_residual_bound_rebuild_not_reconciled",
+    "m2_core_revenue_manual_command_failed:node.exe",
+    "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+    "hpsr02_parameter_lineage_snapshot_invalid",
+    "hpsr02_private_or_absolute_path_forbidden",
+    "hpsr02_independent_source_gate_invalid"
+  ]);
+  assert.equal(
+    config.experiment.engineeringRecoveryStatus,
+    "PRE_RESULT_ENGINEERING_HISTORY_PRESERVED_RECOVERY_COMPLETE"
+  );
+  assert.equal(
+    config.currentExecutionStatus,
+    HPSR02_FINAL_STATUSES.MIXED
+  );
+  assert.equal(
+    config.authorization.executionBlockedBySourceAuthorityDecision,
+    false
+  );
+  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, false);
+  assert.equal(config.governance.sourceAuthorityDecisionRequired, false);
+  assert.equal(
+    config.authorization.immutableFrozenParameterDirectUseAuthorizedNow,
+    false
+  );
+  assert.equal(
+    config.authorization.digestBoundParameterLineageRecoveryAuthorizedNow,
+    false
+  );
+  assert.equal(
+    config.authorization.currentBillParameterDerivationAuthorizedNow,
+    false
+  );
+  assert.equal(
+    config.independentDataBoundary.currentEstimate.independentCheckpointReady,
+    true
+  );
+  assert.equal(
+    config.independentDataBoundary.currentEstimate
+      .independentEvaluationExecutionReady,
+    false
+  );
+  assert.equal(
+    config.independentDataBoundary.currentEstimate
+      .privateParameterIntegrityGatePending,
+    false
+  );
+  assert.equal(config.auditBoundary.realModelEvaluationExecuted, true);
+  assert.equal(config.auditBoundary.realBootstrapExecuted, true);
+  assert.equal(config.governance.cashOnlyResearchEnded, true);
+  assert.equal(config.governance.hpsr03Authorized, false);
+});
+
+test("controlled evaluation loads immutable parameters before current bills", () => {
+  const independentStart = privateRunnerSource.indexOf(
+    "export async function runHpsr02IndependentPrivate"
+  );
+  const independentEnd = privateRunnerSource.indexOf(
+    "export async function runHpsrRetrospectivePrivate",
+    independentStart
+  );
+  const independentSource = privateRunnerSource.slice(
+    independentStart,
+    independentEnd
+  );
+  const parameterGateIndex = independentSource.indexOf(
+    "loadOrRecoverHpsrImmutableFrozenParameters"
+  );
+  const frozenResultGuardIndex = independentSource.indexOf(
+    "hpsr02_independent_complete_result_already_frozen"
+  );
+  const sourceGateIndex = independentSource.indexOf(
+    "reconcileHpsr02SourceAuthorityPrivate"
+  );
+  const currentFeatureIndex = independentSource.indexOf(
+    "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+  );
+  assert.ok(parameterGateIndex >= 0);
+  assert.ok(frozenResultGuardIndex >= 0);
+  assert.ok(frozenResultGuardIndex < parameterGateIndex);
+  assert.ok(sourceGateIndex > parameterGateIndex);
+  assert.ok(currentFeatureIndex > sourceGateIndex);
+  assert.doesNotMatch(independentSource, /deriveHpsrResidualBounds/u);
+  assert.doesNotMatch(privateRunnerSource, /deriveHpsrResidualBounds/u);
+  assert.match(parameterAuthoritySource, /deriveHpsrResidualBounds/u);
+});
+
+test("parameter recovery uses historical lineage and cannot consume current split or future actual", () => {
+  assert.match(
+    parameterAuthoritySource,
+    /HPSR_FROZEN_PARAMETER_LINEAGE_SNAPSHOT/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /M2-lg01-head-cash-residual-input-rows-private-v0\.1\.ndjson/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /EXACT_FROZEN_H3_B3_AGGREGATE_RECONCILIATION/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /row\?\.evaluationFamily === "STRICT_ROLLING"[\s\S]*row\?\.populationId === "CORE80"[\s\S]*Number\(row\?\.horizonMonths\) === 3/u
+  );
+  assert.doesNotMatch(
+    parameterAuthoritySource,
+    /HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY/u
+  );
+  assert.match(
+    coreRevenuePrivateSource,
+    /authorityMode === HPSR_FROZEN_PARAMETER_LINEAGE_MODE[\s\S]*return;/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /currentBillSourceUsedForParameterDerivation: false/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /laterOriginOutcomeUsed: false/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /prospectiveFinalHoldoutOutcomeUsed: false/u
+  );
+  assert.doesNotMatch(parameterAuthoritySource, /2026-0[3-9]/u);
+  assert.match(
+    privateRunnerSource,
+    /retrospectiveOrigins: \["2026-03"\],[\s\S]*authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"/u
+  );
+  assert.match(parameterAuthoritySource, /M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER/u);
+  assert.match(
+    controlledSource,
+    /\^hpsr02_\[a-z0-9_\]\+\$/u
+  );
 });
 
 test("production loader route and API do not import HPSR02", async () => {
@@ -320,6 +840,8 @@ test("public reports explain post-hoc inspiration without private leakage", () =
   for (const content of [
     preregistration,
     attributionReport,
+    independentEvaluationReport,
+    JSON.stringify(independentEvaluation),
     JSON.stringify(config)
   ]) {
     assert.doesNotMatch(content, /data[\\/]+private-(?:input|output)/iu);

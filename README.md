@@ -41,7 +41,7 @@
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
-| 最新受控研究结果是什么？ | HPSR01 v0.1 的原机械合同不支持结论保持冻结；科学解释已修订为单起点证据不足（`M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`）。HPSR02 v0.2（`M2-WORK-HPSR02`）已在独立 outcome 打开前预注册，尚未执行真实评价 |
+| 最新受控研究结果是什么？ | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`）唯一一次独立评价已冻结：43 部动态 Core80 上 WAPE 为 64.1150%，相对冻结 LG01 基线的 relative FVA 为 0.5179%，bootstrap 95% 区间跨 0，结论为证据不足并结束现金-only 相邻研究（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
 
 ## 项目状态一览
@@ -63,7 +63,7 @@
 | M2 CHAM01 数值稳定性披露 | Primary/Core90 有限极端外推（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） | 5 个冻结原始单元格的单一作品贡献近乎全部绝对误差；原值未截断、置零或重跑，数值失败与性能失败分别登记 |
 | M2 LG01 头部现金残差校准 v0.1 | 首个完整结果已冻结并失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`） | 全部 16 个外层选择单元都没有合格 alpha；C2/C3 原始候选均为 0 个案例，selected 全量回退冻结 LG01；`activeCandidate=null` |
 | M2 LG01 头部保护分段路由 v0.1 | 原机械合同不支持结果保持冻结；科学解释为证据不足（`M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`） | 单起点、57 部作品、bootstrap 跨 0 且现金带方向异质；不能把原合同结果改成通过，也不能宣称整个方向失败 |
-| M2 LG01 头部保护尾段修正 v0.2 | 已事后启发并在独立结果前预注册（`M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA`） | H50/M30 精确使用冻结 LG01，仅 L20 使用既有冻结修正；无真实成绩，独立评价仍缺 `2026-05`、`2026-06`，final holdout 未打开 |
+| M2 LG01 头部保护尾段修正 v0.2 | 唯一独立结果已冻结为证据不足，现金相邻研究结束（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） | 头部 50% 和中部 30% 现金带精确使用冻结 LG01，仅尾部 20% 使用既有冻结修正；作品—渠道门禁仍为 `PARTIAL_NOT_ACTIVE`，第二起点、HPSR03 和 prospective final holdout 均未执行或打开 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
 最新状态以 [M2 当前状态索引 v0.53](docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md)
@@ -88,7 +88,7 @@
 | 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
 | 头部现金残差研究 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`）已执行失败 | 16 个外层选择单元均无合格 alpha，两个 raw 候选均无案例；停止在同一现金特征与同一评价窗内继续微调，不得重跑或外推到 6/12/36 月 |
 | 头部保护分段路由研究 | HPSR01 v0.1 原合同不支持结论保留，科学解释修订为证据不足 | `2025-11` 的 57 个同案例、bootstrap 跨 0 且 H50/M30/L20 异质；不改写原结果，也不把整个方向判死 |
-| 头部保护尾段修正研究 | LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）已预注册、未执行 | H50/M30 逐行精确使用 LG01，仅 L20 应用冻结修正；只有 public synthetic，不是活动候选或运行管线 |
+| 头部保护尾段修正研究 | LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）的唯一独立结果已冻结为证据不足 | 头部 50% 和中部 30% 现金带逐行精确使用 LG01，仅尾部 20% 应用冻结修正；旧 577 行只作参数谱系快照（`PARAMETER_LINEAGE_SNAPSHOT`）；授权已消耗，现金相邻研究结束，不是活动候选或运行管线 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）是组合级参考（portfolio reference） | 组合结果不得分配回作品；不同 horizon 必须分别报告 |
 | 分层组合开发候选 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`）已执行失败 | 四分量守恒，但 12/36 个月质量失败且协议物化不完整；不替代组合级参考 |
 | 排序能力 | 仅有后验诊断（post-hoc diagnostic） | 排序信号不能掩盖点预测失败，也不能直接用于分配 |
@@ -122,7 +122,7 @@
 | 周期路由 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`） | 已执行失败候选 | 没有稳定优于各周期最强单模型，不是 selected pipeline |
 | 头部现金残差 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | 已执行失败候选 | C2/C3 没有 raw 候选案例；selected 只是全量回退冻结 LG01，不能掩盖失败 |
 | 头部保护分段路由 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | 原合同不支持保持，科学解释为证据不足 | 唯一真实回溯结果与机械门限判定冻结；不是整个方向失效的充分证据 |
-| 头部保护尾段修正 | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`） | 独立评价候选已预注册但尚未执行且未激活 | 事后诊断启发、独立 outcome 前冻结；无真实成绩、未执行所属实验的独立评价检查点、未打开 final holdout、无自动化批准 |
+| 头部保护尾段修正 | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`） | 首个独立起点证据不足、现金相邻研究结束且未激活（`first_independent_inconclusive_cash_only_research_ended_not_active`） | 唯一结果已冻结；当前账单只形成起点输入与作品总额 actual，不派生冻结参数；未打开 prospective final holdout，无第二起点、HPSR03 或自动化批准 |
 | 分层组合 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`） | 已执行失败候选 | 作品点预测以外的组合能力；不能与作品模型直接排名 |
 
 当前没有活动候选和自动化批准模型。完整历史模型、实验臂、别名和成绩总账见
@@ -130,9 +130,10 @@
 当前活动实验为 `null`。M2 LG01 头部保护分段路由实验
 （`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）的原合同不支持结果保持
 冻结；HPSR02 独立评价实验
-（`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）只完成预注册与公开
-synthetic 验证，尚未执行。prospective final holdout 未打开，活动候选和自动化
-批准仍为空。
+（`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）已完成并冻结唯一一次独立
+结果，同时保留两次历史阻断检查点与七次结果前工程停止。最终状态为证据不足并结束
+现金-only 相邻研究；prospective final holdout、第二独立起点和 HPSR03 均未打开或
+执行，活动候选和自动化批准仍为空。
 
 ## 最新研究结论
 
@@ -158,9 +159,16 @@ bootstrap 95% 区间为 [-18.3441%, 20.0303%]，absolute bias 恶化 2.0358 个�
 并越过预冻结 2 个百分点门限。科学解释新增一层：只有 `2025-11` 一个时间块和
 57 部作品，而且 H50 相等、M30 变差、L20 改善，现有证据不足以宣称整个方向失效。
 
-由此启发的 HPSR02 v0.2（`M2-WORK-HPSR02`）已经在独立 outcome 前冻结为
-H50/M30 精确使用 LG01、仅 L20 使用既有冻结有界修正的唯一主候选结构。它尚无
-真实预测或成绩；事后 L20-only 聚合算术明确不是模型证据。
+由此启发的 LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）已经在独立
+outcome 前冻结为头部 50% 和中部 30% 现金带精确使用 LG01、仅尾部 20% 现金带
+使用既有冻结有界修正的唯一主候选结构。用户已明确其 positive base floor、q05、
+q95 为不可变冻结模型参数（`IMMUTABLE_FROZEN_MODEL_PARAMETER`）；旧 577 行只作
+摘要绑定的参数谱系快照（`PARAMETER_LINEAGE_SNAPSHOT`），不得用当前账单重估。
+参数完整性门禁已通过，唯一一次 `2026-03` 起点独立评价已经完成并冻结。动态 Core80
+为 43 部，冻结 LG01 基线 WAPE 为 64.4488%，HPSR02 WAPE 为 64.1150%，relative FVA
+为 0.5179%，2,000 次作品 cluster bootstrap 95% 区间为 [-2.4406%, 3.8718%]；未达到
+1% 支持门限且区间跨 0，因此结论为证据不足并结束现金-only 相邻研究。事后尾部 20%
+聚合算术仍明确不是模型证据。
 
 详细证据：
 
@@ -169,6 +177,7 @@ H50/M30 精确使用 LG01、仅 L20 使用既有冻结有界修正的唯一主�
 - [HPSR01 科学解释修订](docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md)
 - [HPSR01/HPSR02 现金带归因](docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md)
 - [HPSR02 独立评价前预注册](docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md)
+- [HPSR02 首个独立冻结结果](docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md)
 - [M2 当前状态索引 v0.53](docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md)
 
 出版行业规模适配渠道核心（`M2-CHAN-PSC01-RAW`）已完成首个完整、同人口、可解释的
@@ -413,7 +422,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 | 核心老品全周期 | [同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
 | 核心老品分周期金额 | [预注册](docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md) · [冻结开发评价](docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md) · [有限极端外推披露](docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json) |
 | LG01 头部现金残差校准 | [冻结开发评价](docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md) · [机器结果](docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.json) · [三个月探索性预注册](docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md) · [实现与合成验证](docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md) · [机器合同](config/m2-current-lg01-head-cash-residual.v0.1.json) |
-| LG01 头部保护分段路由与尾段修正 | [HPSR01 回溯开发评价](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md) · [HPSR01 科学解释修订](docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md) · [现金带归因](docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md) · [HPSR02 预注册](docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md) · [HPSR02 机器合同](config/m2-current-head-protected-tail-band-correction.v0.2.json) · [HPSR01 机器结果](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json) |
+| LG01 头部保护分段路由与尾段修正 | [HPSR01 回溯开发评价](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md) · [HPSR01 科学解释修订](docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md) · [现金带归因](docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md) · [HPSR02 预注册](docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md) · [HPSR02 首个独立冻结结果](docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md) · [HPSR02 机器合同](config/m2-current-head-protected-tail-band-correction.v0.2.json) · [HPSR01 机器结果](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json) |
 | 工程与协作 | [协作规则](AGENTS.md) · [命令生命周期](config/command-lifecycle.v0.1.json) |
 
 ## 安全与贡献

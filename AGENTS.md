@@ -63,6 +63,8 @@
   - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md`
   - `config/m2-current-head-protected-tail-band-correction.v0.2.json`
   - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md`
 - M2 评价体系：
   - `config/m2-business-acceptance-contract.v1.json`
   - `docs/analysis/m2-current/M2-business-acceptance-contract-v1.md`
@@ -299,20 +301,27 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`，不得写入模型成绩榜。
 - LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）已在独立 outcome 打开前
   预注册为 `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED`：H50/M30 逐行精确
-  使用冻结 LG01，只有 L20 使用 HPSR01 既有冻结有界修正。当前只有 canonical
-  implementation 和公开 synthetic 不变量验证；独立评价、真实 bootstrap、训练、
-  alpha 搜索与边界重估均未执行。当前完整账单只到 `2026-04`，首个独立起点预计仍缺
-  `2026-05`、`2026-06`；prospective final holdout 必须保持未打开，active
-  candidate、自动化批准和 production 权限继续为空。未来执行需要新的明确授权。
+  使用冻结 LG01，只有 L20 使用 HPSR01 既有冻结有界修正。positive base floor、q05
+  和 q95 是 outcome 打开前形成的三项 `IMMUTABLE_FROZEN_MODEL_PARAMETER`；当前人工
+  复核账单只作为 `SOURCE_AUTHORITY` 形成当前起点输入和 WORK_TOTAL actual，不得据此
+  重算参数。旧 577 行摘要绑定输入仅是 `PARAMETER_LINEAGE_SNAPSHOT`，可以执行
+  `FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`，但不得替换
+  当前 actual 或升格为全项目账单权威。渠道拆分漂移登记为
+  `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`，不修改冻结参数，
+  WORK_CHANNEL 继续 `PARTIAL_NOT_ACTIVE`。唯一一次 2026-03 起点独立评价已经完成并冻结：
+  动态 Core80 为 43 部，relative FVA 为 0.5179%，2,000 次作品 cluster bootstrap 95%
+  区间跨 0，最终为
+  `M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`。两个历史阻断
+  检查点与七次结果前工程停止必须保留；不得重跑科学评价。prospective final holdout、
+  第二独立起点、active candidate、自动化批准和 production 权限继续为空。
 - 当前 M2 的 3、6、12、36 个月都是必须分别交付和分别判定的硬业务输出；不得用短周期
   通过替代长周期。36 个月必须使用多个合法历史起点的 origin-safe rolling 现金、
   逐起点稳定性和不确定性作为当前硬门禁，并明确尚未形成 prospective 验证。
   60 个月只允许作为未来 M3 precursor 的低置信成熟目录情景参考，不属于当前 M2
   排名、验收门禁或实现范围。
-- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）未来首次合法独立评价若为
-  `NOT_SUPPORTED` 或 `INCONCLUSIVE`，必须结束现金-only 邻接模型工作，不得继续
-  HPSR03；只有 `SUPPORTED` 才可在用户另行授权后增加至多一个第二独立起点确认，
-  且任何结果都不自动授权 production。
+- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）的首次合法独立评价已经是
+  `INCONCLUSIVE`，因此现金-only 邻接模型工作已经结束；不得继续 HPSR03，也不得以
+  新授权追加第二独立起点来绕过该预注册停止规则。该结果不授权 production。
 
 ## Git 与提交规则
 
