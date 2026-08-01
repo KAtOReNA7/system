@@ -89,9 +89,12 @@ test("first independent evaluation preserves prior blocker and current gate", ()
       + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION";
   const recoveryStatus =
     "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED";
+  const sourceDecisionStatus =
+    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED";
   assert.ok([
     readyStatus,
     recoveryStatus,
+    sourceDecisionStatus,
     ...Object.values(HPSR02_FINAL_STATUSES)
   ].includes(independentEvaluation.status));
   assert.equal(
@@ -170,6 +173,43 @@ test("first independent evaluation preserves prior blocker and current gate", ()
       independentEvaluation.executionLedger.bootstrapRuns,
       0
     );
+  } else if (independentEvaluation.status === sourceDecisionStatus) {
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation.status,
+      "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT"
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .historicalOnlyRowCount,
+      732
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .currentOnlyRowCount,
+      732
+    );
+    assert.equal(
+      independentEvaluation.frozenBoundSourceReconciliation
+        .workMonthAmountTotalEqual,
+      true
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.retryAllowed,
+      false
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+    assert.equal(
+      independentEvaluation.governance.sourceAuthorityDecisionRequired,
+      true
+    );
   } else {
     assert.equal(
       independentEvaluation.execution
@@ -186,6 +226,10 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   assert.match(
     independentEvaluationReport,
     /M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED/u
   );
 });
 
@@ -527,12 +571,31 @@ test("authorization, final holdout, automation, and production remain closed", (
   ]);
   assert.equal(
     config.experiment.engineeringRecoveryStatus,
-    "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+  );
+  assert.equal(
+    config.currentExecutionStatus,
+    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+  );
+  assert.equal(
+    config.authorization.executionBlockedBySourceAuthorityDecision,
+    true
+  );
+  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, false);
+  assert.equal(config.governance.sourceAuthorityDecisionRequired, true);
+  assert.equal(
+    config.independentDataBoundary.currentEstimate.independentCheckpointReady,
+    true
+  );
+  assert.equal(
+    config.independentDataBoundary.currentEstimate
+      .independentEvaluationExecutionReady,
+    false
   );
   assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
 });
 
-test("engineering recovery freezes historical cutoff before current outcome", () => {
+test("source decision blocks recovery after frozen historical cutoff audit", () => {
   assert.match(
     privateRunnerSource,
     /retrospectiveOrigins: boundOrigins,[\s\S]{0,180}authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY",[\s\S]{0,100}labelMaturityCutoff: historicalCutoff/u
@@ -544,6 +607,10 @@ test("engineering recovery freezes historical cutoff before current outcome", ()
   assert.match(
     privateRunnerSource,
     /assertHpsr02FrozenBoundArtifactMatches/u
+  );
+  assert.match(
+    privateRunnerSource,
+    /hpsr02_source_authority_decision_required/u
   );
 });
 

@@ -776,6 +776,8 @@ function roleZh(role) {
       "作品总额来源权威已复核，首次独立评价已授权但尚未执行且未激活",
     pre_result_engineering_recovery_authorized_not_active:
       "首次独立评价发生结果前工程故障，恢复已授权但尚无完整结果且未激活",
+    blocked_source_authority_decision_required_not_active:
+      "冻结边界来源权威冲突，等待明确决策且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }

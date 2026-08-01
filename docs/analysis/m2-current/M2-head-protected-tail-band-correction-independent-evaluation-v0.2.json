@@ -1,7 +1,7 @@
 {
   "schema": "m2.current.head_protected_tail_band_correction.independent_evaluation.public.v0.2",
   "asOf": "2026-08-01",
-  "status": "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED",
+  "status": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
   "model": {
     "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
@@ -13,7 +13,7 @@
     "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
     "baselineModelId": "M2-WORK-LG01",
     "candidateArmId": "R2",
-    "executionStatus": "PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED_NOT_YET_COMPLETED"
+    "executionStatus": "BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
   },
   "priorBlockedAttempt": {
     "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
@@ -77,7 +77,8 @@
     "bootstrapRuns": 0,
     "completeIndependentResultProduced": false,
     "resultFrozen": false,
-    "retryAllowed": true,
+    "retryAllowed": false,
+    "currentResumeBlockedBySourceAuthorityDecision": true,
     "contractChangedForRecovery": false
   },
   "sourceAuthorityReconciliation": {
@@ -118,6 +119,25 @@
     "workTotalGatePassed": true,
     "workChannelGateStatus": "PARTIAL_NOT_ACTIVE"
   },
+  "frozenBoundSourceReconciliation": {
+    "status": "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT",
+    "historicalCutoff": "2026-02",
+    "publicFrozenProvenanceExpectedInputRowCount": 577,
+    "currentSourceRebuildMatchesPublicFrozenProvenance": false,
+    "historicalOnlyRowCount": 732,
+    "currentOnlyRowCount": 732,
+    "affectedWorkCount": 421,
+    "affectedMonthCount": 82,
+    "affectedChannelIdentityCount": 21,
+    "affectedWorkMonthCount": 721,
+    "workMonthRowCountEqual": true,
+    "workMonthAmountTotalEqual": true,
+    "exactChannelRowMultisetEqual": false,
+    "oldDerivedCacheUseAuthorized": false,
+    "residualBoundReestimationAuthorized": false,
+    "sourceDecisionTableGeneratedPrivately": true,
+    "privateIdentitiesOrAmountsPublished": false
+  },
   "reservedEvaluationBoundary": {
     "origin": "2026-03",
     "horizonMonths": 3,
@@ -141,6 +161,7 @@
     "futureActualOutcomeAccessOccurred": true,
     "scoringCaseRowsConstructed": 0,
     "preResultEngineeringAttempts": 3,
+    "frozenBoundReconciliationDiagnostics": 1,
     "candidateModelRuns": 0,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,
@@ -152,7 +173,7 @@
     "modelSelectionRuns": 0
   },
   "scientificEvidence": {
-    "status": "PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED_NO_COMPLETE_RESULT",
+    "status": "BLOCKED_BEFORE_PREDICTION_BY_FROZEN_BOUND_SOURCE_AUTHORITY_CONFLICT",
     "candidateOutcomeProduced": false,
     "metricsAvailable": false,
     "firstCompleteLegalResultCount": 0
@@ -172,7 +193,8 @@
     "approvedForAutomation": null,
     "productionReady": false,
     "finalHoldoutOpened": false,
-    "currentTaskResumeAuthorized": true,
+    "currentTaskResumeAuthorized": false,
+    "sourceAuthorityDecisionRequired": true,
     "secondIndependentOriginAuthorized": false,
     "pullRequestMustRemainDraftOpenUnmerged": true
   },

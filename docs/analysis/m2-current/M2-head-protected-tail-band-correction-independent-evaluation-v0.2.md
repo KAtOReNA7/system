@@ -1,6 +1,6 @@
 # M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
-当前状态：**作品总额来源权威已复核；首次授权运行发生结果前工程故障，恢复已获授权且尚未形成完整结果**（`M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED`）。
+当前状态：**当前作品总额 actual 来源权威可用，但 HPSR01 冻结残差边界的历史源无法从当前权威输入复现；首次独立评价在预测前停止并等待一项明确来源决策**（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）。
 
 对象是 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`），所属实验是 M2 LG01 头部保护分段路由与独立后期起点验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）。同案例基线仍是冻结 LG01（`M2-WORK-LG01`）。
 
@@ -29,7 +29,13 @@
 
 首次授权运行已经打开作品总额权威事实，但在构造预测、评分或 bootstrap 之前先后发生三次纯工程停止：第一次是请求起点与历史支持起点重复拼接（`m2_hpsr_rebuilt_work_case_duplicate`）；完成普通提交、精确提交 Linux/Windows CI 后继续同一次授权评价，第二次因历史冻结残差边界重建与当前作品总额评价错误共用了来源权威口径而停止（`hpsr02_residual_bound_rebuild_not_reconciled`）；再次完成提交与双平台 CI 后，第三次在历史全账渠道导出阶段被当前窗口 3 条范围外分表事实阻断（`m2_core_revenue_manual_command_failed:node.exe`；`HISTORICAL_GLOBAL_CHANNEL_EXPORT_BLOCKED_BY_THREE_CURRENT_WINDOW_OUT_OF_SCOPE_SPLIT_FACTS`）。三次尝试的候选预测、科学评价、bootstrap 和完整合法结果仍均为 0；receipt 状态均为结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`），没有冻结科学结果。
 
-恢复先排除历史支持集合中已由请求集合显式物化的重复起点，再把 HPSR01 历史冻结残差边界重建限制到原开发最大可见截止月 2026-02；这会排除 2026-05 的范围外分表差异，同时保持可跨电脑从权威源确定性重建。若既有冻结缓存存在，重建参数必须逐值一致；若缓存缺失，则重建结果必须与公开冻结 provenance 的人口、起点范围、支持行数和分位数合同一致。2026-03 当前评价人口仍单独使用作品总额范围感知权威口径（`HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY`）。模型、人口、actual、现金带、基线、门限和评价规则均不改变。按照预注册边界，本次修复仍须先普通提交并通过新的精确提交 Linux/Windows CI；随后先运行不读取 outcome、不产生预测或评分的冻结边界复核，只有一致性门禁通过才允许继续同一首次独立评价。这不是第二次科学运行。
+三次工程恢复均没有形成候选预测或模型结果。随后在新的精确提交 Linux/Windows CI 通过后，单独执行了不产生候选预测、评分或 bootstrap 的冻结边界复核。该复核把当前权威源限制到原开发最大可见截止月 2026-02，仍无法复现公开冻结 provenance 的 577 行输入门禁（`hpsr02_residual_bound_rebuild_not_reconciled`）。
+
+## 冻结边界来源冲突与人工决策
+
+只读多重集比较证明：截至 2026-02，旧冻结来源与当前来源的作品×月份行数和金额总额完全一致，但渠道行级拆分并不一致；两侧各有 732 行差异，涉及 421 部作品、82 个月、21 个渠道身份和 721 个作品×月份组合。由于当前模型人口要求起点时已有成熟来源渠道，这种拆分变化会影响冻结 HPSR01 边界的重建，不能再归类为只影响展示或只影响非活动作品—渠道评价的警告。
+
+当前任务禁止重估 residual bound，也禁止把旧电脑派生缓存或历史 receipt 自动当成源权威，因此不能用结果导向方式选择旧或新拆分。已在 Git ignored private 目录生成一项中文决策表（`M2-hpsr02-source-authority-decision-table-private-v0.2.json`）；公开报告不包含原始身份、金额、digest 或本机路径。推荐提供与冻结谱系匹配的原分成权威账单快照；若无法提供，则需要在新任务中明确决定是否升格现存冻结事实为该谱系的私有源权威，或终止 HPSR02。
 
 ## 执行前冻结边界
 
@@ -38,6 +44,6 @@
 - 不训练新模型、不调参、不搜索 alpha、不重估 residual bound、不选模；
 - 不读取 2026-07 以后 actual，不打开 2026-06 前瞻最终留出，不执行第二起点或 HPSR03；
 - actual outcome 已在结果前工程尝试中打开；候选预测、科学评价、bootstrap 和完整结果仍为 0；
-- 先提交工程恢复修订并通过新的 exact-head Linux/Windows CI，再继续同一首次独立评价。
+- 首次独立评价当前由冻结边界来源冲突阻断；未获得明确来源决策前不得继续。
 
-活动候选与自动化批准保持 `null`，生产就绪为 `false`，Draft PR 保持 Open / Draft / Unmerged。机器可读同源状态见 `M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`。
+候选预测、科学评价、bootstrap 和完整合法结果均为 0；活动候选与自动化批准保持 `null`，生产就绪为 `false`，前瞻最终留出未打开，作品—渠道门禁保持 `PARTIAL_NOT_ACTIVE`。Draft PR 保持 Open / Draft / Unmerged。机器可读同源状态见 `M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`。

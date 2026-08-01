@@ -80,10 +80,18 @@ function printStatus() {
         + `${resultStatusZh(activeExperiment.resultStatus)}，`
         + `${activeExperiment.resultStatus}）。`
   );
+  const blockedExperiment = registry.experiments.find(
+    (item) => item.experimentId === registry.currentRoles.blockedExperiment
+  );
+  const blockedStatus = blockedExperiment?.hpsr02IndependentEvaluation
+    ?.status ?? blockedExperiment?.resultStatus;
   console.log(
-    registry.currentRoles.blockedExperiment === null
+    blockedExperiment === undefined
       ? "当前阻断实验：无（null）。"
-      : `当前阻断实验：${registry.currentRoles.blockedExperiment}。`
+      : `当前阻断实验：${blockedExperiment.displayNameZh}（`
+        + `${blockedExperiment.displayNameEn}，`
+        + `${blockedExperiment.experimentId}；`
+        + `${resultStatusZh(blockedStatus)}，${blockedStatus}）。`
   );
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
   console.log("本次只读查询模型执行次数：0。");
@@ -373,6 +381,8 @@ function roleZh(value) {
       "已实现并等待独立评价",
     retrospective_development_unsupported_stop_before_independent_k2:
       "回溯开发评价不支持并在独立评价前停止",
+    blocked_source_authority_decision_required_not_active:
+      "冻结边界来源权威冲突，等待明确决策且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
@@ -411,6 +421,13 @@ function operationalStatusZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (
+    value
+      === "M2_HPSR02_BLOCKED_ACTIONABLE_"
+        + "SOURCE_AUTHORITY_DECISION_REQUIRED"
+  ) {
+    return "冻结边界来源权威冲突，等待一项明确决策";
+  }
   if (
     value
       === "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_"

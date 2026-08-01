@@ -63,6 +63,8 @@
   - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md`
   - `config/m2-current-head-protected-tail-band-correction.v0.2.json`
   - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md`
 - M2 评价体系：
   - `config/m2-business-acceptance-contract.v1.json`
   - `docs/analysis/m2-current/M2-business-acceptance-contract-v1.md`

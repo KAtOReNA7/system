@@ -297,12 +297,20 @@ export async function reconcileHpsr02FrozenBoundCachePrivate({ root }) {
     root,
     allowedDirtyPaths: []
   });
-  const [hpsr01Config, coreAmountConfig, boundProof] =
+  const [hpsr02Config, hpsr01Config, coreAmountConfig, boundProof] =
     await Promise.all([
+      readJson(path.join(root, HPSR02_CONFIG)),
       readJson(path.join(root, HPSR01_CONFIG)),
       readJson(path.join(root, CORE_AMOUNT_CONFIG)),
       readJson(path.join(root, HPSR02_BOUND_PROVENANCE))
     ]);
+  if (
+    hpsr02Config?.currentExecutionStatus
+      === "M2_HPSR02_BLOCKED_ACTIONABLE_"
+        + "SOURCE_AUTHORITY_DECISION_REQUIRED"
+  ) {
+    throw new Error("hpsr02_source_authority_decision_required");
+  }
   validateM2CoreLegacyHorizonAmountConfig(coreAmountConfig);
   const reconciliation =
     await reconcileHpsr02FrozenResidualBoundCache({
@@ -362,6 +370,13 @@ export async function runHpsr02IndependentPrivate({ root }) {
     throw new Error("hpsr02_independent_authorization_invalid");
   }
   validateM2CoreLegacyHorizonAmountConfig(coreAmountConfig);
+  if (
+    hpsr02Config?.currentExecutionStatus
+      === "M2_HPSR02_BLOCKED_ACTIONABLE_"
+        + "SOURCE_AUTHORITY_DECISION_REQUIRED"
+  ) {
+    throw new Error("hpsr02_source_authority_decision_required");
+  }
   const sourceGate = await reconcileHpsr02SourceAuthorityPrivate({ root });
   const receiptPath = path.join(root, HPSR02_INDEPENDENT_RECEIPT);
   const [priorReceipt, priorPublicCheckpoint] = await Promise.all([

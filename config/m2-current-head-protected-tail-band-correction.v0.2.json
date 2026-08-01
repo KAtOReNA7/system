@@ -3,13 +3,15 @@
   "asOf": "2026-08-01",
   "status": "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
   "workflowStatus": "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
+  "currentExecutionStatus": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
+  "currentWorkflowStatus": "M2_HPSR02_FIRST_INDEPENDENT_BLOCKED_BEFORE_PREDICTION_BY_FROZEN_BOUND_SOURCE_CONFLICT",
   "model": {
     "stableModelId": "M2-WORK-HPSR02",
     "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
     "entityType": "model",
     "capability": "WORK",
-    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_SCOPE_RECONCILED_PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED",
+    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_SCOPE_RECONCILED_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
     "productionImported": false
   },
   "experiment": {
@@ -53,7 +55,14 @@
       "m2_core_revenue_manual_command_failed:node.exe"
     ],
     "completeIndependentResultProduced": false,
-    "engineeringRecoveryStatus": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+    "engineeringRecoveryStatus": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
+    "frozenBoundSourceReconciliation": {
+      "status": "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT",
+      "historicalCutoff": "2026-02",
+      "expectedInputRowCount": 577,
+      "currentSourceRebuildMatchesFrozenProvenance": false,
+      "sourceDecisionRequired": true
+    }
   },
   "inspiration": {
     "classification": "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED",
@@ -228,7 +237,10 @@
       "metadataDifferenceStatus": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
       "workTotalScopeRelevantDifferenceRowCount": 0,
       "workChannelGateStatus": "PARTIAL_NOT_ACTIVE",
+      "frozenBoundSourceAuthorityStatus": "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT",
+      "sourceAuthorityDecisionRequired": true,
       "independentCheckpointReady": true,
+      "independentEvaluationExecutionReady": false,
       "firstIndependentOutcomeOpened": true,
       "firstIndependentCompleteResultProduced": false,
       "prospectiveFinalHoldoutOrigin": "2026-06",
@@ -262,7 +274,9 @@
     "hpsr01InterpretationJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json",
     "hpsr01InterpretationReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md",
     "cashBandAttributionReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md",
-    "preregistrationReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md"
+    "preregistrationReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md",
+    "independentEvaluationJson": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json",
+    "independentEvaluationReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md"
   },
   "authorization": {
     "source": "USER_INSTRUCTION_M2_HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_RESUME_2026_08_01",
@@ -276,7 +290,8 @@
     "prospectiveFinalHoldoutOpenAuthorizedNow": false,
     "productionAuthorized": false,
     "mergeAuthorized": false,
-    "nextModelAuthorized": false
+    "nextModelAuthorized": false,
+    "executionBlockedBySourceAuthorityDecision": true
   },
   "governance": {
     "activeCandidate": null,
@@ -287,7 +302,8 @@
     "hpsr01ScientificInterpretationAmended": true,
     "postHocArithmeticIsIndependentEvidence": false,
     "independentK2Executed": false,
-    "preResultEngineeringRecoveryAuthorized": true
+    "preResultEngineeringRecoveryAuthorized": false,
+    "sourceAuthorityDecisionRequired": true
   },
   "auditBoundary": {
     "hpsr01Rerun": false,
