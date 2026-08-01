@@ -54,6 +54,9 @@ const independentEvaluationReport = await readText(
 const dateAuditSource = await readText(
   "scripts/m2-current/audit_head_protected_segmented_router_dates.py"
 );
+const privateRunnerSource = await readText(
+  "scripts/m2-current/head_protected_segmented_router_private.mjs"
+);
 
 test("HPSR02 stable identity and preregistration contract validate", () => {
   const validation = validateHeadProtectedTailBandCorrectionContract(
@@ -140,6 +143,23 @@ test("first independent evaluation preserves prior blocker and current gate", ()
       independentEvaluation.preResultEngineeringRecovery
         .completeIndependentResultProduced,
       false
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.attemptCount,
+      2
+    );
+    assert.deepEqual(
+      independentEvaluation.preResultEngineeringRecovery.attempts.map(
+        (attempt) => attempt.errorCode
+      ),
+      [
+        "m2_hpsr_rebuilt_work_case_duplicate",
+        "hpsr02_residual_bound_rebuild_not_reconciled"
+      ]
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.preResultEngineeringAttempts,
+      2
     );
     assert.equal(
       independentEvaluation.executionLedger.candidateModelRuns,
@@ -498,11 +518,27 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.auditBoundary.hpsr01Rerun, false);
   assert.equal(config.auditBoundary.newActualRead, true);
   assert.equal(config.experiment.completeIndependentResultProduced, false);
+  assert.equal(config.experiment.preResultEngineeringAttemptCount, 2);
+  assert.deepEqual(config.experiment.preResultEngineeringErrorCodes, [
+    "m2_hpsr_rebuilt_work_case_duplicate",
+    "hpsr02_residual_bound_rebuild_not_reconciled"
+  ]);
   assert.equal(
     config.experiment.engineeringRecoveryStatus,
     "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
   );
   assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
+});
+
+test("engineering recovery keeps frozen and current authority modes separate", () => {
+  assert.match(
+    privateRunnerSource,
+    /retrospectiveOrigins: boundOrigins,[\s\S]*authorityMode: "CANONICAL_WORK_CHANNEL_AUTHORITY"/u
+  );
+  assert.match(
+    privateRunnerSource,
+    /retrospectiveOrigins: \["2026-03"\],[\s\S]*authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"/u
+  );
 });
 
 test("production loader route and API do not import HPSR02", async () => {

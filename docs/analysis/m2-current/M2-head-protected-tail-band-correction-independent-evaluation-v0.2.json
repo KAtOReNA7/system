@@ -31,7 +31,33 @@
   },
   "preResultEngineeringRecovery": {
     "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
-    "errorCode": "m2_hpsr_rebuilt_work_case_duplicate",
+    "attemptCount": 2,
+    "attempts": [
+      {
+        "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+        "errorCode": "m2_hpsr_rebuilt_work_case_duplicate",
+        "futureActualOutcomeRead": true,
+        "candidatePredictionsProduced": 0,
+        "scientificEvaluationsExecuted": 0,
+        "bootstrapRuns": 0,
+        "completeIndependentResultProduced": false,
+        "resultFrozen": false,
+        "retryAllowed": true,
+        "contractChangedForRecovery": false
+      },
+      {
+        "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+        "errorCode": "hpsr02_residual_bound_rebuild_not_reconciled",
+        "futureActualOutcomeRead": true,
+        "candidatePredictionsProduced": 0,
+        "scientificEvaluationsExecuted": 0,
+        "bootstrapRuns": 0,
+        "completeIndependentResultProduced": false,
+        "resultFrozen": false,
+        "retryAllowed": true,
+        "contractChangedForRecovery": false
+      }
+    ],
     "futureActualOutcomeRead": true,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,
@@ -101,7 +127,7 @@
   "executionLedger": {
     "futureActualOutcomeAccessOccurred": true,
     "scoringCaseRowsConstructed": 0,
-    "preResultEngineeringAttempts": 1,
+    "preResultEngineeringAttempts": 2,
     "candidateModelRuns": 0,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,

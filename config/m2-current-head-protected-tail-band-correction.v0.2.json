@@ -46,7 +46,11 @@
     "sameCaseRequired": true,
     "independentK2Executed": false,
     "firstIndependentOutcomeOpened": true,
-    "preResultEngineeringAttemptCount": 1,
+    "preResultEngineeringAttemptCount": 2,
+    "preResultEngineeringErrorCodes": [
+      "m2_hpsr_rebuilt_work_case_duplicate",
+      "hpsr02_residual_bound_rebuild_not_reconciled"
+    ],
     "completeIndependentResultProduced": false,
     "engineeringRecoveryStatus": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
   },

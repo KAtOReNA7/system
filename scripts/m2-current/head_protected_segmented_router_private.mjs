@@ -322,33 +322,21 @@ export async function runHpsr02IndependentPrivate({ root }) {
   validateM2CoreLegacyHorizonAmountConfig(coreAmountConfig);
   const sourceGate = await reconcileHpsr02SourceAuthorityPrivate({ root });
   const receiptPath = path.join(root, HPSR02_INDEPENDENT_RECEIPT);
-  const priorReceipt = await readJsonIfPresent(receiptPath);
+  const [priorReceipt, priorPublicCheckpoint] = await Promise.all([
+    readJsonIfPresent(receiptPath),
+    readJsonIfPresent(path.join(root, HPSR02_PUBLIC_RESULT))
+  ]);
   if (
     priorReceipt?.completeIndependentResultProduced === true
     || priorReceipt?.resultFrozen === true
   ) {
     throw new Error("hpsr02_independent_complete_result_already_frozen");
   }
-  const priorPreResultEngineeringAttempt = (
-    priorReceipt?.status
-      === "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
-  )
-    ? Object.freeze({
-      status: priorReceipt.status,
-      errorCode: priorReceipt.errorCode,
-      completeIndependentResultProduced: false,
-      resultFrozen: false,
-      retryAllowed: true,
-      futureActualOutcomeRead:
-        priorReceipt.futureActualOutcomeRead === true
-        || priorReceipt.errorCode
-          === "m2_hpsr_rebuilt_work_case_duplicate",
-      candidatePredictionsProduced: 0,
-      scientificEvaluationsExecuted: 0,
-      bootstrapRuns: 0,
-      contractChangedForRecovery: false
-    })
-    : null;
+  const priorPreResultEngineeringAttempt =
+    mergeHpsr02PreResultEngineeringAttempts({
+      priorReceipt,
+      priorPublicCheckpoint
+    });
   const attemptId = crypto.randomUUID();
   await writeJsonAtomic(receiptPath, {
     schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
@@ -367,28 +355,42 @@ export async function runHpsr02IndependentPrivate({ root }) {
       hpsr01Config.residualBoundaryFreeze.sourceOriginRange.from,
       hpsr01Config.residualBoundaryFreeze.sourceOriginRange.through
     );
-    const featureMaterialization =
+    const boundFeatureMaterialization =
       await materializeM2HpsrFrozenFormulaFeatureRows({
         root,
-        retrospectiveOrigins: [...boundOrigins, "2026-03"],
+        retrospectiveOrigins: boundOrigins,
+        authorityMode: "CANONICAL_WORK_CHANNEL_AUTHORITY"
+      });
+    const currentFeatureMaterialization =
+      await materializeM2HpsrFrozenFormulaFeatureRows({
+        root,
+        retrospectiveOrigins: ["2026-03"],
         authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
       });
     if (
-      featureMaterialization.sourceAuthority.authorityMode
+      boundFeatureMaterialization.sourceAuthority.authorityMode
+        !== "CANONICAL_WORK_CHANNEL_AUTHORITY"
+      || currentFeatureMaterialization.sourceAuthority.authorityMode
         !== "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
     ) {
       throw new Error("hpsr02_independent_authority_mode_mismatch");
     }
     const fixedFit = hpsr01Config.retrospectiveReplay.fixedCham01B3Fit;
     const originFits = new Map();
-    for (const origin of [...boundOrigins, "2026-03"]) {
+    for (const origin of boundOrigins) {
       originFits.set(origin, fitFrozenB3AtOrigin({
         origin,
-        featureRows: featureMaterialization.featureRows,
+        featureRows: boundFeatureMaterialization.featureRows,
         coreAmountConfig,
         fixedFit
       }));
     }
+    originFits.set("2026-03", fitFrozenB3AtOrigin({
+      origin: "2026-03",
+      featureRows: currentFeatureMaterialization.featureRows,
+      coreAmountConfig,
+      fixedFit
+    }));
     const boundRows = [];
     for (const origin of boundOrigins) {
       const fit = originFits.get(origin);
@@ -668,9 +670,13 @@ export async function runHpsr02IndependentPrivate({ root }) {
     });
   } catch (error) {
     const errorCode = safeHpsr02Error(error);
-    const futureActualOutcomeRead = [
-      "m2_hpsr_rebuilt_work_case_duplicate"
-    ].includes(errorCode);
+    const futureActualOutcomeRead = (
+      priorPreResultEngineeringAttempt?.futureActualOutcomeRead === true
+      || [
+        "m2_hpsr_rebuilt_work_case_duplicate",
+        "hpsr02_residual_bound_rebuild_not_reconciled"
+      ].includes(errorCode)
+    );
     await writeJsonAtomic(receiptPath, {
       schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
       artifactClass: "PRIVATE_RUN_PROVENANCE",
@@ -681,6 +687,12 @@ export async function runHpsr02IndependentPrivate({ root }) {
       exactHeadCiRunId: preflight.ciRunId,
       errorCode,
       futureActualOutcomeRead,
+      priorEngineeringAttemptCount:
+        priorPreResultEngineeringAttempt?.attemptCount ?? 0,
+      priorEngineeringErrorCodes:
+        priorPreResultEngineeringAttempt?.attempts.map(
+          (attempt) => attempt.errorCode
+        ) ?? [],
       completeIndependentResultProduced: false,
       resultFrozen: false,
       retryAllowed: true,
@@ -1243,7 +1255,17 @@ function renderHpsr02ChineseReport(value) {
   });
   const recovery = value.preResultEngineeringRecovery === null
     ? ""
-    : `\n## 结果前工程恢复\n\n首次授权运行在形成预测、评分或 bootstrap 前因案例键重复停止（\`${value.preResultEngineeringRecovery.errorCode}\`）。该尝试已经读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；receipt 明确标记为结果前工程失败、可恢复（\`${value.preResultEngineeringRecovery.status}\`）。恢复只修正请求起点与历史支持起点的重复拼接，不改变模型、人口、基线、门限或 outcome。\n`;
+    : (() => {
+      const recoveryValue = value.preResultEngineeringRecovery;
+      const attempts = recoveryValue.attempts.map((attempt, index) => {
+        const reason = attempt.errorCode
+          === "m2_hpsr_rebuilt_work_case_duplicate"
+          ? "请求起点与历史支持起点重复拼接"
+          : "历史冻结边界与当前作品总额评价错误共用了来源权威口径";
+        return `${index + 1}. ${reason}（\`${attempt.errorCode}\`）`;
+      });
+      return `\n## 结果前工程恢复\n\n首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 ${recoveryValue.attemptCount} 次纯工程停止：\n\n${attempts.join("\n")}\n\n两次尝试均已读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；审计状态保持结果前工程失败、可恢复（\`${recoveryValue.status}\`）。恢复先消除重复起点，再把历史冻结残差边界重建固定在原渠道权威口径，只让当前 2026-03 作品总额评价使用范围感知权威口径；模型、人口、基线、门限和 outcome 均未改变。\n`;
+    })();
   return `# M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
 ## 首页结论
@@ -1320,6 +1342,71 @@ function safeHpsr02Error(error) {
   return String(error?.message ?? "hpsr02_unknown_error")
     .replace(/[^A-Za-z0-9_.:-]+/gu, "_")
     .slice(0, 240);
+}
+
+function mergeHpsr02PreResultEngineeringAttempts({
+  priorReceipt,
+  priorPublicCheckpoint
+}) {
+  const attempts = [];
+  const publicRecovery =
+    priorPublicCheckpoint?.preResultEngineeringRecovery;
+  if (Array.isArray(publicRecovery?.attempts)) {
+    attempts.push(...publicRecovery.attempts);
+  } else if (publicRecovery?.errorCode) {
+    attempts.push(publicRecovery);
+  }
+  if (
+    priorReceipt?.status
+      === "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+    && priorReceipt?.errorCode
+  ) {
+    attempts.push(priorReceipt);
+  }
+  const byErrorCode = new Map();
+  for (const attempt of attempts) {
+    const errorCode = safeHpsr02Error({
+      message: attempt.errorCode
+    });
+    if (!byErrorCode.has(errorCode)) {
+      byErrorCode.set(errorCode, Object.freeze({
+        status:
+          "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+        errorCode,
+        futureActualOutcomeRead:
+          attempt.futureActualOutcomeRead === true
+          || [
+            "m2_hpsr_rebuilt_work_case_duplicate",
+            "hpsr02_residual_bound_rebuild_not_reconciled"
+          ].includes(errorCode),
+        candidatePredictionsProduced: 0,
+        scientificEvaluationsExecuted: 0,
+        bootstrapRuns: 0,
+        completeIndependentResultProduced: false,
+        resultFrozen: false,
+        retryAllowed: true,
+        contractChangedForRecovery: false
+      }));
+    }
+  }
+  const normalized = [...byErrorCode.values()];
+  if (normalized.length === 0) return null;
+  return Object.freeze({
+    status:
+      "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+    attemptCount: normalized.length,
+    attempts: Object.freeze(normalized),
+    futureActualOutcomeRead: normalized.some(
+      (attempt) => attempt.futureActualOutcomeRead
+    ),
+    candidatePredictionsProduced: 0,
+    scientificEvaluationsExecuted: 0,
+    bootstrapRuns: 0,
+    completeIndependentResultProduced: false,
+    resultFrozen: false,
+    retryAllowed: true,
+    contractChangedForRecovery: false
+  });
 }
 
 async function readRelevantFeatureRows(filePath, maximumOrigin) {
