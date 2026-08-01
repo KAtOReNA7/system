@@ -9,7 +9,7 @@
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
     "entityType": "model",
     "capability": "WORK",
-    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_SCOPE_RECONCILED_AUTHORIZED_FOR_FIRST_INDEPENDENT_EXECUTION",
+    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_SCOPE_RECONCILED_PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED",
     "productionImported": false
   },
   "experiment": {
@@ -44,7 +44,11 @@
     ],
     "sameIndependentCheckpointRequired": true,
     "sameCaseRequired": true,
-    "independentK2Executed": false
+    "independentK2Executed": false,
+    "firstIndependentOutcomeOpened": true,
+    "preResultEngineeringAttemptCount": 1,
+    "completeIndependentResultProduced": false,
+    "engineeringRecoveryStatus": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
   },
   "inspiration": {
     "classification": "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED",
@@ -220,6 +224,8 @@
       "workTotalScopeRelevantDifferenceRowCount": 0,
       "workChannelGateStatus": "PARTIAL_NOT_ACTIVE",
       "independentCheckpointReady": true,
+      "firstIndependentOutcomeOpened": true,
+      "firstIndependentCompleteResultProduced": false,
       "prospectiveFinalHoldoutOrigin": "2026-06",
       "prospectiveFinalHoldoutRequiredCompleteThrough": "2026-09",
       "prospectiveFinalHoldoutOpened": false
@@ -275,11 +281,12 @@
     "hpsr01OriginalContractResultPreserved": true,
     "hpsr01ScientificInterpretationAmended": true,
     "postHocArithmeticIsIndependentEvidence": false,
-    "independentK2Executed": false
+    "independentK2Executed": false,
+    "preResultEngineeringRecoveryAuthorized": true
   },
   "auditBoundary": {
     "hpsr01Rerun": false,
-    "newActualRead": false,
+    "newActualRead": true,
     "realPredictionGenerated": false,
     "realModelEvaluationExecuted": false,
     "realBootstrapExecuted": false,

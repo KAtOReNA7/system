@@ -329,6 +329,26 @@ export async function runHpsr02IndependentPrivate({ root }) {
   ) {
     throw new Error("hpsr02_independent_complete_result_already_frozen");
   }
+  const priorPreResultEngineeringAttempt = (
+    priorReceipt?.status
+      === "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+  )
+    ? Object.freeze({
+      status: priorReceipt.status,
+      errorCode: priorReceipt.errorCode,
+      completeIndependentResultProduced: false,
+      resultFrozen: false,
+      retryAllowed: true,
+      futureActualOutcomeRead:
+        priorReceipt.futureActualOutcomeRead === true
+        || priorReceipt.errorCode
+          === "m2_hpsr_rebuilt_work_case_duplicate",
+      candidatePredictionsProduced: 0,
+      scientificEvaluationsExecuted: 0,
+      bootstrapRuns: 0,
+      contractChangedForRecovery: false
+    })
+    : null;
   const attemptId = crypto.randomUUID();
   await writeJsonAtomic(receiptPath, {
     schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
@@ -612,7 +632,8 @@ export async function runHpsr02IndependentPrivate({ root }) {
       sourceGate,
       preflight,
       fit: currentFit,
-      resultDigest
+      resultDigest,
+      priorPreResultEngineeringAttempt
     });
     await writeJsonAtomic(path.join(root, HPSR02_PUBLIC_RESULT), publicResult);
     await writeTextAtomic(
@@ -646,6 +667,10 @@ export async function runHpsr02IndependentPrivate({ root }) {
       publicResult
     });
   } catch (error) {
+    const errorCode = safeHpsr02Error(error);
+    const futureActualOutcomeRead = [
+      "m2_hpsr_rebuilt_work_case_duplicate"
+    ].includes(errorCode);
     await writeJsonAtomic(receiptPath, {
       schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
       artifactClass: "PRIVATE_RUN_PROVENANCE",
@@ -654,7 +679,8 @@ export async function runHpsr02IndependentPrivate({ root }) {
         "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
       executionHead: preflight.head,
       exactHeadCiRunId: preflight.ciRunId,
-      errorCode: safeHpsr02Error(error),
+      errorCode,
+      futureActualOutcomeRead,
       completeIndependentResultProduced: false,
       resultFrozen: false,
       retryAllowed: true,
@@ -1070,7 +1096,8 @@ function buildHpsr02PublicResult({
   sourceGate,
   preflight,
   fit,
-  resultDigest
+  resultDigest,
+  priorPreResultEngineeringAttempt
 }) {
   const { privateRows: _privateRows, ...publicEvaluation } = evaluation;
   return Object.freeze({
@@ -1113,6 +1140,8 @@ function buildHpsr02PublicResult({
           + "WORK_TOTAL_AND_DID_NOT_CLASSIFY_THREE_SPLIT_ROWS_BY_SCOPE",
       historyRewritten: false
     }),
+    preResultEngineeringRecovery:
+      priorPreResultEngineeringAttempt,
     sourceAuthorityReconciliation: Object.freeze({
       status: sourceGate.status,
       sourceAuthorityStatus: sourceGate.sourceAuthorityStatus,
@@ -1212,6 +1241,9 @@ function renderHpsr02ChineseReport(value) {
       + ` | ${number(band.absoluteErrorReduction)}`
       + ` | ${band.direction} |`;
   });
+  const recovery = value.preResultEngineeringRecovery === null
+    ? ""
+    : `\n## 结果前工程恢复\n\n首次授权运行在形成预测、评分或 bootstrap 前因案例键重复停止（\`${value.preResultEngineeringRecovery.errorCode}\`）。该尝试已经读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；receipt 明确标记为结果前工程失败、可恢复（\`${value.preResultEngineeringRecovery.status}\`）。恢复只修正请求起点与历史支持起点的重复拼接，不改变模型、人口、基线、门限或 outcome。\n`;
   return `# M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
 ## 首页结论
@@ -1232,6 +1264,7 @@ function renderHpsr02ChineseReport(value) {
 - 分表比总表多出的 3 条 2026-05 非零事实确实影响全账守恒，但对应作品均不在 2026-03 动态 Core80；本次作品总额评价相关差异为 0 行（\`OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING\`）。
 - 作品总额源权威可用（\`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL\`）；作品—渠道门禁继续部分且未激活（\`PARTIAL_NOT_ACTIVE\`）。
 - 可重建缓存已由权威源与冻结代码重建；历史 receipt 缺失不构成阻断。
+${recovery}
 
 ## 人口与实际现金
 

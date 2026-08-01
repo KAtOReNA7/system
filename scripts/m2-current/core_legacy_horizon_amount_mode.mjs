@@ -546,11 +546,14 @@ export async function materializeM2HpsrFrozenFormulaFeatureRows({
     labelMaturityCutoff: authority.labelMaturityCutoff
   });
   const maximumRequestedOrigin = requestedOrigins.at(-1);
-  const historicalOrigins = trainingAndEvaluationOrigins({
-    authorityStartMonth: authority.authorityStartMonth,
-    labelMaturityCutoff: authority.labelMaturityCutoff,
-    schedules
-  }).filter((origin) => origin < maximumRequestedOrigin);
+  const historicalOrigins = selectM2HpsrHistoricalSupportOrigins({
+    candidateOrigins: trainingAndEvaluationOrigins({
+      authorityStartMonth: authority.authorityStartMonth,
+      labelMaturityCutoff: authority.labelMaturityCutoff,
+      schedules
+    }),
+    requestedOrigins
+  });
   const origins = [...new Set([
     ...historicalOrigins,
     ...requestedOrigins
@@ -640,6 +643,33 @@ export async function materializeM2HpsrFrozenFormulaFeatureRows({
     futureIndependentOutcomeRead: false,
     finalHoldoutOutcomeRead: false
   });
+}
+
+export function selectM2HpsrHistoricalSupportOrigins({
+  candidateOrigins,
+  requestedOrigins
+}) {
+  if (
+    !Array.isArray(candidateOrigins)
+    || !Array.isArray(requestedOrigins)
+    || requestedOrigins.length === 0
+  ) {
+    throw new Error("m2_hpsr_origin_partition_invalid");
+  }
+  const requested = [...new Set(requestedOrigins)].sort();
+  if (requested.length !== requestedOrigins.length) {
+    throw new Error("m2_hpsr_origin_partition_requested_duplicate");
+  }
+  const requestedSet = new Set(requested);
+  const maximumRequestedOrigin = requested.at(-1);
+  const historical = [...new Set(candidateOrigins)].filter((origin) => (
+    origin < maximumRequestedOrigin
+    && !requestedSet.has(origin)
+  )).sort();
+  if (historical.some((origin) => requestedSet.has(origin))) {
+    throw new Error("m2_hpsr_origin_partition_overlap");
+  }
+  return Object.freeze(historical);
 }
 
 export function buildOriginVisibleTrailing12CashIndex(populations) {

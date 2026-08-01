@@ -1,6 +1,6 @@
 # M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
-当前状态：**作品总额来源权威已复核，已获授权但尚未执行独立评价**（`M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION`）。
+当前状态：**作品总额来源权威已复核；首次授权运行发生结果前工程故障，恢复已获授权且尚未形成完整结果**（`M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED`）。
 
 对象是 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`），所属实验是 M2 LG01 头部保护分段路由与独立后期起点验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）。同案例基线仍是冻结 LG01（`M2-WORK-LG01`）。
 
@@ -25,13 +25,19 @@
 
 因此作品总额源权威可用（`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL`）。这不表示作品—渠道门禁已激活，也不修复全账层面的 3 条差异；它只证明这些差异不会改变本次动态 Core80 的作品总额 actual、现金带或 R0/R2 同案例关系。
 
+## 结果前工程失败与恢复
+
+首次授权运行已经打开作品总额权威事实，但在构造预测、评分或 bootstrap 之前因请求起点与历史支持起点重复拼接而停止（`m2_hpsr_rebuilt_work_case_duplicate`）。候选预测、科学评价、bootstrap 和完整合法结果仍均为 0；receipt 状态为结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`），没有冻结科学结果。
+
+恢复只排除历史支持集合中已由请求集合显式物化的重复起点，不改变模型、人口、actual、现金带、基线、门限或评价规则。按照预注册边界，修复必须先普通提交并通过新 exact-head Linux/Windows CI，之后才允许继续同一首次独立评价；这不是第二次科学运行。
+
 ## 执行前冻结边界
 
 - origin：2026-03；horizon：3 个月；actual window：2026-04 至 2026-06；
 - H50/M30 逐行精确使用冻结 LG01；L20 使用 HPSR01 已冻结的有界残差修正；`alpha=1`；
 - 不训练新模型、不调参、不搜索 alpha、不重估 residual bound、不选模；
 - 不读取 2026-07 以后 actual，不打开 2026-06 前瞻最终留出，不执行第二起点或 HPSR03；
-- 当前 actual outcome 读取、候选运行、科学评价和 bootstrap 仍为 0；
-- 先提交本执行器与门禁修订并通过 exact-head Linux/Windows CI，再执行唯一一次完整评价。
+- actual outcome 已在结果前工程尝试中打开；候选预测、科学评价、bootstrap 和完整结果仍为 0；
+- 先提交工程恢复修订并通过新的 exact-head Linux/Windows CI，再继续同一首次独立评价。
 
 活动候选与自动化批准保持 `null`，生产就绪为 `false`，Draft PR 保持 Open / Draft / Unmerged。机器可读同源状态见 `M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`。

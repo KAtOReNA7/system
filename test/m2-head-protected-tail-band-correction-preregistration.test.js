@@ -84,8 +84,11 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   const readyStatus =
     "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
       + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION";
+  const recoveryStatus =
+    "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED";
   assert.ok([
     readyStatus,
+    recoveryStatus,
     ...Object.values(HPSR02_FINAL_STATUSES)
   ].includes(independentEvaluation.status));
   assert.equal(
@@ -128,6 +131,24 @@ test("first independent evaluation preserves prior blocker and current gate", ()
     );
     assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
     assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  } else if (independentEvaluation.status === recoveryStatus) {
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery.status,
+      "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+    );
+    assert.equal(
+      independentEvaluation.preResultEngineeringRecovery
+        .completeIndependentResultProduced,
+      false
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.bootstrapRuns,
+      0
+    );
   } else {
     assert.equal(
       independentEvaluation.execution
@@ -475,7 +496,12 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.governance.productionReady, false);
   assert.equal(config.governance.finalHoldoutOpened, false);
   assert.equal(config.auditBoundary.hpsr01Rerun, false);
-  assert.equal(config.auditBoundary.newActualRead, false);
+  assert.equal(config.auditBoundary.newActualRead, true);
+  assert.equal(config.experiment.completeIndependentResultProduced, false);
+  assert.equal(
+    config.experiment.engineeringRecoveryStatus,
+    "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"
+  );
   assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
 });
 

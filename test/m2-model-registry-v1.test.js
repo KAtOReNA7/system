@@ -454,7 +454,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR02 work-total source authority is reconciled without promotion", () => {
+test("HPSR02 pre-result engineering recovery is authorized without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR02"
   );
@@ -473,11 +473,11 @@ test("HPSR02 work-total source authority is reconciled without promotion", () =>
 
   assert.equal(
     model.currentRole,
-    "source_reconciled_independent_evaluation_authorized_not_executed_not_active"
+    "pre_result_engineering_recovery_authorized_not_active"
   );
   assert.equal(
     model.evidenceStatus,
-    "work_total_source_authority_reconciled_work_channel_partial_no_independent_outcome"
+    "work_total_source_reconciled_outcome_opened_no_prediction_no_score_recovery_authorized"
   );
   assert.equal(
     model.currentExperimentId,
@@ -490,12 +490,11 @@ test("HPSR02 work-total source authority is reconciled without promotion", () =>
   const hpsr02Arm = experiment.arms.find((arm) => arm.armId === "R2");
   assert.equal(
     hpsr02Arm.executionStatus,
-    "AUTHORIZED_FIRST_INDEPENDENT_NOT_YET_EXECUTED"
+    "PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED_NOT_YET_COMPLETED"
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.status,
-    "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
-      + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION"
+    "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED"
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.sourceAuthorityStatus,
@@ -510,8 +509,8 @@ test("HPSR02 work-total source authority is reconciled without promotion", () =>
     "PARTIAL_NOT_ACTIVE"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.amountCellReadCount,
-    0
+    experiment.hpsr02IndependentEvaluation.outcomeValueAccessOccurred,
+    true
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.scientificEvaluationsExecuted,

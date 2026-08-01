@@ -1,7 +1,7 @@
 {
   "schema": "m2.current.head_protected_tail_band_correction.independent_evaluation.public.v0.2",
   "asOf": "2026-08-01",
-  "status": "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION",
+  "status": "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED",
   "model": {
     "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
@@ -13,7 +13,7 @@
     "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
     "baselineModelId": "M2-WORK-LG01",
     "candidateArmId": "R2",
-    "executionStatus": "AUTHORIZED_NOT_YET_EXECUTED"
+    "executionStatus": "PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED_NOT_YET_COMPLETED"
   },
   "priorBlockedAttempt": {
     "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
@@ -28,6 +28,18 @@
     "scientificEvaluationsExecuted": 0,
     "bootstrapRuns": 0,
     "historyRewritten": false
+  },
+  "preResultEngineeringRecovery": {
+    "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+    "errorCode": "m2_hpsr_rebuilt_work_case_duplicate",
+    "futureActualOutcomeRead": true,
+    "candidatePredictionsProduced": 0,
+    "scientificEvaluationsExecuted": 0,
+    "bootstrapRuns": 0,
+    "completeIndependentResultProduced": false,
+    "resultFrozen": false,
+    "retryAllowed": true,
+    "contractChangedForRecovery": false
   },
   "sourceAuthorityReconciliation": {
     "checkpointDisplayNameZh": "作品总额范围感知来源权威复核检查点",
@@ -75,7 +87,8 @@
       "2026-05",
       "2026-06"
     ],
-    "actualAmountRead": false,
+    "actualAmountRead": true,
+    "outcomeOpenedByPreResultEngineeringAttempt": true,
     "prospectiveFinalHoldoutOrigin": "2026-06",
     "prospectiveFinalHoldoutWindow": [
       "2026-07",
@@ -86,7 +99,9 @@
     "prospectiveFinalHoldoutOutcomeRead": false
   },
   "executionLedger": {
-    "actualAmountRowsReadForOutcome": 0,
+    "futureActualOutcomeAccessOccurred": true,
+    "scoringCaseRowsConstructed": 0,
+    "preResultEngineeringAttempts": 1,
     "candidateModelRuns": 0,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,
@@ -98,7 +113,7 @@
     "modelSelectionRuns": 0
   },
   "scientificEvidence": {
-    "status": "AUTHORIZED_NOT_YET_EXECUTED",
+    "status": "PRE_RESULT_ENGINEERING_RECOVERY_AUTHORIZED_NO_COMPLETE_RESULT",
     "candidateOutcomeProduced": false,
     "metricsAvailable": false,
     "firstCompleteLegalResultCount": 0
