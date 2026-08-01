@@ -1,7 +1,7 @@
 {
   "schema": "m2.current.head_protected_tail_band_correction.independent_evaluation.public.v0.2",
-  "asOf": "2026-07-31",
-  "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
+  "asOf": "2026-08-01",
+  "status": "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION",
   "model": {
     "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
@@ -12,64 +12,60 @@
     "displayNameEn": "M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1",
     "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
     "baselineModelId": "M2-WORK-LG01",
-    "evaluationActivityZh": "LG01 头部保护尾段修正模型首次独立后期起点评价",
-    "evaluationActivityEn": "HPSR02 First Independent Later-Origin Evaluation",
-    "executionStatus": "BLOCKED_BEFORE_ACTUAL_AMOUNT_READ_NOT_EXECUTED"
+    "candidateArmId": "R2",
+    "executionStatus": "AUTHORIZED_NOT_YET_EXECUTED"
   },
-  "amountPreReadIntegrityAndContractCheckpoint": {
-    "displayNameZh": "金额读取前的完整性与合同复核检查点",
-    "checkpointId": "K0",
+  "priorBlockedAttempt": {
+    "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
     "metadataOnly": true,
-    "sourceAuthorityFilePresence": "SOURCE_AUTHORITY_FILES_PRESENT",
-    "sourceAuthorityStatus": "SOURCE_AUTHORITY_INCOMPLETE_STANDARD_IMPORT",
-    "standardImportPassed": false,
-    "schemaValid": true,
-    "deduplicationStatus": "NOT_REACHED_SOURCE_AUTHORITY_BLOCKED_BEFORE_AMOUNT_READ",
-    "workMappingValid": true,
-    "canonicalChannelMappingValid": false,
     "billMonthWindowComplete": true,
     "completeAuthoritativeBillMonthThrough": "2026-06",
-    "requiredBillMonths": [
-      "2026-04",
-      "2026-05",
-      "2026-06"
-    ],
-    "monthlyNonAmountFactCounts": [
-      {
-        "billMonth": "2026-04",
-        "factCount": 2949
-      },
-      {
-        "billMonth": "2026-05",
-        "factCount": 3190
-      },
-      {
-        "billMonth": "2026-06",
-        "factCount": 2517
-      }
-    ],
-    "explicitPartialImportMarkerPresent": false,
     "missingCanonicalChannelMappingRowCount": 134,
     "missingCanonicalRawPairCount": 3,
-    "missingCanonicalChannelMappingMonths": [
-      {
-        "billMonth": "2026-05",
-        "rowCount": 134
-      }
-    ],
-    "metadataPartitionAudit": {
-      "totalLedgerRowCount": 198076,
-      "salesShareLedgerRowCount": 196367,
-      "buyoutLedgerRowCount": 1712,
-      "combinedSplitRowCount": 198079,
-      "metadataRowMultisetConserved": false,
-      "missingFromSplitRowCount": 0,
-      "extraInSplitRowCount": 3
+    "splitExtraPresentationRowCount": 3,
+    "amountCellReadCount": 0,
+    "candidateModelRuns": 0,
+    "scientificEvaluationsExecuted": 0,
+    "bootstrapRuns": 0,
+    "historyRewritten": false
+  },
+  "sourceAuthorityReconciliation": {
+    "checkpointDisplayNameZh": "作品总额范围感知来源权威复核检查点",
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
+    "workTotalCanonicalMappingStatus": "WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL",
+    "metadataDifferenceStatus": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
+    "workTotalScopeRelevantDifferenceRowCount": 0,
+    "billMonthWindowComplete": true,
+    "completeAuthoritativeBillMonthThrough": "2026-06",
+    "schemaValid": true,
+    "workMappingValid": true,
+    "sourceAuthorityCriticalAmountCellsValidated": 396155,
+    "futureActualOutcomeOpened": false,
+    "amountValuesPublished": false,
+    "canonicalMappingAudit": {
+      "status": "WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL",
+      "missingCanonicalChannelMappingRowCount": 134,
+      "missingCanonicalRawPairCount": 3,
+      "stableRawSourceIdentityIssueCount": 3,
+      "nonzeroDuplicateRiskCount": 0,
+      "changesWorkTotalActual": false,
+      "changesDynamicCore80": false,
+      "changesCashBands": false,
+      "changesSameCaseRelation": false,
+      "canonicalMappingGuessedOrBackfilled": false
+    },
+    "ledgerDifferenceAudit": {
+      "status": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
+      "splitExtraNonzeroFactRowCount": 3,
+      "originMatureBeforeCore80RowCount": 3,
+      "dynamicCore80WorkCount": 43,
+      "workTotalScopeRelevantDifferenceRowCount": 0,
+      "changesWorkTotalActual": false
     },
     "derivedCacheStatus": "CACHE_MISS_REBUILDABLE",
     "historicalReceiptStatus": "OPTIONAL_PROVENANCE_MISSING",
-    "amountCellReadCount": 0,
-    "checkpointPassed": false
+    "workTotalGatePassed": true,
+    "workChannelGateStatus": "PARTIAL_NOT_ACTIVE"
   },
   "reservedEvaluationBoundary": {
     "origin": "2026-03",
@@ -90,46 +86,31 @@
     "prospectiveFinalHoldoutOutcomeRead": false
   },
   "executionLedger": {
-    "actualAmountRowsRead": 0,
+    "actualAmountRowsReadForOutcome": 0,
     "candidateModelRuns": 0,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,
     "bootstrapRuns": 0,
-    "trainingRuns": 0,
-    "fitRuns": 0,
+    "newModelTrainingRuns": 0,
     "tuningRuns": 0,
     "alphaSearchRuns": 0,
     "residualBoundReestimationRuns": 0,
-    "modelSelectionRuns": 0,
-    "semanticSupplementApplied": false
+    "modelSelectionRuns": 0
   },
   "scientificEvidence": {
-    "status": "CAPABILITY_NOT_EXECUTED_SOURCE_AUTHORITY_BLOCKED",
+    "status": "AUTHORIZED_NOT_YET_EXECUTED",
     "candidateOutcomeProduced": false,
-    "rawCandidateEvidenceProduced": false,
     "metricsAvailable": false,
-    "unavailableEvidence": [
-      "origin_mature_work_count",
-      "dynamic_core80_case_count",
-      "dynamic_core80_amount_coverage",
-      "cash_band_composition",
-      "baseline_actual_prediction_and_error",
-      "candidate_actual_prediction_and_error",
-      "paired_fva",
-      "paired_absolute_error_reduction",
-      "bootstrap_interval",
-      "signed_bias",
-      "error_concentration",
-      "cash_band_attribution",
-      "numeric_fallback_and_clip_diagnostics",
-      "final_scientific_classification"
-    ],
-    "core90SensitivityStatus": "CAPABILITY_NOT_DEFINED"
+    "firstCompleteLegalResultCount": 0
+  },
+  "workTotalGate": {
+    "grain": "WORK_TOTAL",
+    "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+    "ready": true
   },
   "workChannelGate": {
+    "grain": "WORK_CHANNEL",
     "status": "PARTIAL_NOT_ACTIVE",
-    "servedWorkOriginChannelCaseCount": 633,
-    "servedWorkOriginChannelComponentCount": 914,
     "changedByThisActivity": false
   },
   "governance": {
@@ -137,27 +118,15 @@
     "approvedForAutomation": null,
     "productionReady": false,
     "finalHoldoutOpened": false,
-    "pullRequestMustRemainDraftOpenUnmerged": true,
-    "automaticResumeAllowed": false,
-    "newExplicitAuthorizationRequiredAfterSourceAuthorityRepair": true
+    "currentTaskResumeAuthorized": true,
+    "secondIndependentOriginAuthorized": false,
+    "pullRequestMustRemainDraftOpenUnmerged": true
   },
-  "requiredSourceAuthorityRepair": [
-    {
-      "requirementZh": "由用户复核并补齐 3 个原始渠道组合的 canonical 渠道映射",
-      "requirementEn": "User-review and complete canonical mappings for three raw channel pairs",
-      "status": "REQUIRED"
-    },
-    {
-      "requirementZh": "复核总表与分成/买断分表之间的 3 行非金额元数据差异",
-      "requirementEn": "Reconcile three non-amount metadata rows between the total and split ledgers",
-      "status": "REQUIRED"
-    }
-  ],
   "privacy": {
     "privatePathsPublished": false,
     "rawWorkIdentitiesPublished": false,
     "rawChannelIdentitiesPublished": false,
     "actualAmountsPublished": false,
-    "aggregateNonAmountMetadataOnly": true
+    "aggregateSourceAuditOnly": true
   }
 }

@@ -1293,7 +1293,7 @@
     },
     {
       "id": "m2-head-protected-segmented-router",
-      "description": "Rebuild metadata-only opened-origin semantics and derived caches, verify the completed HPSR01 canonical implementation, execute the single authorized retrospective development replay on outcomes opened before this task, and retain a separate fail-closed conditional gate for an independent K2. K1 is complete; K2 is authorized by the current task only when the fresh audit proves maturity and the retrospective result is not unsupported.",
+      "description": "Reconcile HPSR02 source authority at WORK_TOTAL versus WORK_CHANNEL grain, rebuild origin-visible population and frozen derived caches, and execute at most one user-authorized first independent later-origin evaluation after an exact-head dual-platform CI preflight. Canonical channel gaps remain PARTIAL_NOT_ACTIVE for WORK_CHANNEL and cannot block WORK_TOTAL when stable raw identity and dynamic Core80 scope prove no impact.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1374,11 +1374,13 @@
       "futureControlledEntrypoint": {
         "command": "npm run execute:m2:head-protected-segmented-router",
         "retrospectiveArguments": "-- --retrospective",
-        "defaultExpectedStatus": "FAIL_CLOSED_K2_NOT_READY",
-        "currentTaskConditionalK2Authorization": true
+        "sourceReconciliationArguments": "-- --source-authority-reconciliation",
+        "firstIndependentArguments": "-- --hpsr02-independent",
+        "defaultExpectedStatus": "FAIL_CLOSED_WITHOUT_EXPLICIT_MODE",
+        "currentTaskFirstIndependentAuthorization": true
       },
-      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild feature rows, opened-origin semantics and residual bounds from authority and committed frozen code. Missing derived caches never block after deterministic rebuild; missing historical provenance only warns and is never fabricated. The current authorization permits exactly one retrospective result and conditionally one independent K2 only if the fresh audit proves maturity.",
-      "authorization": "USER_AUTHORIZED_HPSR01_RETROSPECTIVE_AND_CONDITIONAL_K2_2026_07_31"
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild scope reconciliation, feature rows, opened-origin population and residual bounds from authority and committed frozen code. Missing derived caches never block after deterministic rebuild; missing historical provenance only warns and is never fabricated. The current authorization permits exactly one HPSR02 first independent result and no second origin or final holdout.",
+      "authorization": "USER_AUTHORIZED_HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_FIRST_INDEPENDENT_RESUME_2026_08_01"
     },
     {
       "id": "m3-private-materials",

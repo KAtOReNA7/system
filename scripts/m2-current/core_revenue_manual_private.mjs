@@ -43,6 +43,16 @@ const AUTHORITY_FACTS =
   `${AUTHORITY_DIRECTORY}/M2-reversal-authority-facts-private-v1.ndjson`;
 const AUTHORITY_RECEIPT =
   `${AUTHORITY_DIRECTORY}/M2-reversal-authority-export-receipt-private-v1.json`;
+const HPSR02_WORK_TOTAL_AUTHORITY_MODE =
+  "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY";
+const HPSR02_AUTHORITY_DIRECTORY =
+  "data/private-output/m2-head-protected-segmented-router";
+const HPSR02_AUTHORITY_FACTS =
+  `${HPSR02_AUTHORITY_DIRECTORY}/`
+    + "M2-hpsr02-work-total-authority-private-v0.2.ndjson";
+const HPSR02_AUTHORITY_RECEIPT =
+  `${HPSR02_AUTHORITY_DIRECTORY}/`
+    + "M2-hpsr02-work-total-authority-receipt-private-v0.2.json";
 const V22_RESCORE =
   `${AUTHORITY_DIRECTORY}/M2-evaluation-v2.2-label-only-rescore-private-v1.ndjson`;
 const LG01_PRIVATE =
@@ -185,11 +195,12 @@ export async function runM2CoreRevenueManualPrivateEvaluation({ root }) {
 
 export async function materializeM2CoreRevenueAuthority({
   root,
-  labelMaturityCutoff: requestedLabelMaturityCutoff = null
+  labelMaturityCutoff: requestedLabelMaturityCutoff = null,
+  authorityMode = "CANONICAL_WORK_CHANNEL_AUTHORITY"
 }) {
   const config = await readJson(path.join(root, CONFIG_PATH));
   validateM2CoreRevenueManualConfig(config);
-  preparePrivateInputs(root);
+  preparePrivateInputs(root, authorityMode);
   const privateDirectory = path.join(
     root,
     config.privateOutputs.directory
@@ -198,7 +209,7 @@ export async function materializeM2CoreRevenueAuthority({
     privateDirectory,
     config.privateOutputs.staticMetadata
   ));
-  const authority = await loadAuthority(root);
+  const authority = await loadAuthority(root, authorityMode);
   const authorityStartMonth = authority.rows
     .map((row) => row.postingMonth)
     .sort()[0];
@@ -359,11 +370,25 @@ function verifyExactHeadPreflight(root) {
   };
 }
 
-function preparePrivateInputs(root) {
-  run(root, process.execPath, [
-    "scripts/run-codex-python.mjs",
-    "scripts/m2-current/export_m2_reversal_authority.py"
-  ]);
+function preparePrivateInputs(
+  root,
+  authorityMode = "CANONICAL_WORK_CHANNEL_AUTHORITY"
+) {
+  if (authorityMode === HPSR02_WORK_TOTAL_AUTHORITY_MODE) {
+    run(root, process.execPath, [
+      "scripts/run-codex-python.mjs",
+      "scripts/m2-current/"
+        + "audit_head_protected_segmented_router_dates.py",
+      "--export-work-total-authority"
+    ]);
+  } else if (authorityMode === "CANONICAL_WORK_CHANNEL_AUTHORITY") {
+    run(root, process.execPath, [
+      "scripts/run-codex-python.mjs",
+      "scripts/m2-current/export_m2_reversal_authority.py"
+    ]);
+  } else {
+    throw new Error("m2_core_revenue_manual_authority_mode_invalid");
+  }
   run(root, process.execPath, [
     "scripts/run-codex-python.mjs",
     "scripts/m2-current/materialize_human_anchored_cases.py",
@@ -371,17 +396,40 @@ function preparePrivateInputs(root) {
   ]);
 }
 
-async function loadAuthority(root) {
-  const receipt = await readJson(path.join(root, AUTHORITY_RECEIPT));
-  const factsPath = path.join(root, AUTHORITY_FACTS);
+async function loadAuthority(
+  root,
+  authorityMode = "CANONICAL_WORK_CHANNEL_AUTHORITY"
+) {
+  const hpsr02Mode = authorityMode === HPSR02_WORK_TOTAL_AUTHORITY_MODE;
+  const receiptPath = hpsr02Mode
+    ? HPSR02_AUTHORITY_RECEIPT
+    : AUTHORITY_RECEIPT;
+  const factsPath = path.join(
+    root,
+    hpsr02Mode ? HPSR02_AUTHORITY_FACTS : AUTHORITY_FACTS
+  );
+  const receipt = await readJson(path.join(root, receiptPath));
+  const receiptValid = hpsr02Mode
+    ? (
+      receipt.status === "READY_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+      && receipt.workTotalSourceAuthorityStatus
+        === "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
+      && receipt.workChannelGateStatus === "PARTIAL_NOT_ACTIVE"
+      && receipt.channelScopeMode
+        === "CANONICAL_OR_STABLE_RAW_SOURCE_IDENTITY_WORK_TOTAL_ONLY"
+      && receipt.finalHoldoutOutcomeRead === false
+    )
+    : (
+      receipt.status === "READY"
+      && receipt.authorityMode === "user_reviewed_workbook_membership"
+      && receipt.machineClassificationUsed === false
+      && receipt.missingWorkCount === 0
+      && receipt.missingChannelCount === 0
+      && receipt.channelScopeMode
+        === "user_reviewed_canonical_channel_uid"
+    );
   if (
-    receipt.status !== "READY"
-    || receipt.authorityMode !== "user_reviewed_workbook_membership"
-    || receipt.machineClassificationUsed !== false
-    || receipt.missingWorkCount !== 0
-    || receipt.missingChannelCount !== 0
-    || receipt.channelScopeMode
-      !== "user_reviewed_canonical_channel_uid"
+    !receiptValid
     || !Number.isInteger(receipt.amountScalePower)
     || receipt.amountScalePower < 0
   ) {
@@ -390,7 +438,11 @@ async function loadAuthority(root) {
     );
   }
   const factDigest = await sha256File(factsPath);
-  if (factDigest !== receipt.authorityFactsSha256) {
+  if (
+    factDigest !== (
+      hpsr02Mode ? receipt.factsDigest : receipt.authorityFactsSha256
+    )
+  ) {
     throw new Error(
       "m2_core_revenue_manual_authority_fact_digest_mismatch"
     );
@@ -455,7 +507,11 @@ async function loadAuthority(root) {
     channelCount: new Set(rows.map((row) => row.channelMemberId)).size,
     reversalRowCount: receipt.negativeRowCount,
     sourceDigests: receipt.sourceDigests,
-    mappingArtifactDigests: receipt.mappingArtifactDigests
+    mappingArtifactDigests: receipt.mappingArtifactDigests,
+    authorityMode,
+    workChannelGateStatus: hpsr02Mode
+      ? receipt.workChannelGateStatus
+      : "ACTIVE_CANONICAL_AUTHORITY"
   };
 }
 

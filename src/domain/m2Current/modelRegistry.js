@@ -772,6 +772,8 @@ function roleZh(role) {
       "独立评价候选已预注册但尚未执行且未激活",
     blocked_missing_source_authority_not_executed_not_active:
       "首次独立评价因源权威不完整而阻断，未读取金额、未执行且未激活",
+    source_reconciled_independent_evaluation_authorized_not_executed_not_active:
+      "作品总额来源权威已复核，首次独立评价已授权但尚未执行且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }

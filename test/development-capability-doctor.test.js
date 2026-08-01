@@ -697,11 +697,11 @@ test("HPSR capability separates authority, rebuildable cache, and optional recei
   );
   assert.match(
     cacheMiss.authorization,
-    /RETROSPECTIVE_AND_CONDITIONAL_K2/u,
+    /HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_FIRST_INDEPENDENT_RESUME/u,
   );
   assert.match(
     cacheMiss.recovery,
-    /conditionally one independent K2/u,
+    /exactly one HPSR02 first independent result/u,
   );
   assert.ok(
     cacheMiss.notes.includes("availability does not grant execution authorization"),

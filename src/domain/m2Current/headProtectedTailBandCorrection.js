@@ -1,8 +1,11 @@
 import {
+  bootstrapHpsrFva,
   buildHpsrOriginCashBands,
   buildHpsrOriginCashBandsFromWorkCash,
   computeHpsrFrozenBoundedResidualCorrection,
-  planHpsrProspectiveReservation
+  pairedFva,
+  planHpsrProspectiveReservation,
+  scoreHpsrEvaluationRows
 } from "./headProtectedSegmentedRouter.js";
 
 export const HPSR02_MODEL_ID = "M2-WORK-HPSR02";
@@ -15,6 +18,16 @@ export const HPSR02_PREREGISTERED_STATUS =
 export const HPSR02_WORKFLOW_STATUS =
   "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_"
     + "PREREGISTERED_AWAITING_INDEPENDENT_DATA";
+export const HPSR02_FINAL_STATUSES = Object.freeze({
+  SUPPORTED:
+    "M2_HPSR02_FIRST_INDEPENDENT_SUPPORTED_FOR_SECOND_CONFIRMATION",
+  UNSUPPORTED:
+    "M2_HPSR02_FIRST_INDEPENDENT_NOT_SUPPORTED_"
+      + "CASH_ONLY_RESEARCH_ENDED",
+  MIXED:
+    "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_"
+      + "CASH_ONLY_RESEARCH_ENDED"
+});
 
 const MONTH_PATTERN = /^\d{4}-(?:0[1-9]|1[0-2])$/u;
 const CASH_BANDS = Object.freeze(["H50", "M30", "L20"]);
@@ -357,6 +370,271 @@ export function classifyHpsr02IndependentEvidence({
   });
 }
 
+export function evaluateHpsr02IndependentEvaluation({
+  routerResult,
+  actualRows,
+  eligibleActualRows,
+  sourceGate,
+  bootstrap = {}
+}) {
+  if (
+    routerResult?.modelId !== HPSR02_MODEL_ID
+    || routerResult?.origin !== "2026-03"
+    || routerResult?.horizonMonths !== 3
+    || routerResult?.executionMode !== "CONTROLLED_LATER_ORIGIN"
+    || routerResult?.invariants?.scoreComputed !== false
+    || routerResult?.invariants?.bootstrapExecuted !== false
+  ) {
+    throw new Error("hpsr02_independent_router_result_invalid");
+  }
+  if (
+    sourceGate?.sourceAuthorityStatus
+      !== "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
+    || sourceGate?.workTotalSourceAuthorityChecksPass !== true
+    || sourceGate?.workChannelGateStatus !== "PARTIAL_NOT_ACTIVE"
+    || sourceGate?.futureActualOutcomeOpened !== false
+  ) {
+    throw new Error("hpsr02_independent_source_gate_invalid");
+  }
+  const normalizedActual = normalizeIndependentActualRows(
+    actualRows,
+    "2026-03"
+  );
+  const normalizedEligible = normalizeIndependentActualRows(
+    eligibleActualRows,
+    "2026-03"
+  );
+  const actualByWork = new Map(normalizedActual.map((row) => [
+    row.standardWorkId,
+    row.actual
+  ]));
+  const r0ByWork = independentWorkIndex(routerResult.r0Rows, "R0");
+  const r2ByWork = independentWorkIndex(routerResult.r2Rows, "R2");
+  const core80Ids = [...routerResult.population.core80WorkIds];
+  if (
+    !sameIndependentValues([...r0ByWork.keys()], core80Ids)
+    || !sameIndependentValues([...r2ByWork.keys()], core80Ids)
+    || core80Ids.some((workId) => !actualByWork.has(workId))
+  ) {
+    throw new Error("hpsr02_independent_exact_same_case_failed");
+  }
+  const privateRows = core80Ids.map((standardWorkId) => {
+    const r0 = r0ByWork.get(standardWorkId);
+    const r2 = r2ByWork.get(standardWorkId);
+    if (r0.cashBandId !== r2.cashBandId) {
+      throw new Error("hpsr02_independent_cash_band_mismatch");
+    }
+    return Object.freeze({
+      schema:
+        "m2.current.head_protected_tail_band_correction."
+          + "independent_evaluation_row.private.v0.2",
+      experimentId: HPSR02_EXPERIMENT_ID,
+      modelId: HPSR02_MODEL_ID,
+      actualDefinitionId:
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      standardWorkId,
+      origin: "2026-03",
+      horizonMonths: 3,
+      cashBandId: r2.cashBandId,
+      actual: actualByWork.get(standardWorkId),
+      r0PointEstimate: r0.pointEstimate,
+      r2PointEstimate: r2.pointEstimate,
+      r2BoundTriggered: r2.boundTriggered,
+      r2CorrectionApplied: r2.correctionApplied,
+      r2FallbackToLg01: r2.fallbackToLg01,
+      r2FallbackReason: r2.fallbackReason,
+      r2NumericStatus: r2.numericStatus,
+      rawPredictionFinite: r2.rawPredictionFinite ?? null,
+      caseKey: [
+        "STRICT_ROLLING",
+        "CORE80",
+        standardWorkId,
+        "2026-03",
+        "3",
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+      ].join("\u0000")
+    });
+  }).sort((left, right) => (
+    left.standardWorkId.localeCompare(right.standardWorkId)
+  ));
+  const caseKeys = privateRows.map((row) => row.caseKey);
+  if (new Set(caseKeys).size !== privateRows.length) {
+    throw new Error("hpsr02_independent_case_key_duplicate");
+  }
+  const r0 = scoreHpsrEvaluationRows(
+    privateRows,
+    "r0PointEstimate"
+  );
+  const r2 = scoreHpsrEvaluationRows(
+    privateRows,
+    "r2PointEstimate"
+  );
+  const relativeFva = pairedFva(r2, r0);
+  const pairedAbsoluteErrorReduction =
+    r0.absoluteErrorTotal - r2.absoluteErrorTotal;
+  const pairedAbsoluteErrorReductionOverActualCash =
+    r0.absoluteActualTotal > 0
+      ? pairedAbsoluteErrorReduction / r0.absoluteActualTotal
+      : null;
+  const iterations = Number(bootstrap.iterations ?? 2000);
+  const seed = Number(bootstrap.seed ?? 20260801);
+  if (iterations !== 2000 || !Number.isInteger(seed) || seed < 0) {
+    throw new Error("hpsr02_independent_bootstrap_contract_invalid");
+  }
+  const bootstrapResult = bootstrapHpsrFva(privateRows, {
+    candidateField: "r2PointEstimate",
+    baselineField: "r0PointEstimate",
+    iterations,
+    seed
+  });
+  if (
+    bootstrapResult.iterations !== 2000
+    || bootstrapResult.interval95 === null
+  ) {
+    throw new Error("hpsr02_independent_bootstrap_incomplete");
+  }
+  const cashBands = Object.freeze(Object.fromEntries(CASH_BANDS.map(
+    (cashBandId) => {
+      const rows = privateRows.filter(
+        (row) => row.cashBandId === cashBandId
+      );
+      const baseline = scoreHpsrEvaluationRows(
+        rows,
+        "r0PointEstimate",
+        "NO_ROWS_IN_CASH_BAND"
+      );
+      const candidate = scoreHpsrEvaluationRows(
+        rows,
+        "r2PointEstimate",
+        "NO_ROWS_IN_CASH_BAND"
+      );
+      const errorReduction =
+        baseline.absoluteErrorTotal - candidate.absoluteErrorTotal;
+      return [cashBandId, Object.freeze({
+        workCount: rows.length,
+        actualCash: candidate.absoluteActualTotal,
+        actualCashShare: r2.absoluteActualTotal > 0
+          ? candidate.absoluteActualTotal / r2.absoluteActualTotal
+          : null,
+        r0: baseline,
+        r2: candidate,
+        absoluteErrorReduction: errorReduction,
+        direction: errorReduction > 0
+          ? "IMPROVED"
+          : errorReduction < 0
+            ? "DEGRADED"
+            : "TIED"
+      })];
+    }
+  )));
+  const H50M30EqualityPass = privateRows.filter(
+    (row) => row.cashBandId !== "L20"
+  ).every((row) => (
+    Object.is(row.r0PointEstimate, row.r2PointEstimate)
+    && row.r2CorrectionApplied === false
+    && row.r2FallbackToLg01 === false
+  ));
+  const allFinite = privateRows.every((row) => (
+    Number.isFinite(row.actual)
+    && Number.isFinite(row.r0PointEstimate)
+    && Number.isFinite(row.r2PointEstimate)
+  ));
+  const absoluteBiasWorsening =
+    r2.absoluteBias - r0.absoluteBias;
+  const concentrationWorsening =
+    r2.errorConcentration.maximumWorkShare
+      - r0.errorConcentration.maximumWorkShare;
+  const catastrophicSingleWorkDominance = (
+    relativeFva < 0
+    && r2.errorConcentration.maximumWorkShare >= 0.35
+    && concentrationWorsening >= 0.1
+  );
+  const evidence = classifyHpsr02IndependentEvidence({
+    pairedFva: relativeFva,
+    bootstrapLower: bootstrapResult.interval95.lower,
+    absoluteBiasWorsening,
+    H50M30EqualityPass,
+    allFinite,
+    caseKeyPass: new Set(caseKeys).size === privateRows.length,
+    originVisibilityPass:
+      routerResult.population.futureCashUsed === false,
+    dataValidityPass: true,
+    catastrophicSingleWorkDominance
+  });
+  const status = HPSR02_FINAL_STATUSES[evidence.classification];
+  const eligibleActualCash = normalizedEligible.reduce(
+    (total, row) => total + Math.abs(row.actual),
+    0
+  );
+  const l20Rows = privateRows.filter(
+    (row) => row.cashBandId === "L20"
+  );
+  return Object.freeze({
+    schema:
+      "m2.current.head_protected_tail_band_correction."
+        + "independent_evaluation.v0.2",
+    experimentId: HPSR02_EXPERIMENT_ID,
+    modelId: HPSR02_MODEL_ID,
+    status,
+    classification: evidence.classification,
+    origin: "2026-03",
+    horizonMonths: 3,
+    actualWindow: Object.freeze([
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ]),
+    caseCount: privateRows.length,
+    workCount: privateRows.length,
+    eligibleWorkCount: normalizedEligible.length,
+    core80ActualCashCoverage: eligibleActualCash > 0
+      ? r2.absoluteActualTotal / eligibleActualCash
+      : null,
+    metrics: Object.freeze({
+      r0,
+      r2,
+      pairedAbsoluteErrorReduction,
+      pairedAbsoluteErrorReductionOverActualCash,
+      relativeFva,
+      absoluteBiasWorsening,
+      bootstrapFva95: bootstrapResult
+    }),
+    cashBands,
+    numeric: Object.freeze({
+      clipCount: privateRows.filter(
+        (row) => row.r2BoundTriggered
+      ).length,
+      correctionCount: privateRows.filter(
+        (row) => row.r2CorrectionApplied
+      ).length,
+      fallbackCount: privateRows.filter(
+        (row) => row.r2FallbackToLg01
+      ).length,
+      nonfiniteRawL20Count: l20Rows.filter(
+        (row) => row.rawPredictionFinite === false
+      ).length,
+      rawL20Coverage: l20Rows.length > 0
+        ? l20Rows.filter(
+          (row) => row.rawPredictionFinite === true
+        ).length / l20Rows.length
+        : null,
+      allFinalPredictionsFinite: allFinite
+    }),
+    structure: Object.freeze({
+      H50M30RowwiseExactLg01: H50M30EqualityPass,
+      caseKeyConservationPass: true,
+      originVisibleOnly: true,
+      workTotalPrimary: true,
+      workChannelStatus: "PARTIAL_NOT_ACTIVE",
+      futureActualUsedForPopulationFeaturesOrBands: false
+    }),
+    decision: evidence,
+    bootstrapExecutionCount: 1,
+    rawCandidateEvaluationCount: 1,
+    privateRows: Object.freeze(privateRows)
+  });
+}
+
 export function validateHeadProtectedTailBandCorrectionContract(config) {
   const errors = [];
   let currentBoundary = null;
@@ -457,15 +735,30 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
     if (
       JSON.stringify(estimate?.missingOrIncompleteBillMonths)
         !== JSON.stringify(currentBoundary.missingOrIncompleteBillMonths)
-      || estimate?.independentCheckpointReady !== false
+      || estimate?.independentCheckpointReady
+        !== currentBoundary.independentCheckpointReady
       || estimate?.prospectiveFinalHoldoutOpened !== false
+      || estimate?.workTotalSourceAuthorityStatus
+        !== "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
+      || estimate?.workTotalCanonicalMappingStatus
+        !== "WORK_TOTAL_CANONICAL_MAPPING_WARNING_"
+          + "WORK_CHANNEL_REMAINS_PARTIAL"
+      || estimate?.metadataDifferenceStatus
+        !== "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING"
+      || estimate?.workTotalScopeRelevantDifferenceRowCount !== 0
+      || estimate?.workChannelGateStatus !== "PARTIAL_NOT_ACTIVE"
     ) {
       errors.push("hpsr02_current_boundary_readiness_invalid");
     }
   }
   if (
-    config?.authorization?.independentK2EvaluationAuthorizedNow !== false
-    || config?.authorization?.newPrivateActualReadAuthorizedNow !== false
+    config?.authorization?.source
+      !== "USER_INSTRUCTION_M2_HPSR02_SOURCE_AUTHORITY_"
+        + "RECONCILIATION_AND_RESUME_2026_08_01"
+    || config?.authorization?.independentK2EvaluationAuthorizedNow
+      !== true
+    || config?.authorization?.newPrivateActualReadAuthorizedNow
+      !== true
     || config?.authorization?.modelTrainingAuthorizedNow !== false
     || config?.authorization?.alphaSearchAuthorizedNow !== false
     || config?.authorization?.residualBoundReestimationAuthorizedNow
@@ -478,6 +771,8 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
     || config?.governance?.approvedForAutomation !== null
     || config?.governance?.productionReady !== false
     || config?.governance?.finalHoldoutOpened !== false
+    || config?.implementation?.privateRunnerCreated !== true
+    || config?.implementation?.realEvaluationEntrypointCreated !== true
   ) {
     errors.push("hpsr02_authorization_or_governance_invalid");
   }
@@ -485,6 +780,77 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
     valid: errors.length === 0,
     errors: Object.freeze(errors)
   });
+}
+
+function normalizeIndependentActualRows(rows, origin) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("hpsr02_independent_actual_rows_required");
+  }
+  const output = rows.map((row) => {
+    if (
+      row === null
+      || typeof row !== "object"
+      || Array.isArray(row)
+      || Object.keys(row).some((key) => ![
+        "standardWorkId",
+        "origin",
+        "horizonMonths",
+        "actual"
+      ].includes(key))
+    ) {
+      throw new Error("hpsr02_independent_actual_row_invalid");
+    }
+    if (
+      requireMonth(row.origin, "independent_actual_origin") !== origin
+      || Number(row.horizonMonths) !== 3
+    ) {
+      throw new Error("hpsr02_independent_actual_case_mismatch");
+    }
+    return Object.freeze({
+      standardWorkId: nonempty(
+        row.standardWorkId,
+        "independent_actual_work_id"
+      ),
+      origin,
+      horizonMonths: 3,
+      actual: finiteNumber(row.actual, "independent_actual")
+    });
+  });
+  if (
+    new Set(output.map((row) => row.standardWorkId)).size
+      !== output.length
+  ) {
+    throw new Error("hpsr02_independent_actual_work_duplicate");
+  }
+  return output;
+}
+
+function independentWorkIndex(rows, expectedArmId) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("hpsr02_independent_prediction_rows_required");
+  }
+  const output = new Map();
+  for (const row of rows) {
+    const standardWorkId = nonempty(
+      row?.standardWorkId,
+      "independent_prediction_work_id"
+    );
+    if (
+      row?.armId !== expectedArmId
+      || row?.origin !== "2026-03"
+      || Number(row?.horizonMonths) !== 3
+      || output.has(standardWorkId)
+    ) {
+      throw new Error("hpsr02_independent_prediction_identity_invalid");
+    }
+    output.set(standardWorkId, row);
+  }
+  return output;
+}
+
+function sameIndependentValues(left, right) {
+  return JSON.stringify([...left].sort())
+    === JSON.stringify([...right].sort());
 }
 
 function normalizePredictionRow(row, origin) {

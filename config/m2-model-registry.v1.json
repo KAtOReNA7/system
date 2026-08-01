@@ -1,7 +1,7 @@
 {
   "schema": "m2.model_registry.v1",
   "contentAuthority": "tracked_registry_content_with_runtime_verified_execution_head",
-  "asOf": "2026-07-31",
+  "asOf": "2026-08-01",
   "targetAuthority": {
     "currentTarget": "future_sales_share_development_modelable_cash_for_origin_mature_core_legacy_works_on_origin_observed_mature_channels",
     "displayNameZh": "动态核心老品在起点已有成熟渠道上的未来开发可建模分成收入现金",
@@ -72,7 +72,7 @@
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+    "blockedExperiment": null,
     "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md",
     "roleConflict": false,
     "sourceAssertions": [
@@ -256,13 +256,13 @@
       },
       {
         "source": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json",
-        "assertion": "hpsr02_first_independent_evaluation_blocked_before_actual_amount_read_by_incomplete_standard_source_authority",
-        "scope": "metadata_only_source_authority_readiness_for_first_independent_later_origin_dynamic_core80_three_month_work_total",
+        "assertion": "hpsr02_work_total_source_authority_reconciled_and_first_independent_evaluation_authorized_but_not_yet_executed_while_work_channel_remains_partial",
+        "scope": "scope_aware_source_authority_readiness_for_first_independent_later_origin_dynamic_core80_three_month_work_total",
         "historicalAssertion": false,
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持并在独立评价前停止；该机械判定没有计算错误。科学解释状态修订为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE：单起点、57 部作品的证据不足，R1 的 WAPE 与配对 FVA 小幅优于 R0，bootstrap 跨 0，且 H50 相等、M30 变差、L20 改善，不能证明整个头部保护分段方向失败。L20-only 数字只是事后聚合算术，不是模型成绩。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已在独立 outcome 打开前冻结为 H50/M30 使用 LG01、仅 L20 使用既有有界修正的唯一主候选结构。首次独立评价的账单月份已覆盖到 2026-06，但金额读取前的标准导入检查发现 3 个未经用户复核的 canonical 渠道映射和总表/分表 3 行非金额元数据差异，因此以 M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY 在金额读取前停止；没有运行候选、评分或 bootstrap，也没有形成独立模型成绩。prospective final holdout 仍未打开，现行路由不变，活动候选与自动化批准均为空。",
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持并在独立评价前停止；该机械判定没有计算错误。科学解释状态修订为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE：单起点、57 部作品的证据不足，R1 的 WAPE 与配对 FVA 小幅优于 R0，bootstrap 跨 0，且 H50 相等、M30 变差、L20 改善，不能证明整个头部保护分段方向失败。L20-only 数字只是事后聚合算术，不是模型成绩。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已在独立 outcome 打开前冻结为 H50/M30 使用 LG01、仅 L20 使用既有有界修正的唯一主候选结构。先前尝试以 M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY 在金额读取前停止，未运行候选、评分或 bootstrap。范围感知复核现已确认：缺失 canonical 映射仅使作品×渠道评价保持 PARTIAL_NOT_ACTIVE；总表/分表的 3 条非零事实差异均不进入 2026-03 起点动态 Core80，作品总额受影响行数为 0，因此作品总额来源权威可用于本任务已授权但尚未执行的首次独立评价。prospective final holdout 仍未打开，现行路由不变，活动候选与自动化批准均为空。",
     "activeExperiment": null
   },
   "currentEvaluationContract": {
@@ -4074,9 +4074,9 @@
         "M2-WORK-CHAM01"
       ],
       "successorIds": [],
-      "currentRole": "blocked_missing_source_authority_not_executed_not_active",
-      "evidenceStatus": "k0_metadata_only_source_authority_incomplete_no_actual_amount_read_no_independent_outcome",
-      "operationalStatus": "independent_evaluation_blocked_not_executed_not_active_not_production",
+      "currentRole": "source_reconciled_independent_evaluation_authorized_not_executed_not_active",
+      "evidenceStatus": "work_total_source_authority_reconciled_work_channel_partial_no_independent_outcome",
+      "operationalStatus": "first_independent_evaluation_authorized_not_executed_not_active_not_production",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
@@ -4084,8 +4084,9 @@
       "limitationsZh": [
         "结构由 HPSR01 回溯现金带归因启发，因此必须明确标记为事后启发；已在独立 outcome 打开前预注册",
         "H50 与 M30 必须逐行精确等于冻结 LG01，只有 L20 可应用既有冻结有界残差修正",
-        "首次独立评价的账单月份已覆盖到 2026-06，但金额读取前检查发现 3 个未经用户复核的 canonical 渠道映射和总表/分表 3 行非金额元数据差异，源权威不完整",
-        "actual 金额读取、候选运行、评分和 bootstrap 均为 0；当前没有独立 later-origin 成绩、模型排名或业务通过结论",
+        "先前首次独立评价尝试因标准导入来源权威不完整而在金额读取前停止；该历史阻断记录保持不变",
+        "范围感知复核确认作品总额来源权威可用：缺失 canonical 映射仅影响作品×渠道粒度，3 条总表/分表非零事实差异均在动态 Core80 外",
+        "actual 金额读取、候选运行、评分和 bootstrap 仍均为 0；本任务已授权首次独立评价但尚未执行，当前没有独立 later-origin 成绩、模型排名或业务通过结论",
         "公开 synthetic 只验证实现不变量，不能作为模型效果证据",
         "即使未来独立检查点支持，也不能自动授予 active candidate、自动化、生产、final holdout 或发布权限"
       ],
@@ -4586,7 +4587,7 @@
         "armId": "R2",
         "displayNameZh": "LG01 头部保护尾段修正模型 v0.2 唯一主候选",
         "modelId": "M2-WORK-HPSR02",
-        "executionStatus": "BLOCKED_K0_SOURCE_AUTHORITY_INCOMPLETE_NOT_EXECUTED"
+        "executionStatus": "AUTHORIZED_FIRST_INDEPENDENT_NOT_YET_EXECUTED"
         }
       ],
       "resultStatus": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
@@ -4619,8 +4620,14 @@
       "historicalFinalHoldoutIsolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT",
       "newFinalHoldoutOpened": false,
       "hpsr02IndependentEvaluation": {
-        "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
-        "sourceAuthorityStatus": "SOURCE_AUTHORITY_INCOMPLETE_STANDARD_IMPORT",
+        "status": "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION",
+        "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
+        "workTotalCanonicalMappingStatus": "WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL",
+        "metadataDifferenceStatus": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
+        "dynamicCore80WorkCount": 43,
+        "workTotalScopeRelevantDifferenceRowCount": 0,
+        "workTotalGateStatus": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+        "workChannelGateStatus": "PARTIAL_NOT_ACTIVE",
         "amountCellReadCount": 0,
         "candidateModelRuns": 0,
         "scientificEvaluationsExecuted": 0,

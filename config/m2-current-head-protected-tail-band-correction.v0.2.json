@@ -1,6 +1,6 @@
 {
   "schema": "m2.current.head_protected_tail_band_correction.v0.2",
-  "asOf": "2026-07-31",
+  "asOf": "2026-08-01",
   "status": "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
   "workflowStatus": "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
   "model": {
@@ -9,7 +9,7 @@
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
     "entityType": "model",
     "capability": "WORK",
-    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_AWAITING_INDEPENDENT_DATA",
+    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_SCOPE_RECONCILED_AUTHORIZED_FOR_FIRST_INDEPENDENT_EXECUTION",
     "productionImported": false
   },
   "experiment": {
@@ -211,12 +211,15 @@
       "maxActualValueOpenedOrigin": "2026-02",
       "firstIndependentLaterOrigin": "2026-03",
       "firstIndependentRequiredCompleteThrough": "2026-06",
-      "completeAuthoritativeBillMonthThrough": "2026-04",
-      "missingOrIncompleteBillMonths": [
-        "2026-05",
-        "2026-06"
-      ],
-      "independentCheckpointReady": false,
+      "completeAuthoritativeBillMonthThrough": "2026-06",
+      "missingOrIncompleteBillMonths": [],
+      "billMonthWindowReady": true,
+      "workTotalSourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
+      "workTotalCanonicalMappingStatus": "WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL",
+      "metadataDifferenceStatus": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
+      "workTotalScopeRelevantDifferenceRowCount": 0,
+      "workChannelGateStatus": "PARTIAL_NOT_ACTIVE",
+      "independentCheckpointReady": true,
       "prospectiveFinalHoldoutOrigin": "2026-06",
       "prospectiveFinalHoldoutRequiredCompleteThrough": "2026-09",
       "prospectiveFinalHoldoutOpened": false
@@ -235,8 +238,10 @@
     "canonicalModule": "src/domain/m2Current/headProtectedTailBandCorrection.js",
     "publicSyntheticEntrypoint": "scripts/m2-current/run_m2_head_protected_tail_band_correction_synthetic.mjs",
     "publicSyntheticFixture": "test/fixtures/m2-head-protected-tail-band-correction.synthetic.v0.2.json",
-    "privateRunnerCreated": false,
-    "realEvaluationEntrypointCreated": false,
+    "privateRunnerCreated": true,
+    "realEvaluationEntrypointCreated": true,
+    "controlledEntrypoint": "execute:m2:head-protected-segmented-router -- --hpsr02-independent",
+    "sourceReconciliationEntrypoint": "check:m2:head-protected-segmented-router-dates",
     "productionLoaderModified": false,
     "productionRouteModified": false,
     "productionApiModified": false,
@@ -249,8 +254,9 @@
     "preregistrationReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md"
   },
   "authorization": {
-    "independentK2EvaluationAuthorizedNow": false,
-    "newPrivateActualReadAuthorizedNow": false,
+    "source": "USER_INSTRUCTION_M2_HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_RESUME_2026_08_01",
+    "independentK2EvaluationAuthorizedNow": true,
+    "newPrivateActualReadAuthorizedNow": true,
     "modelTrainingAuthorizedNow": false,
     "modelFittingAuthorizedNow": false,
     "hyperparameterTuningAuthorizedNow": false,

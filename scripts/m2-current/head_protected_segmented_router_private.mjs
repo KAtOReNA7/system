@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {
@@ -10,11 +11,25 @@ import path from "node:path";
 import readline from "node:readline";
 
 import {
+  addMonths,
+  deriveHpsrResidualBounds,
   evaluateHpsrRetrospectiveDevelopment,
   planHpsrRetrospectiveOrigins,
   runHeadProtectedSegmentedRouter,
   assertHpsrRetrospectiveExecutionGate
 } from "../../src/domain/m2Current/headProtectedSegmentedRouter.js";
+import {
+  evaluateHpsr02IndependentEvaluation,
+  HPSR02_FINAL_STATUSES,
+  runHeadProtectedTailBandCorrection
+} from "../../src/domain/m2Current/headProtectedTailBandCorrection.js";
+import {
+  buildCoreLegacyOriginPopulation
+} from "../../src/domain/m2Current/coreLegacyPopulation.js";
+import {
+  buildReversalScopeKeyV1,
+  restateSalesShareReversalsV1
+} from "../../src/domain/m2Current/reversalRestatement.js";
 import {
   fitM2CoreHorizonAmountModel,
   predictM2CoreHorizonAmount,
@@ -34,6 +49,599 @@ import {
 const CAPABILITY_ID = "m2-head-protected-segmented-router";
 const CORE_AMOUNT_CONFIG =
   "config/m2-current-core-legacy-horizon-amount.v0.1.json";
+const CORE_POPULATION_CONFIG =
+  "config/m2-current-core-legacy-population.v0.1.json";
+const HPSR02_CONFIG =
+  "config/m2-current-head-protected-tail-band-correction.v0.2.json";
+const HPSR01_CONFIG =
+  "config/m2-current-head-protected-segmented-router.v0.1.json";
+const HPSR02_BOUND_PROVENANCE =
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-segmented-router-"
+    + "residual-bound-provenance-v0.1.json";
+const HPSR02_PUBLIC_RESULT =
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.json";
+const HPSR02_PUBLIC_REPORT =
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.md";
+const HPSR02_PRIVATE_DIRECTORY =
+  "data/private-output/m2-head-protected-segmented-router";
+const HPSR02_SOURCE_RECONCILIATION =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-source-authority-reconciliation-private-v0.2.json";
+const HPSR02_ORIGIN_AUTHORITY_FACTS =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-origin-visible-authority-private-v0.2.ndjson";
+const HPSR02_ORIGIN_AUTHORITY_RECEIPT =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-origin-visible-authority-receipt-private-v0.2.json";
+const HPSR02_WORK_TOTAL_SCOPE_ASSESSMENT =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-work-total-scope-assessment-private-v0.2.json";
+const HPSR02_INDEPENDENT_RECEIPT =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-independent-receipt-private-v0.2.json";
+const HPSR02_INDEPENDENT_PREDICTIONS =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-independent-predictions-private-v0.2.ndjson";
+const HPSR02_INDEPENDENT_EVALUATION_ROWS =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-independent-evaluation-private-v0.2.ndjson";
+const HPSR02_INDEPENDENT_MANIFEST =
+  `${HPSR02_PRIVATE_DIRECTORY}/`
+    + "M2-hpsr02-independent-manifest-private-v0.2.json";
+
+export async function reconcileHpsr02SourceAuthorityPrivate({ root }) {
+  runPythonAudit(root, []);
+  runPythonAudit(root, ["--export-origin-visible-authority"]);
+  const [
+    reconciliation,
+    receipt,
+    populationConfig
+  ] = await Promise.all([
+    readJson(path.join(root, HPSR02_SOURCE_RECONCILIATION)),
+    readJson(path.join(root, HPSR02_ORIGIN_AUTHORITY_RECEIPT)),
+    readJson(path.join(root, CORE_POPULATION_CONFIG))
+  ]);
+  if (
+    reconciliation?.schema
+      !== "m2.current.hpsr02."
+        + "source_authority_reconciliation.private.v0.2"
+    || receipt?.status
+      !== "READY_ORIGIN_VISIBLE_ONLY_NO_FUTURE_OUTCOME"
+    || receipt?.origin !== "2026-03"
+    || receipt?.futureActualOutcomeRead !== false
+    || receipt?.finalHoldoutOutcomeRead !== false
+    || reconciliation?.sourceDigests?.salesShare
+      !== receipt.sourceDigest
+    || reconciliation?.sourceDigests?.channelMaster
+      !== receipt.channelMasterDigest
+  ) {
+    throw new Error("hpsr02_source_reconciliation_binding_invalid");
+  }
+  const facts = await readNdjson(path.join(
+    root,
+    HPSR02_ORIGIN_AUTHORITY_FACTS
+  ));
+  if (facts.length !== receipt.rowCount) {
+    throw new Error("hpsr02_origin_authority_row_count_mismatch");
+  }
+  const factor = 10n ** BigInt(receipt.amountScalePower);
+  const currencyScope =
+    `authority-ledger-native-unit:${receipt.sourceDigest}`;
+  const authorityRows = facts.map((row) => {
+    const amountMinor = decimalToMinor(
+      row.actualSalesAmount,
+      receipt.amountScalePower
+    );
+    return {
+      recordId: String(row.authorityRecordId),
+      reversalScopeKey: buildReversalScopeKeyV1({
+        cashCategory: "sales_share",
+        standardWorkId: String(row.standardWorkId),
+        channelMemberId: String(row.channelMemberId),
+        currencyScope
+      }),
+      postingMonth: String(row.billMonth).slice(0, 7),
+      recordedAt: String(row.recordedAt),
+      eventType: amountMinor < 0n
+        ? "reversal"
+        : "positive_sales_share",
+      amountMinor: amountMinor.toString(),
+      standardWorkId: String(row.standardWorkId),
+      channelMemberId: String(row.channelMemberId)
+    };
+  });
+  const authorityStartMonth = authorityRows.map(
+    (row) => row.postingMonth
+  ).sort()[0];
+  const restatement = restateSalesShareReversalsV1(
+    authorityRows,
+    {
+      cutoff: "2026-03",
+      authorityStartMonth
+    }
+  );
+  if (
+    restatement.conservationDifferenceMinor !== "0"
+    || [
+      "BLOCKED_RECORDED_AT_MISSING",
+      "BLOCKED_REVERSAL_CLASSIFICATION"
+    ].includes(restatement.status)
+  ) {
+    throw new Error("hpsr02_origin_restatement_unusable");
+  }
+  const monthlyRows = [];
+  for (const scope of restatement.scopes) {
+    for (const balance of scope.restatedBalances) {
+      const amountMinor = BigInt(balance.amountMinor);
+      if (amountMinor === 0n) continue;
+      monthlyRows.push({
+        standardWorkId: scope.standardWorkId,
+        channelUid: scope.channelMemberId,
+        month: balance.month,
+        cash: Number(amountMinor) / Number(factor),
+        level2Category: "UNKNOWN",
+        level3Category: "UNKNOWN",
+        settlementMechanism: "UNKNOWN"
+      });
+    }
+  }
+  const population = buildCoreLegacyOriginPopulation({
+    origin: "2026-03",
+    monthlyRows,
+    minimumCompleteMonths:
+      populationConfig.eligibility.minimumCompleteMonths,
+    thresholds: populationConfig.coreSelection.thresholds,
+    topCounts: populationConfig.coreSelection.topDiagnostics
+  });
+  const core80 = new Set(
+    population.selection.populations.CORE80 ?? []
+  );
+  const eligiblePairs = new Set(population.eligiblePairs.map(
+    (row) => `${row.standardWorkId}\u0000${row.channelUid}`
+  ));
+  const differenceRows =
+    reconciliation?.partitionAudit?.privateDifferenceRows ?? [];
+  if (differenceRows.length === 0 || differenceRows.length > 6) {
+    throw new Error("hpsr02_source_difference_inventory_invalid");
+  }
+  const items = differenceRows.map((item) => {
+    const standardWorkId =
+      item?.privateScopeIdentity?.standardWorkId;
+    const channelMemberId =
+      item?.privateScopeIdentity?.channelMemberId;
+    if (
+      typeof standardWorkId !== "string"
+      || standardWorkId === ""
+      || typeof channelMemberId !== "string"
+      || channelMemberId === ""
+    ) {
+      throw new Error("hpsr02_source_difference_identity_invalid");
+    }
+    return {
+      issueId: item.issueId,
+      redactedFactIdentity: item.redactedFactIdentity,
+      pairEligibleAtOrigin: eligiblePairs.has(
+        `${standardWorkId}\u0000${channelMemberId}`
+      ),
+      workInDynamicCore80: core80.has(standardWorkId)
+    };
+  });
+  await writeJsonAtomic(path.join(
+    root,
+    HPSR02_WORK_TOTAL_SCOPE_ASSESSMENT
+  ), {
+    schema:
+      "m2.current.hpsr02."
+        + "work_total_scope_assessment.private.v0.2",
+    artifactClass: "PRIVATE_DERIVED_CACHE",
+    tracked: false,
+    status: "WORK_TOTAL_SCOPE_ASSESSMENT_COMPLETE",
+    origin: "2026-03",
+    sourceDigests: {
+      salesShare: receipt.sourceDigest,
+      channelMaster: receipt.channelMasterDigest,
+      originVisibleFacts: receipt.factsDigest
+    },
+    actualDefinitionId:
+      "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    restatementStatus: restatement.status,
+    eligibleWorkCount: population.eligibleWorkCount,
+    dynamicCore80WorkCount: core80.size,
+    items,
+    originVisibleOnly: true,
+    futureActualOutcomeRead: false,
+    finalHoldoutOutcomeRead: false,
+    modelPredictionRun: false,
+    scoreComputed: false
+  });
+  const finalAudit = JSON.parse(runPythonAudit(root, []));
+  if (
+    finalAudit.decision
+      !== "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
+        + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION"
+    || finalAudit.workTotalSourceAuthorityChecksPass !== true
+    || finalAudit.workChannelGateStatus !== "PARTIAL_NOT_ACTIVE"
+    || finalAudit.newFutureActualOutcomeOpened !== false
+  ) {
+    throw new Error("hpsr02_source_reconciliation_not_ready");
+  }
+  const finalReconciliation = await readJson(path.join(
+    root,
+    HPSR02_SOURCE_RECONCILIATION
+  ));
+  return Object.freeze({
+    status: finalAudit.decision,
+    sourceAuthorityStatus: finalAudit.sourceAuthorityStatus,
+    canonicalMappingStatus:
+      finalAudit.workTotalCanonicalMappingStatus,
+    metadataDifferenceStatus:
+      finalAudit.metadataDifferenceStatus,
+    dynamicCore80WorkCount: core80.size,
+    workTotalScopeRelevantDifferenceRowCount:
+      finalReconciliation.partitionAudit
+        .workTotalScopeRelevantDifferenceRowCount,
+    workChannelGateStatus: finalAudit.workChannelGateStatus,
+    futureActualOutcomeRead: false,
+    modelPredictionRun: false,
+    scoreComputed: false
+  });
+}
+
+export async function runHpsr02IndependentPrivate({ root }) {
+  const preflight = verifyM2Oa03GitAndCiPreflight({
+    root,
+    allowedDirtyPaths: []
+  });
+  const [hpsr02Config, hpsr01Config, coreAmountConfig, boundProof] =
+    await Promise.all([
+      readJson(path.join(root, HPSR02_CONFIG)),
+      readJson(path.join(root, HPSR01_CONFIG)),
+      readJson(path.join(root, CORE_AMOUNT_CONFIG)),
+      readJson(path.join(root, HPSR02_BOUND_PROVENANCE))
+    ]);
+  if (
+    hpsr02Config?.model?.stableModelId !== "M2-WORK-HPSR02"
+    || hpsr02Config?.authorization
+      ?.independentK2EvaluationAuthorizedNow !== true
+    || hpsr02Config?.authorization
+      ?.newPrivateActualReadAuthorizedNow !== true
+    || hpsr02Config?.authorization?.modelTrainingAuthorizedNow !== false
+    || hpsr02Config?.authorization?.alphaSearchAuthorizedNow !== false
+    || hpsr02Config?.authorization
+      ?.residualBoundReestimationAuthorizedNow !== false
+    || hpsr02Config?.authorization
+      ?.prospectiveFinalHoldoutOpenAuthorizedNow !== false
+  ) {
+    throw new Error("hpsr02_independent_authorization_invalid");
+  }
+  validateM2CoreLegacyHorizonAmountConfig(coreAmountConfig);
+  const sourceGate = await reconcileHpsr02SourceAuthorityPrivate({ root });
+  const receiptPath = path.join(root, HPSR02_INDEPENDENT_RECEIPT);
+  const priorReceipt = await readJsonIfPresent(receiptPath);
+  if (
+    priorReceipt?.completeIndependentResultProduced === true
+    || priorReceipt?.resultFrozen === true
+  ) {
+    throw new Error("hpsr02_independent_complete_result_already_frozen");
+  }
+  const attemptId = crypto.randomUUID();
+  await writeJsonAtomic(receiptPath, {
+    schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
+    artifactClass: "PRIVATE_RUN_PROVENANCE",
+    attemptId,
+    status: "M2_HPSR02_FIRST_INDEPENDENT_EXECUTION_STARTED",
+    executionHead: preflight.head,
+    exactHeadCiRunId: preflight.ciRunId,
+    origin: "2026-03",
+    actualWindow: ["2026-04", "2026-05", "2026-06"],
+    completeIndependentResultProduced: false,
+    finalHoldoutOutcomeRead: false
+  });
+  try {
+    const boundOrigins = monthRangeInclusive(
+      hpsr01Config.residualBoundaryFreeze.sourceOriginRange.from,
+      hpsr01Config.residualBoundaryFreeze.sourceOriginRange.through
+    );
+    const featureMaterialization =
+      await materializeM2HpsrFrozenFormulaFeatureRows({
+        root,
+        retrospectiveOrigins: [...boundOrigins, "2026-03"],
+        authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+      });
+    if (
+      featureMaterialization.sourceAuthority.authorityMode
+        !== "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+    ) {
+      throw new Error("hpsr02_independent_authority_mode_mismatch");
+    }
+    const fixedFit = hpsr01Config.retrospectiveReplay.fixedCham01B3Fit;
+    const originFits = new Map();
+    for (const origin of [...boundOrigins, "2026-03"]) {
+      originFits.set(origin, fitFrozenB3AtOrigin({
+        origin,
+        featureRows: featureMaterialization.featureRows,
+        coreAmountConfig,
+        fixedFit
+      }));
+    }
+    const boundRows = [];
+    for (const origin of boundOrigins) {
+      const fit = originFits.get(origin);
+      for (let index = 0; index < fit.validationRows.length; index += 1) {
+        const feature = fit.validationRows[index];
+        if (feature.core80 !== true) continue;
+        boundRows.push({
+          origin,
+          basePointEstimate: feature.features.lg01PointEstimate,
+          rawPointEstimate: fit.predictions[index].pointEstimate
+        });
+      }
+    }
+    const boundState = deriveHpsrResidualBounds(boundRows, {
+      maximumOpenedDevelopmentOrigin:
+        hpsr01Config.residualBoundaryFreeze
+          .maximumOpenedDevelopmentOrigin,
+      positiveBaseQuantile:
+        hpsr01Config.residualBoundaryFreeze
+          .positiveBaseFloor.quantile,
+      lowerResidualQuantile:
+        hpsr01Config.residualBoundaryFreeze
+          .normalizedResidualBounds.lowerQuantile,
+      upperResidualQuantile:
+        hpsr01Config.residualBoundaryFreeze
+          .normalizedResidualBounds.upperQuantile
+    });
+    if (
+      boundState.inputRowCount !== boundProof.inputRowCount
+      || boundState.finiteSupportRowCount
+        !== boundProof.finiteSupportRowCount
+      || boundState.excludedNonfiniteRowCount
+        !== boundProof.excludedNonfiniteRowCount
+      || boundState.positiveBaseSupportRowCount
+        !== boundProof.positiveBaseSupportRowCount
+      || JSON.stringify(boundState.derivationOriginRange)
+        !== JSON.stringify(boundProof.derivationOriginRange)
+    ) {
+      throw new Error("hpsr02_residual_bound_rebuild_not_reconciled");
+    }
+    const frozenBoundArtifact = {
+      schema:
+        "m2.current.head_protected_segmented_router."
+          + "residual_bounds.private.v0.1",
+      artifactClass: "PRIVATE_DERIVED_CACHE",
+      tracked: false,
+      rebuildable: true,
+      experimentId:
+        "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+      modelId: "M2-WORK-HPSR01",
+      status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+      sourcePopulation:
+        "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+      derivationOriginRange: boundState.derivationOriginRange,
+      maximumOpenedDevelopmentOrigin:
+        boundState.maximumOpenedDevelopmentOrigin,
+      inputRowCount: boundState.inputRowCount,
+      finiteSupportRowCount: boundState.finiteSupportRowCount,
+      excludedNonfiniteRowCount: boundState.excludedNonfiniteRowCount,
+      positiveBaseSupportRowCount:
+        boundState.positiveBaseSupportRowCount,
+      quantileMethod: boundState.quantileMethod,
+      quantiles: boundState.quantiles,
+      parameterValues: {
+        frozenDevelopmentPositiveBaseFloor:
+          boundState.positiveBaseFloor,
+        frozenDevelopmentQ05: boundState.lowerBound,
+        frozenDevelopmentQ95: boundState.upperBound
+      },
+      actualFieldConsumedForBoundDerivation: false,
+      laterOriginOutcomeUsed: false,
+      prospectiveFinalHoldoutOutcomeUsed: false,
+      publicParameterValuesPublished: false,
+      privateDigestIsCrossComputerGate: false
+    };
+    await writeJsonAtomic(path.join(
+      root,
+      hpsr01Config.privateCapability.residualBoundArtifact
+    ), frozenBoundArtifact);
+    const currentFit = originFits.get("2026-03");
+    const validationRows = currentFit.validationRows;
+    if (
+      validationRows.length === 0
+      || validationRows.some((row) => (
+        row.origin !== "2026-03"
+        || row.horizonMonths !== 3
+        || row.originVisibleOnly !== true
+        || row.futureHistoryRowCount !== 0
+        || !Number.isFinite(row.actual)
+        || !Number.isFinite(row.referenceRevenue)
+        || !Number.isFinite(row.features?.lg01PointEstimate)
+      ))
+    ) {
+      throw new Error("hpsr02_independent_validation_rows_invalid");
+    }
+    const routerResult = runHeadProtectedTailBandCorrection({
+      origin: "2026-03",
+      horizonMonths: 3,
+      originVisibleWorkCashRows: validationRows.map((row) => ({
+        standardWorkId: row.standardWorkId,
+        trailing12Cash: row.referenceRevenue
+      })),
+      predictionRows: currentFit.predictions.map((prediction, index) => ({
+        standardWorkId: prediction.standardWorkId,
+        origin: "2026-03",
+        horizonMonths: 3,
+        lg01Prediction:
+          validationRows[index].features.lg01PointEstimate,
+        cham01B3Prediction: prediction.pointEstimate,
+        cham01Diagnostics: {
+          signedExpm1Overflow:
+            !Number.isFinite(prediction.pointEstimate)
+            && Number.isFinite(prediction.transformedPointEstimate),
+          supportRangeExtrapolation: false
+        }
+      })),
+      residualBoundState: frozenBoundArtifact,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    });
+    const expectedCore80 = validationRows.filter(
+      (row) => row.core80 === true
+    ).map((row) => row.standardWorkId).sort();
+    if (
+      JSON.stringify(expectedCore80)
+      !== JSON.stringify([...routerResult.population.core80WorkIds].sort())
+    ) {
+      throw new Error("hpsr02_independent_core80_mismatch");
+    }
+    const evaluation = evaluateHpsr02IndependentEvaluation({
+      routerResult,
+      actualRows: validationRows.filter(
+        (row) => row.core80 === true
+      ).map(actualRow),
+      eligibleActualRows: validationRows.map(actualRow),
+      sourceGate: {
+        ...sourceGate,
+        workTotalSourceAuthorityChecksPass: true
+      },
+      bootstrap: hpsr02Config.independentEvaluation.bootstrap
+    });
+    const privatePredictions = validationRows.filter(
+      (row) => row.core80 === true
+    ).map((row) => {
+      const prediction = currentFit.predictions.find(
+        (item) => item.standardWorkId === row.standardWorkId
+      );
+      const r0 = routerResult.r0Rows.find(
+        (item) => item.standardWorkId === row.standardWorkId
+      );
+      const r2 = routerResult.r2Rows.find(
+        (item) => item.standardWorkId === row.standardWorkId
+      );
+      return {
+        schema:
+          "m2.current.hpsr02.independent_prediction.private.v0.2",
+        experimentId: evaluation.experimentId,
+        modelId: evaluation.modelId,
+        standardWorkId: row.standardWorkId,
+        origin: "2026-03",
+        horizonMonths: 3,
+        actual: row.actual,
+        cashBandId: r2.cashBandId,
+        lg01PointEstimate: r0.pointEstimate,
+        cham01B3RawPointEstimate: Number.isFinite(prediction.pointEstimate)
+          ? prediction.pointEstimate
+          : null,
+        cham01B3RawFinite: Number.isFinite(prediction.pointEstimate),
+        hpsr02PointEstimate: r2.pointEstimate,
+        correctionApplied: r2.correctionApplied,
+        fallbackToLg01: r2.fallbackToLg01,
+        maximumTrainingLabelAvailableAsOf:
+          currentFit.state.maximumTrainingLabelAvailableAsOf,
+        fixedHuberDelta: currentFit.state.huberDelta,
+        fixedL2: currentFit.state.l2,
+        hyperparameterSearchExecuted: false
+      };
+    });
+    await writeNdjsonAtomic(path.join(
+      root,
+      HPSR02_INDEPENDENT_PREDICTIONS
+    ), privatePredictions);
+    await writeNdjsonAtomic(path.join(
+      root,
+      HPSR02_INDEPENDENT_EVALUATION_ROWS
+    ), evaluation.privateRows);
+    const resultDigest = sha256Json({
+      status: evaluation.status,
+      predictions: privatePredictions,
+      evaluationRows: evaluation.privateRows,
+      metrics: evaluation.metrics,
+      cashBands: evaluation.cashBands
+    });
+    await writeJsonAtomic(path.join(
+      root,
+      HPSR02_INDEPENDENT_MANIFEST
+    ), {
+      schema: "m2.current.hpsr02.independent_manifest.private.v0.2",
+      artifactClass: "PRIVATE_DERIVED_CACHE",
+      status: evaluation.status,
+      experimentId: evaluation.experimentId,
+      modelId: evaluation.modelId,
+      executionHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      origin: evaluation.origin,
+      actualWindow: evaluation.actualWindow,
+      predictionRowCount: privatePredictions.length,
+      evaluationRowCount: evaluation.privateRows.length,
+      uniqueCaseKeyCount: evaluation.structure.caseKeyConservationPass
+        ? evaluation.privateRows.length
+        : null,
+      resultDigest,
+      workTotalSourceAuthorityStatus:
+        sourceGate.sourceAuthorityStatus,
+      workChannelGateStatus: "PARTIAL_NOT_ACTIVE",
+      prospectiveFinalHoldoutOpened: false,
+      prospectiveFinalHoldoutOutcomeRead: false
+    });
+    const publicResult = buildHpsr02PublicResult({
+      evaluation,
+      sourceGate,
+      preflight,
+      fit: currentFit,
+      resultDigest
+    });
+    await writeJsonAtomic(path.join(root, HPSR02_PUBLIC_RESULT), publicResult);
+    await writeTextAtomic(
+      path.join(root, HPSR02_PUBLIC_REPORT),
+      renderHpsr02ChineseReport(publicResult)
+    );
+    await writeJsonAtomic(receiptPath, {
+      schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
+      artifactClass: "PRIVATE_RUN_PROVENANCE",
+      attemptId,
+      status: evaluation.status,
+      executionHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      resultDigest,
+      predictionRowCount: privatePredictions.length,
+      evaluationRowCount: evaluation.privateRows.length,
+      completeIndependentResultProduced: true,
+      resultFrozen: true,
+      retryAllowed: false,
+      secondIndependentOriginExecuted: false,
+      finalHoldoutOutcomeRead: false
+    });
+    return Object.freeze({
+      status: evaluation.status,
+      origin: evaluation.origin,
+      caseCount: evaluation.caseCount,
+      completeIndependentResultProduced: true,
+      resultFrozen: true,
+      secondIndependentOriginExecuted: false,
+      prospectiveFinalHoldoutOpened: false,
+      publicResult
+    });
+  } catch (error) {
+    await writeJsonAtomic(receiptPath, {
+      schema: "m2.current.hpsr02.independent_receipt.private.v0.2",
+      artifactClass: "PRIVATE_RUN_PROVENANCE",
+      attemptId,
+      status:
+        "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+      executionHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      errorCode: safeHpsr02Error(error),
+      completeIndependentResultProduced: false,
+      resultFrozen: false,
+      retryAllowed: true,
+      finalHoldoutOutcomeRead: false
+    });
+    throw error;
+  }
+}
 
 export async function runHpsrRetrospectivePrivate({
   root,
@@ -373,6 +981,287 @@ export async function runHpsrRetrospectivePrivate({
   });
 }
 
+function fitFrozenB3AtOrigin({
+  origin,
+  featureRows,
+  coreAmountConfig,
+  fixedFit
+}) {
+  const trainingRows = featureRows.filter((row) => (
+    row.horizonMonths === 3
+    && row.origin < origin
+    && row.labelAvailableAsOf <= origin
+    && Number.isFinite(row.features?.lg01PointEstimate)
+  ));
+  const validationRows = featureRows.filter((row) => (
+    row.horizonMonths === 3
+    && row.origin === origin
+    && Number.isFinite(row.features?.lg01PointEstimate)
+  ));
+  if (trainingRows.length === 0 || validationRows.length === 0) {
+    throw new Error("hpsr02_frozen_formula_cell_empty");
+  }
+  const state = fitM2CoreHorizonAmountModel(trainingRows, {
+    armId: "B3",
+    huberDelta: fixedFit.huberDelta,
+    l2: fixedFit.l2,
+    config: coreAmountConfig
+  });
+  if (state.maximumTrainingLabelAvailableAsOf > origin) {
+    throw new Error("hpsr02_frozen_formula_future_label_read");
+  }
+  const predictions = validationRows.map(
+    (row) => predictM2CoreHorizonAmount(row, state)
+  );
+  return Object.freeze({
+    origin,
+    trainingRows,
+    validationRows,
+    state,
+    predictions
+  });
+}
+
+function monthRangeInclusive(from, through) {
+  const months = [];
+  let current = from;
+  while (current <= through) {
+    months.push(current);
+    current = addMonths(current, 1);
+  }
+  if (months.length === 0 || months.at(-1) !== through) {
+    throw new Error("hpsr02_bound_origin_range_invalid");
+  }
+  return months;
+}
+
+function actualRow(row) {
+  return {
+    standardWorkId: row.standardWorkId,
+    origin: row.origin,
+    horizonMonths: 3,
+    actual: row.actual
+  };
+}
+
+function buildHpsr02PublicResult({
+  evaluation,
+  sourceGate,
+  preflight,
+  fit,
+  resultDigest
+}) {
+  const { privateRows: _privateRows, ...publicEvaluation } = evaluation;
+  return Object.freeze({
+    schema:
+      "m2.current.head_protected_tail_band_correction."
+        + "independent_evaluation.public.v0.2",
+    asOf: new Date().toISOString().slice(0, 10),
+    status: evaluation.status,
+    model: Object.freeze({
+      displayNameZh: "LG01 头部保护尾段修正模型 v0.2",
+      displayNameEn:
+        "LG01 Head-Protected Tail-Band Correction Model v0.2",
+      stableModelId: "M2-WORK-HPSR02"
+    }),
+    experiment: Object.freeze({
+      displayNameZh:
+        "M2 LG01 头部保护分段路由与独立后期起点验证 v0.1",
+      displayNameEn:
+        "M2 LG01 Head-Protected Segmented Router and Independent "
+          + "Later-Origin Validation v0.1",
+      stableExperimentId:
+        "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+      baselineModelId: "M2-WORK-LG01",
+      candidateArmId: "R2",
+      baselineArmId: "R0",
+      executionStatus: "FIRST_INDEPENDENT_COMPLETE_RESULT_FROZEN"
+    }),
+    priorBlockedAttempt: Object.freeze({
+      status: "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
+      evidenceRef:
+        "M2-head-protected-tail-band-correction-"
+          + "independent-evaluation-v0.2 previous checkpoint",
+      metadataOnly: true,
+      amountCellReadCount: 0,
+      candidateModelRuns: 0,
+      scientificEvaluationsExecuted: 0,
+      bootstrapRuns: 0,
+      reason:
+        "PREVIOUS_GATE_CONFLATED_WORK_CHANNEL_COMPLETENESS_WITH_"
+          + "WORK_TOTAL_AND_DID_NOT_CLASSIFY_THREE_SPLIT_ROWS_BY_SCOPE",
+      historyRewritten: false
+    }),
+    sourceAuthorityReconciliation: Object.freeze({
+      status: sourceGate.status,
+      sourceAuthorityStatus: sourceGate.sourceAuthorityStatus,
+      workTotalCanonicalMappingStatus:
+        sourceGate.canonicalMappingStatus,
+      metadataDifferenceStatus:
+        sourceGate.metadataDifferenceStatus,
+      missingCanonicalRawPairCount: 3,
+      missingCanonicalMappingRowCount: 134,
+      splitExtraNonzeroFactRowCount: 3,
+      dynamicCore80WorkCount:
+        sourceGate.dynamicCore80WorkCount,
+      workTotalScopeRelevantDifferenceRowCount:
+        sourceGate.workTotalScopeRelevantDifferenceRowCount,
+      workTotalGatePassed: true,
+      workChannelGateStatus: "PARTIAL_NOT_ACTIVE",
+      rawCanonicalMappingGuessedOrBackfilled: false,
+      sourceAmountValuesPublished: false
+    }),
+    execution: Object.freeze({
+      branch: preflight.branch,
+      exactHead: preflight.head,
+      pullRequestNumber: preflight.prNumber,
+      pullRequestDraft: preflight.prDraft,
+      exactHeadCiRunId: preflight.ciRunId,
+      linuxCi: preflight.linux,
+      windowsCi: preflight.windows,
+      firstIndependentEvaluationActuallyExecuted: true,
+      completeIndependentResultCount: 1,
+      secondIndependentOriginExecuted: false,
+      prospectiveFinalHoldoutOpened: false,
+      productionSurfaceChanged: false,
+      resultDigest
+    }),
+    evaluation: publicEvaluation,
+    executionLedger: Object.freeze({
+      futureActualRowsUsedForScoring: fit.validationRows.length,
+      candidateModelRuns: 1,
+      candidatePredictionsProduced: evaluation.caseCount,
+      scientificEvaluationsExecuted: 1,
+      bootstrapRuns: 1,
+      bootstrapIterations: 2000,
+      newModelTrainingRuns: 0,
+      frozenFormulaOriginFaithfulReconstructionRuns: 1,
+      tuningRuns: 0,
+      alphaSearchRuns: 0,
+      residualBoundReestimationRuns: 0,
+      residualBoundDeterministicReconstructionRuns: 1,
+      modelSelectionRuns: 0
+    }),
+    workTotalGate: Object.freeze({
+      grain: "WORK_TOTAL",
+      status: "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+      evaluated: true
+    }),
+    workChannelGate: Object.freeze({
+      grain: "WORK_CHANNEL",
+      status: "PARTIAL_NOT_ACTIVE",
+      evaluated: false,
+      changedByThisActivity: false
+    }),
+    governance: Object.freeze({
+      activeCandidate: null,
+      approvedForAutomation: null,
+      productionReady: false,
+      releaseAuthorized: false,
+      secondConfirmationAuthorizedNow: false,
+      finalHoldoutOpened: false,
+      pullRequestMustRemainDraftOpenUnmerged: true,
+      cashOnlyResearchEnded: [
+        HPSR02_FINAL_STATUSES.UNSUPPORTED,
+        HPSR02_FINAL_STATUSES.MIXED
+      ].includes(evaluation.status)
+    }),
+    privacy: Object.freeze({
+      privatePathsPublished: false,
+      rawWorkIdentitiesPublished: false,
+      rawChannelIdentitiesPublished: false,
+      rowLevelActualsPublished: false,
+      aggregateCashMetricsPublished: true
+    })
+  });
+}
+
+function renderHpsr02ChineseReport(value) {
+  const evaluation = value.evaluation;
+  const metrics = evaluation.metrics;
+  const bandRows = ["H50", "M30", "L20"].map((bandId) => {
+    const band = evaluation.cashBands[bandId];
+    return `| ${bandId} | ${band.workCount} | ${number(band.actualCash)}`
+      + ` | ${percent(band.actualCashShare)}`
+      + ` | ${number(band.r0.absoluteErrorTotal)}`
+      + ` | ${number(band.r2.absoluteErrorTotal)}`
+      + ` | ${number(band.absoluteErrorReduction)}`
+      + ` | ${band.direction} |`;
+  });
+  return `# M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
+
+## 首页结论
+
+- 最终科学状态：\`${value.status}\`（${hpsr02DecisionZh(value.status)}）。
+- 对象：LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，\`M2-WORK-HPSR02\`）。
+- 所属实验：M2 LG01 头部保护分段路由与独立后期起点验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，\`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01\`）。
+- 本次是 2026-03 起点、3 个月 horizon 的首个且唯一完整独立结果；结果已冻结。
+- 活动候选与自动化批准均为 \`null\`；生产就绪为 \`false\`；前瞻最终留出未打开。
+
+## 来源权威复核
+
+此前金额读取前检查点因 3 个 canonical 渠道组合和 3 条总表/分表差异而停止，状态为 \`M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY\`；该历史检查点、0 次候选运行、0 次评价和 0 次 bootstrap 保持完整，不改写。
+
+字段级复核后的结论如下：
+
+- 134 行、3 个未确认 canonical 渠道组合都有稳定原始来源身份，能够判断起点前发生性且没有非零重复风险；它们只形成作品总额警告（\`WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL\`），没有猜测或回填 canonical 映射。
+- 分表比总表多出的 3 条 2026-05 非零事实确实影响全账守恒，但对应作品均不在 2026-03 动态 Core80；本次作品总额评价相关差异为 0 行（\`OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING\`）。
+- 作品总额源权威可用（\`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL\`）；作品—渠道门禁继续部分且未激活（\`PARTIAL_NOT_ACTIVE\`）。
+- 可重建缓存已由权威源与冻结代码重建；历史 receipt 缺失不构成阻断。
+
+## 人口与实际现金
+
+- origin：2026-03；actual window：2026-04、2026-05、2026-06。
+- 全部成熟可评价作品：${evaluation.eligibleWorkCount}；动态 Core80：${evaluation.workCount}。
+- Core80 实际现金覆盖：${percent(evaluation.core80ActualCashCoverage)}。
+
+| 现金带 | 作品数 | actual cash | actual share | R0 absolute error | HPSR02 absolute error | paired reduction | 方向 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+${bandRows.join("\n")}
+
+## 同案例成绩
+
+| 对象 | WAPE | signed bias | absolute bias | MAE | median AE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 冻结 LG01 同案例基线（\`M2-WORK-LG01\`） | ${percent(metrics.r0.wape)} | ${percent(metrics.r0.signedBias)} | ${percent(metrics.r0.absoluteBias)} | ${number(metrics.r0.mae)} | ${number(metrics.r0.medianAbsoluteError)} |
+| LG01 头部保护尾段修正模型 v0.2（\`M2-WORK-HPSR02\`） | ${percent(metrics.r2.wape)} | ${percent(metrics.r2.signedBias)} | ${percent(metrics.r2.absoluteBias)} | ${number(metrics.r2.mae)} | ${number(metrics.r2.medianAbsoluteError)} |
+
+- 配对绝对误差减少：${number(metrics.pairedAbsoluteErrorReduction)}；占 actual cash：${percent(metrics.pairedAbsoluteErrorReductionOverActualCash)}。
+- relative FVA：${percent(metrics.relativeFva)}。
+- 2,000 次作品 cluster bootstrap 95% 区间：${interval(metrics.bootstrapFva95.interval95)}。
+- absolute bias 相对 R0 变化：${percent(metrics.absoluteBiasWorsening)}。
+- 最大单作品误差集中度（R0/HPSR02）：${percent(metrics.r0.errorConcentration.maximumWorkShare)} / ${percent(metrics.r2.errorConcentration.maximumWorkShare)}。
+- Top5：${percent(metrics.r0.errorConcentration.top5WorkShare)} / ${percent(metrics.r2.errorConcentration.top5WorkShare)}；Top10：${percent(metrics.r0.errorConcentration.top10WorkShare)} / ${percent(metrics.r2.errorConcentration.top10WorkShare)}。
+
+## 数值与结构门禁
+
+- H50/M30 逐行精确等于冻结 LG01：${evaluation.structure.H50M30RowwiseExactLg01 ? "通过" : "失败"}。
+- clip / fallback / nonfinite raw L20：${evaluation.numeric.clipCount} / ${evaluation.numeric.fallbackCount} / ${evaluation.numeric.nonfiniteRawL20Count}。
+- L20 raw coverage：${percent(evaluation.numeric.rawL20Coverage)}；最终预测全部有限：${evaluation.numeric.allFinalPredictionsFinite ? "是" : "否"}。
+- 没有训练新模型、调参、alpha 搜索、残差边界重估或结果后选模；只执行冻结公式的 origin-faithful 确定性重建。
+
+## 治理与停止
+
+Draft PR #${value.execution.pullRequestNumber} 保持 Open / Draft / Unmerged。作品总额开发评价不等于 production、automation、release 或财务承诺。第二独立起点未执行，前瞻最终留出未打开；本任务到此停止。
+`;
+}
+
+function hpsr02DecisionZh(status) {
+  if (status === HPSR02_FINAL_STATUSES.SUPPORTED) {
+    return "首个独立起点支持，至多等待另行授权的第二次确认";
+  }
+  if (status === HPSR02_FINAL_STATUSES.UNSUPPORTED) {
+    return "首个独立起点不支持，现金-only 相邻研究结束";
+  }
+  return "首个独立起点证据不足，现金-only 相邻研究结束";
+}
+
+function safeHpsr02Error(error) {
+  return String(error?.message ?? "hpsr02_unknown_error")
+    .replace(/[^A-Za-z0-9_.:-]+/gu, "_")
+    .slice(0, 240);
+}
+
 async function readRelevantFeatureRows(filePath, maximumOrigin) {
   const rows = [];
   const input = fs.createReadStream(filePath, { encoding: "utf8" });
@@ -673,6 +1562,53 @@ function sha256Json(value) {
   return crypto.createHash("sha256")
     .update(JSON.stringify(value))
     .digest("hex");
+}
+
+function decimalToMinor(value, scalePower) {
+  const text = String(value).trim();
+  const match = /^(-?)(\d+)(?:\.(\d+))?$/u.exec(text);
+  if (!match || !Number.isInteger(scalePower) || scalePower < 0) {
+    throw new Error("hpsr02_origin_authority_amount_invalid");
+  }
+  const fraction = match[3] ?? "";
+  if (fraction.length > scalePower) {
+    throw new Error("hpsr02_origin_authority_amount_scale_invalid");
+  }
+  const factor = 10n ** BigInt(scalePower);
+  const padded = fraction.padEnd(scalePower, "0");
+  const magnitude = BigInt(match[2]) * factor
+    + BigInt(padded === "" ? "0" : padded);
+  return match[1] === "-" ? -magnitude : magnitude;
+}
+
+async function readNdjson(filePath) {
+  const content = await readFile(filePath, "utf8");
+  const rows = content.split(/\r?\n/u)
+    .filter((line) => line.trim() !== "")
+    .map((line) => JSON.parse(line));
+  if (rows.length === 0) {
+    throw new Error("hpsr02_origin_authority_rows_empty");
+  }
+  return rows;
+}
+
+function runPythonAudit(root, argumentsList) {
+  const result = spawnSync(process.execPath, [
+    "scripts/run-codex-python.mjs",
+    "scripts/m2-current/audit_head_protected_segmented_router_dates.py",
+    ...argumentsList
+  ], {
+    cwd: root,
+    encoding: "utf8",
+    shell: false,
+    windowsHide: true
+  });
+  if (result.status !== 0) {
+    throw new Error(
+      `hpsr02_source_audit_failed:${String(result.stderr).trim()}`
+    );
+  }
+  return String(result.stdout).trim();
 }
 
 async function readJson(filePath) {

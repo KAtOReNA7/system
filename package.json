@@ -99,7 +99,7 @@
     "diagnose:m2:lg01-head-cash-residual": "node scripts/m2-current/run_m2_human_anchored_development.mjs --lg01-head-cash-residual-public",
     "diagnose:m2:head-protected-segmented-router": "node scripts/m2-current/run_m2_head_protected_segmented_router_readiness.mjs --verify",
     "check:m2:current:later-origin-readiness": "node scripts/m2-current/run_m2_human_anchored_later_origin_readiness.mjs --private-audit",
-    "check:m2:head-protected-segmented-router-dates": "node scripts/run-codex-python.mjs scripts/m2-current/audit_head_protected_segmented_router_dates.py",
+    "check:m2:head-protected-segmented-router-dates": "node scripts/m2-current/run_m2_head_protected_segmented_router_controlled.mjs --source-authority-reconciliation",
     "prepare:m2:head-protected-segmented-router-bounds": "node scripts/m2-current/materialize_head_protected_segmented_router_bounds.mjs --private-rebuild",
     "check:m2:publishing-scale-audit": "node scripts/run-codex-python.mjs scripts/m2-current/audit_publishing_scale.py",
     "check:m2:publishing-scale-learning": "node scripts/m2-current/run_m2_publishing_scale_learning_study.mjs",

@@ -507,7 +507,8 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
 
 export async function materializeM2HpsrFrozenFormulaFeatureRows({
   root,
-  retrospectiveOrigins
+  retrospectiveOrigins,
+  authorityMode = "CANONICAL_WORK_CHANNEL_AUTHORITY"
 }) {
   if (
     !Array.isArray(retrospectiveOrigins)
@@ -535,7 +536,10 @@ export async function materializeM2HpsrFrozenFormulaFeatureRows({
   ]);
   validateM2CoreLegacyHorizonAmountConfig(config);
   validateM2CoreLegacyPopulationConfig(coreConfig);
-  const authority = await materializeM2CoreRevenueAuthority({ root });
+  const authority = await materializeM2CoreRevenueAuthority({
+    root,
+    authorityMode
+  });
   const schedules = resolveM2Oa03CurrentScopeSchedules({
     config: oa03Config,
     authorityStartMonth: authority.authorityStartMonth,
@@ -629,7 +633,8 @@ export async function materializeM2HpsrFrozenFormulaFeatureRows({
     sourceAuthority: Object.freeze({
       rowCount: authority.authority.rowCount,
       workCount: authority.authority.workCount,
-      authorityStartMonth: authority.authorityStartMonth
+      authorityStartMonth: authority.authorityStartMonth,
+      authorityMode: authority.authority.authorityMode
     }),
     originVisibleOnly: true,
     futureIndependentOutcomeRead: false,

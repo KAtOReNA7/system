@@ -96,10 +96,7 @@ test("current roles retain fallback, research baseline and no automation promoti
     "M2-WORK-LG01"
   );
   assert.equal(registry.currentRoles.activeExperiment, null);
-  assert.equal(
-    registry.currentRoles.blockedExperiment,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
-  );
+  assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
     registry.currentRoles.roleInterpretationZh,
     /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
@@ -457,7 +454,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR02 source-authority blocker is recorded without promotion", () => {
+test("HPSR02 work-total source authority is reconciled without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR02"
   );
@@ -476,11 +473,11 @@ test("HPSR02 source-authority blocker is recorded without promotion", () => {
 
   assert.equal(
     model.currentRole,
-    "blocked_missing_source_authority_not_executed_not_active"
+    "source_reconciled_independent_evaluation_authorized_not_executed_not_active"
   );
   assert.equal(
     model.evidenceStatus,
-    "k0_metadata_only_source_authority_incomplete_no_actual_amount_read_no_independent_outcome"
+    "work_total_source_authority_reconciled_work_channel_partial_no_independent_outcome"
   );
   assert.equal(
     model.currentExperimentId,
@@ -493,11 +490,24 @@ test("HPSR02 source-authority blocker is recorded without promotion", () => {
   const hpsr02Arm = experiment.arms.find((arm) => arm.armId === "R2");
   assert.equal(
     hpsr02Arm.executionStatus,
-    "BLOCKED_K0_SOURCE_AUTHORITY_INCOMPLETE_NOT_EXECUTED"
+    "AUTHORIZED_FIRST_INDEPENDENT_NOT_YET_EXECUTED"
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.status,
-    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
+    "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
+      + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION"
+  );
+  assert.equal(
+    experiment.hpsr02IndependentEvaluation.sourceAuthorityStatus,
+    "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
+  );
+  assert.equal(
+    experiment.hpsr02IndependentEvaluation.workTotalScopeRelevantDifferenceRowCount,
+    0
+  );
+  assert.equal(
+    experiment.hpsr02IndependentEvaluation.workChannelGateStatus,
+    "PARTIAL_NOT_ACTIVE"
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.amountCellReadCount,
@@ -835,10 +845,7 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
     status.stdout,
     /科学解释状态修订为[\s\S]*单起点、57 部作品的证据不足/u
   );
-  assert.match(
-    status.stdout,
-    /当前阻断实验：M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/u
-  );
+  assert.match(status.stdout, /当前阻断实验：无（null）/u);
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
   assert.equal(horizonAmount.status, 0, horizonAmount.stderr);

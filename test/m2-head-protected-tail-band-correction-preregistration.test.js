@@ -6,8 +6,10 @@ import test from "node:test";
 
 import {
   classifyHpsr02IndependentEvidence,
+  evaluateHpsr02IndependentEvaluation,
   HPSR02_ARM_IDS,
   HPSR02_EXPERIMENT_ID,
+  HPSR02_FINAL_STATUSES,
   HPSR02_MODEL_ID,
   HPSR02_PREREGISTERED_STATUS,
   HPSR02_WORKFLOW_STATUS,
@@ -75,11 +77,14 @@ test("HPSR02 stable identity and preregistration contract validate", () => {
   assert.equal(config.experiment.independentK2Executed, false);
 });
 
-test("first independent evaluation stops at incomplete source authority", () => {
-  assert.equal(
-    independentEvaluation.status,
-    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
-  );
+test("first independent evaluation preserves prior blocker and current gate", () => {
+  const readyStatus =
+    "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
+      + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION";
+  assert.ok([
+    readyStatus,
+    ...Object.values(HPSR02_FINAL_STATUSES)
+  ].includes(independentEvaluation.status));
   assert.equal(
     independentEvaluation.model.stableModelId,
     "M2-WORK-HPSR02"
@@ -88,63 +93,77 @@ test("first independent evaluation stops at incomplete source authority", () => 
     independentEvaluation.experiment.stableExperimentId,
     "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
-  const checkpoint = independentEvaluation
-    .amountPreReadIntegrityAndContractCheckpoint;
-  assert.equal(checkpoint.metadataOnly, true);
-  assert.equal(checkpoint.billMonthWindowComplete, true);
-  assert.equal(checkpoint.completeAuthoritativeBillMonthThrough, "2026-06");
-  assert.equal(checkpoint.schemaValid, true);
-  assert.equal(checkpoint.workMappingValid, true);
-  assert.equal(checkpoint.canonicalChannelMappingValid, false);
-  assert.equal(checkpoint.missingCanonicalChannelMappingRowCount, 134);
-  assert.equal(checkpoint.missingCanonicalRawPairCount, 3);
-  assert.equal(checkpoint.metadataPartitionAudit.extraInSplitRowCount, 3);
-  assert.equal(checkpoint.amountCellReadCount, 0);
-  assert.equal(checkpoint.checkpointPassed, false);
-  assert.equal(independentEvaluation.executionLedger.actualAmountRowsRead, 0);
-  assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
   assert.equal(
-    independentEvaluation.executionLedger.scientificEvaluationsExecuted,
-    0
+    independentEvaluation.priorBlockedAttempt.status,
+    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
   );
-  assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  assert.equal(independentEvaluation.priorBlockedAttempt.historyRewritten, false);
+  const source = independentEvaluation.sourceAuthorityReconciliation;
   assert.equal(
-    independentEvaluation.scientificEvidence.metricsAvailable,
-    false
+    source.sourceAuthorityStatus,
+    "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
   );
   assert.equal(
-    independentEvaluation.scientificEvidence.core90SensitivityStatus,
-    "CAPABILITY_NOT_DEFINED"
+    source.workTotalCanonicalMappingStatus,
+    "WORK_TOTAL_CANONICAL_MAPPING_WARNING_"
+      + "WORK_CHANNEL_REMAINS_PARTIAL"
   );
+  assert.equal(
+    source.metadataDifferenceStatus,
+    "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING"
+  );
+  assert.equal(source.workTotalScopeRelevantDifferenceRowCount, 0);
+  assert.equal(source.workChannelGateStatus, "PARTIAL_NOT_ACTIVE");
   assert.equal(independentEvaluation.governance.activeCandidate, null);
   assert.equal(independentEvaluation.governance.approvedForAutomation, null);
   assert.equal(independentEvaluation.governance.productionReady, false);
   assert.equal(independentEvaluation.governance.finalHoldoutOpened, false);
-  assert.equal(
-    independentEvaluation.reservedEvaluationBoundary.actualAmountRead,
-    false
-  );
-  assert.equal(
-    independentEvaluation.reservedEvaluationBoundary
-      .prospectiveFinalHoldoutOpened,
-    false
-  );
-  assert.match(
-    independentEvaluationReport,
-    /因不可替代源权威不完整而阻断/u
-  );
+  if (independentEvaluation.status === readyStatus) {
+    assert.equal(
+      independentEvaluation.executionLedger.actualAmountRowsReadForOutcome,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  } else {
+    assert.equal(
+      independentEvaluation.execution
+        .firstIndependentEvaluationActuallyExecuted,
+      true
+    );
+    assert.equal(independentEvaluation.evaluation.bootstrapExecutionCount, 1);
+    assert.equal(
+      independentEvaluation.evaluation.structure.workChannelStatus,
+      "PARTIAL_NOT_ACTIVE"
+    );
+  }
+  assert.match(independentEvaluationReport, /来源权威/u);
   assert.match(
     independentEvaluationReport,
     /M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY/u
   );
 });
 
-test("metadata readiness adapter never reads an amount cell", () => {
-  assert.match(dateAuditSource, /max_col=6/u);
-  assert.match(dateAuditSource, /min_col=8/u);
-  assert.match(dateAuditSource, /sourceLedgerAmountCellReadCount": 0/u);
-  assert.doesNotMatch(dateAuditSource, /row\[6\]/u);
-  assert.doesNotMatch(dateAuditSource, /min_col=7/u);
+test("source readiness separates WORK_TOTAL from WORK_CHANNEL", () => {
+  assert.match(
+    dateAuditSource,
+    /WORK_TOTAL_CANONICAL_MAPPING_WARNING_/u
+  );
+  assert.match(dateAuditSource, /WORK_CHANNEL_REMAINS_PARTIAL/u);
+  assert.match(dateAuditSource, /PARTIAL_NOT_ACTIVE/u);
+  assert.match(
+    dateAuditSource,
+    /OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING/u
+  );
+  assert.match(
+    dateAuditSource,
+    /SOURCE_AUTHORITY_VALIDITY_EQUALITY_AND_SIGN_ONLY/u
+  );
+  assert.match(dateAuditSource, /amountValuesPublished/u);
+  assert.doesNotMatch(
+    dateAuditSource,
+    /canonicalMappingGuessedOrBackfilled": True/u
+  );
 });
 
 test("HPSR01 mechanical result stays frozen while interpretation is inconclusive", () => {
@@ -208,6 +227,51 @@ test("only L20 receives the frozen bounded correction", () => {
     l20Rows.every((row) => Number.isFinite(row.pointEstimate)),
     true
   );
+});
+
+test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
+  const { result } = synthetic;
+  const r2ByWork = new Map(result.r2Rows.map((row) => [
+    row.standardWorkId,
+    row
+  ]));
+  const actualRows = result.r0Rows.map((row) => ({
+    standardWorkId: row.standardWorkId,
+    origin: "2026-03",
+    horizonMonths: 3,
+    actual: row.cashBandId === "L20"
+      ? r2ByWork.get(row.standardWorkId).pointEstimate
+      : row.pointEstimate + 1
+  }));
+  const evaluation = evaluateHpsr02IndependentEvaluation({
+    routerResult: {
+      ...result,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    },
+    actualRows,
+    eligibleActualRows: actualRows,
+    sourceGate: {
+      sourceAuthorityStatus:
+        "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
+      workTotalSourceAuthorityChecksPass: true,
+      workChannelGateStatus: "PARTIAL_NOT_ACTIVE",
+      futureActualOutcomeOpened: false
+    },
+    bootstrap: {
+      iterations: 2000,
+      seed: 20260801
+    }
+  });
+  assert.ok(Object.values(HPSR02_FINAL_STATUSES).includes(
+    evaluation.status
+  ));
+  assert.equal(evaluation.workCount, 10);
+  assert.equal(evaluation.structure.H50M30RowwiseExactLg01, true);
+  assert.equal(evaluation.structure.workChannelStatus, "PARTIAL_NOT_ACTIVE");
+  assert.equal(evaluation.metrics.bootstrapFva95.iterations, 2000);
+  assert.equal(evaluation.bootstrapExecutionCount, 1);
+  assert.equal(evaluation.rawCandidateEvaluationCount, 1);
+  assert.equal(evaluation.privateRows.length, 10);
 });
 
 test("synthetic contract has no global alpha or cross-band dependency", () => {
@@ -358,11 +422,11 @@ test("three-state decision policy handles support, mixed, threshold, and structu
 test("authorization, final holdout, automation, and production remain closed", () => {
   assert.equal(
     config.authorization.independentK2EvaluationAuthorizedNow,
-    false
+    true
   );
   assert.equal(
     config.authorization.newPrivateActualReadAuthorizedNow,
-    false
+    true
   );
   assert.equal(config.authorization.modelTrainingAuthorizedNow, false);
   assert.equal(config.authorization.modelFittingAuthorizedNow, false);

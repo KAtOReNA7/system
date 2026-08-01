@@ -2390,7 +2390,7 @@ function uniqueWorkIndex(rows, armId) {
   return output;
 }
 
-function scoreHpsrEvaluationRows(
+export function scoreHpsrEvaluationRows(
   rows,
   predictionField,
   nullReason = "NO_EVALUATION_ROWS"
@@ -2489,7 +2489,7 @@ function scoreHpsrEvaluationRows(
   });
 }
 
-function pairedFva(candidate, baseline) {
+export function pairedFva(candidate, baseline) {
   if (
     candidate?.wape === null
     || baseline?.wape === null
@@ -2500,7 +2500,7 @@ function pairedFva(candidate, baseline) {
   return (baseline.wape - candidate.wape) / baseline.wape;
 }
 
-function bootstrapHpsrFva(rows, {
+export function bootstrapHpsrFva(rows, {
   candidateField,
   baselineField,
   iterations,
