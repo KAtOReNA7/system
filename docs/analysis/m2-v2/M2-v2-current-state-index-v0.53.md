@@ -178,7 +178,10 @@ final holdout 或发布权限。
 | production surface 修改 | 0 |
 
 Git 起点、执行 HEAD 和 exact-head CI 均由运行时解析并记录在 PR #36，不写入本机
-路径或预先抄录的活动提交 SHA。PR #36 保持 Draft / Open / Unmerged。
+路径或预先抄录的活动提交 SHA。唯一独立结果形成和冻结时，PR #36 按当时治理约束
+保持 Draft / Open / Unmerged；结果冻结后的独立 Git 集成授权见
+`docs/analysis/m2-current/M2-hpsr02-research-evidence-integration-decision-v0.1.md`。该授权不
+改变模型、评价、参数或发布状态。
 
 ## 当前权威证据
 
@@ -190,9 +193,11 @@ Git 起点、执行 HEAD 和 exact-head CI 均由运行时解析并记录在 PR 
 - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
 - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`
 - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md`
+- `docs/analysis/m2-current/M2-hpsr02-research-evidence-integration-decision-v0.1.md`
 - `config/m2-model-registry.v1.json`
 
 本索引取代 v0.52 作为当前阅读入口，但不改写 v0.52、HPSR01 v0.1 原报告、历史
-机器 JSON、receipt、digest、预测、评价或历史 ID。本轮只形成并冻结一次 HPSR02
+机器 JSON、receipt、digest、预测、评价或历史 ID。冻结评价轮次只形成一次 HPSR02
 首个独立结果；没有执行第二起点、6/12/36 个月评价、新作品、未来首次渠道、公司收入、
-provider、数据库、Canary/full160、release、M3 formal、PR 合并或下一模型开发。
+provider、数据库、Canary/full160、release、M3 formal 或下一模型开发。后续 Git
+集成决策只改变研究证据所在分支，不改变上述科学与权限边界。
