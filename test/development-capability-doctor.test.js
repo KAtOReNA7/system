@@ -710,11 +710,11 @@ test("HPSR capability separates source, immutable parameter, lineage, cache, and
   );
   assert.match(
     cacheMiss.authorization,
-    /HPSR02_FROZEN_PARAMETER_AUTHORITY_AND_FIRST_INDEPENDENT_RESUME/u,
+    /HISTORICAL_USER_AUTHORIZATION_CONSUMED_HPSR02_FIRST_INDEPENDENT/u,
   );
   assert.match(
     cacheMiss.recovery,
-    /exactly one HPSR02 first independent result/u,
+    /does not authorize another HPSR02 scientific evaluation/u,
   );
   assert.ok(
     cacheMiss.notes.includes("availability does not grant execution authorization"),

@@ -1293,7 +1293,7 @@
     },
     {
       "id": "m2-head-protected-segmented-router",
-      "description": "Validate the HPSR01/HPSR02 immutable frozen model parameter independently from current bill source authority, preserve its digest-bound parameter lineage, rebuild only disposable caches, and execute at most one user-authorized first independent later-origin WORK_TOTAL evaluation after an exact-head dual-platform CI preflight. Canonical channel gaps remain PARTIAL_NOT_ACTIVE for WORK_CHANNEL.",
+      "description": "Validate the HPSR01/HPSR02 immutable frozen model parameter independently from current bill source authority, preserve its digest-bound parameter lineage, and rebuild only disposable caches. The unique first independent later-origin WORK_TOTAL evaluation is complete and frozen as inconclusive; it must not be rerun. Canonical channel gaps remain PARTIAL_NOT_ACTIVE for WORK_CHANNEL.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1424,10 +1424,13 @@
         "parameterAuthorityArguments": "-- --hpsr02-parameter-authority",
         "firstIndependentArguments": "-- --hpsr02-independent",
         "defaultExpectedStatus": "FAIL_CLOSED_WITHOUT_EXPLICIT_MODE",
-        "currentTaskFirstIndependentAuthorization": true
+        "currentTaskFirstIndependentAuthorization": false,
+        "firstIndependentAuthorizationConsumed": true,
+        "firstIndependentResultFrozen": true,
+        "firstIndependentResultStatus": "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED"
       },
-      "recovery": "Use current manually reviewed bills only as SOURCE_AUTHORITY for the 2026-03 origin-visible input and 2026-04 through 2026-06 WORK_TOTAL actual. Load the immutable positive-base-floor/q05/q95 parameter directly; if absent, recover it only from a validated digest-bound PARAMETER_LINEAGE_SNAPSHOT and reconcile the existing frozen run record. Never derive the parameter from current bills. Missing disposable caches rebuild automatically; missing historical receipt warns when the immutable parameter plus minimal lineage remain valid. The authorization permits exactly one HPSR02 first independent result and no second origin or final holdout.",
-      "authorization": "USER_AUTHORIZED_HPSR02_FROZEN_PARAMETER_AUTHORITY_AND_FIRST_INDEPENDENT_RESUME_2026_08_01"
+      "recovery": "Use current manually reviewed bills only as SOURCE_AUTHORITY for origin-visible input and WORK_TOTAL actual. Load the immutable positive-base-floor/q05/q95 parameter directly; if absent, recover it only from a validated digest-bound PARAMETER_LINEAGE_SNAPSHOT and reconcile the existing frozen run record. Never derive the parameter from current bills. Missing disposable caches rebuild automatically; missing historical receipt warns when the immutable parameter plus minimal lineage remain valid. Recovery restores parameter capability only and does not authorize another HPSR02 scientific evaluation, a second origin, final holdout, or HPSR03.",
+      "authorization": "HISTORICAL_USER_AUTHORIZATION_CONSUMED_HPSR02_FIRST_INDEPENDENT_RESULT_FROZEN_2026_08_01"
     },
     {
       "id": "m3-private-materials",

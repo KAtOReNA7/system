@@ -89,10 +89,15 @@ test("HPSR02 stable identity and preregistration contract validate", () => {
   );
   assert.equal(config.inspiration.postHocArithmeticIsModelEvidence, false);
   assert.equal(config.experiment.primaryCandidateArmId, "R2");
-  assert.equal(config.experiment.independentK2Executed, false);
+  assert.equal(config.experiment.independentK2Executed, true);
+  assert.equal(
+    config.currentExecutionStatus,
+    HPSR02_FINAL_STATUSES.MIXED
+  );
+  assert.equal(config.authorization.authorizationConsumed, true);
 });
 
-test("first independent evaluation preserves prior blocker and current gate", () => {
+test("first independent result is frozen and preserves all prior gates", () => {
   const readyStatus =
     "M2_HPSR02_WORK_TOTAL_SOURCE_AUTHORITY_RECONCILED_"
       + "READY_FOR_AUTHORIZED_FIRST_INDEPENDENT_EVALUATION";
@@ -113,6 +118,10 @@ test("first independent evaluation preserves prior blocker and current gate", ()
     missingImmutableParameterStatus,
     ...Object.values(HPSR02_FINAL_STATUSES)
   ].includes(independentEvaluation.status));
+  assert.equal(
+    independentEvaluation.status,
+    HPSR02_FINAL_STATUSES.MIXED
+  );
   assert.equal(
     independentEvaluation.model.stableModelId,
     "M2-WORK-HPSR02"
@@ -146,6 +155,42 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   assert.equal(independentEvaluation.governance.approvedForAutomation, null);
   assert.equal(independentEvaluation.governance.productionReady, false);
   assert.equal(independentEvaluation.governance.finalHoldoutOpened, false);
+  assert.equal(
+    independentEvaluation.preResultEngineeringRecovery.attemptCount,
+    7
+  );
+  assert.deepEqual(
+    independentEvaluation.preResultEngineeringRecovery.attempts.map(
+      (attempt) => attempt.errorCode
+    ),
+    [
+      "m2_hpsr_rebuilt_work_case_duplicate",
+      "hpsr02_residual_bound_rebuild_not_reconciled",
+      "m2_core_revenue_manual_command_failed:node.exe",
+      "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+      "hpsr02_parameter_lineage_snapshot_invalid",
+      "hpsr02_private_or_absolute_path_forbidden",
+      "hpsr02_independent_source_gate_invalid"
+    ]
+  );
+  assert.equal(
+    independentEvaluation.evaluation.numeric.historicalR1.rawCoverage,
+    1
+  );
+  assert.equal(
+    independentEvaluation.reportingAmendments
+      .frozenPrivateResultDigestVerified,
+    true
+  );
+  assert.equal(
+    independentEvaluation.reportingAmendments.scientificEvaluationRerun,
+    false
+  );
+  assert.equal(
+    independentEvaluation.frozenParameterAuthority
+      .encryptedBackupMechanismStatus,
+    "NOT_AVAILABLE_FOR_THIS_CAPABILITY_NO_UNENCRYPTED_BACKUP_CREATED"
+  );
   if (independentEvaluation.status === readyStatus) {
     assert.equal(
       independentEvaluation.executionLedger.actualAmountRowsReadForOutcome,
@@ -293,6 +338,10 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   assert.match(
     independentEvaluationReport,
     /HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /冻结结果的报告修订/u
   );
 });
 
@@ -448,6 +497,12 @@ test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
   assert.equal(evaluation.bootstrapComparisonCount, 2);
   assert.equal(evaluation.historicalComparatorEvaluationCount, 1);
   assert.equal(evaluation.structure.historicalR1SameCasePass, true);
+  assert.equal(
+    evaluation.numeric.historicalR1.rawCoverage,
+    historicalSynthetic.d1RawDiagnosticRows.filter(
+      (row) => row.rawPredictionFinite === true
+    ).length / historicalSynthetic.d1RawDiagnosticRows.length
+  );
   assert.equal(evaluation.rawCandidateEvaluationCount, 1);
   assert.equal(evaluation.privateRows.length, 10);
 });
@@ -600,11 +655,11 @@ test("three-state decision policy handles support, mixed, threshold, and structu
 test("authorization, final holdout, automation, and production remain closed", () => {
   assert.equal(
     config.authorization.independentK2EvaluationAuthorizedNow,
-    true
+    false
   );
   assert.equal(
     config.authorization.newPrivateActualReadAuthorizedNow,
-    true
+    false
   );
   assert.equal(config.authorization.modelTrainingAuthorizedNow, false);
   assert.equal(config.authorization.modelFittingAuthorizedNow, false);
@@ -625,35 +680,39 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.governance.finalHoldoutOpened, false);
   assert.equal(config.auditBoundary.hpsr01Rerun, false);
   assert.equal(config.auditBoundary.newActualRead, true);
-  assert.equal(config.experiment.completeIndependentResultProduced, false);
-  assert.equal(config.experiment.preResultEngineeringAttemptCount, 3);
+  assert.equal(config.experiment.completeIndependentResultProduced, true);
+  assert.equal(config.experiment.completeIndependentResultCount, 1);
+  assert.equal(config.experiment.preResultEngineeringAttemptCount, 7);
   assert.deepEqual(config.experiment.preResultEngineeringErrorCodes, [
     "m2_hpsr_rebuilt_work_case_duplicate",
     "hpsr02_residual_bound_rebuild_not_reconciled",
-    "m2_core_revenue_manual_command_failed:node.exe"
+    "m2_core_revenue_manual_command_failed:node.exe",
+    "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+    "hpsr02_parameter_lineage_snapshot_invalid",
+    "hpsr02_private_or_absolute_path_forbidden",
+    "hpsr02_independent_source_gate_invalid"
   ]);
   assert.equal(
     config.experiment.engineeringRecoveryStatus,
-    "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED"
+    "PRE_RESULT_ENGINEERING_HISTORY_PRESERVED_RECOVERY_COMPLETE"
   );
   assert.equal(
     config.currentExecutionStatus,
-    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
-      + "PENDING_PRIVATE_INTEGRITY_GATE"
+    HPSR02_FINAL_STATUSES.MIXED
   );
   assert.equal(
     config.authorization.executionBlockedBySourceAuthorityDecision,
     false
   );
-  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, true);
+  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, false);
   assert.equal(config.governance.sourceAuthorityDecisionRequired, false);
   assert.equal(
     config.authorization.immutableFrozenParameterDirectUseAuthorizedNow,
-    true
+    false
   );
   assert.equal(
     config.authorization.digestBoundParameterLineageRecoveryAuthorizedNow,
-    true
+    false
   );
   assert.equal(
     config.authorization.currentBillParameterDerivationAuthorizedNow,
@@ -671,9 +730,12 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(
     config.independentDataBoundary.currentEstimate
       .privateParameterIntegrityGatePending,
-    true
+    false
   );
-  assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
+  assert.equal(config.auditBoundary.realModelEvaluationExecuted, true);
+  assert.equal(config.auditBoundary.realBootstrapExecuted, true);
+  assert.equal(config.governance.cashOnlyResearchEnded, true);
+  assert.equal(config.governance.hpsr03Authorized, false);
 });
 
 test("controlled evaluation loads immutable parameters before current bills", () => {
@@ -691,6 +753,9 @@ test("controlled evaluation loads immutable parameters before current bills", ()
   const parameterGateIndex = independentSource.indexOf(
     "loadOrRecoverHpsrImmutableFrozenParameters"
   );
+  const frozenResultGuardIndex = independentSource.indexOf(
+    "hpsr02_independent_complete_result_already_frozen"
+  );
   const sourceGateIndex = independentSource.indexOf(
     "reconcileHpsr02SourceAuthorityPrivate"
   );
@@ -698,6 +763,8 @@ test("controlled evaluation loads immutable parameters before current bills", ()
     "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
   );
   assert.ok(parameterGateIndex >= 0);
+  assert.ok(frozenResultGuardIndex >= 0);
+  assert.ok(frozenResultGuardIndex < parameterGateIndex);
   assert.ok(sourceGateIndex > parameterGateIndex);
   assert.ok(currentFeatureIndex > sourceGateIndex);
   assert.doesNotMatch(independentSource, /deriveHpsrResidualBounds/u);

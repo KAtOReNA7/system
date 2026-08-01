@@ -91,7 +91,7 @@ test("historical audit keeps its snapshot while the registry advances", () => {
     .map((group) => group.comparableGroupId)
     .sort();
 
-  assert.equal(evaluationCount, 112);
+  assert.equal(evaluationCount, 115);
   assert.equal(audit.registryCoverage.evaluationCount, 45);
   assert.ok(evaluationCount > audit.registryCoverage.evaluationCount);
   assert.equal(

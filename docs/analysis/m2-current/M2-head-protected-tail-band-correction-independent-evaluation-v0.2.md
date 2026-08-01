@@ -1,62 +1,91 @@
 # M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
-当前状态：**用户已明确把 outcome 打开前冻结的 positive base floor、q05 与 q95 定义为不可变冻结模型参数；当前等待私有参数完整性门禁，通过后继续唯一一次独立评价**（`M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE`）。
+## 首页结论
 
-对象是 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`），所属实验是 M2 LG01 头部保护尾段修正独立评价 v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2，`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）。同案例基线仍是冻结 LG01（`M2-WORK-LG01`）。
+- 最终科学状态：`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`（首个独立起点证据不足，现金-only 相邻研究结束）。
+- 对象：LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`）。
+- 所属实验：M2 LG01 头部保护尾段修正独立评价 v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2，`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）。
+- 本次是 2026-03 起点、3 个月 horizon 的首个且唯一完整独立结果；结果已冻结。
+- 活动候选与自动化批准均为 `null`；生产就绪为 `false`；前瞻最终留出未打开。
 
-## 先前阻断检查点（完整保留）
+## 来源权威复核
 
-先前检查点状态为因源权威不完整而阻断（`M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY`）。当时只检查非金额元数据：2026-04 至 2026-06 月份齐全；2026-05 有 134 行、3 个未经确认的 canonical 渠道组合；组合分表比总表多 3 行。actual 金额单元格读取、候选运行、科学评价和 bootstrap 均为 0，未形成模型成绩。该检查点及原因继续作为历史审计记录，不改写。
+此前金额读取前检查点因 3 个 canonical 渠道组合和 3 条总表/分表差异而停止，状态为 `M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY`；该历史检查点、0 次候选运行、0 次评价和 0 次 bootstrap 保持完整，不改写。
 
-## 范围感知来源权威复核
+随后冻结参数与当前账单源权威被错误混为一类，形成第二个阻断检查点（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）。该检查点、两侧各 732 行渠道拆分差异和“独立 outcome 已打开但尚无完整结果”的事实同样保留；本轮只修正权威类别，不回写历史。
 
-本次先检查评价关键字段的存在、精确相等性和金额符号，但没有汇总或打开 future outcome，没有公开金额值、作品身份、渠道身份或本机路径。
+字段级复核后的结论如下：
 
-| 检查项 | 作品总额结论 |
-| --- | --- |
-| 权威账单窗口 | 2026-04、2026-05、2026-06 均存在；完整至 2026-06（`BILL_MONTH_WINDOW_COMPLETE`） |
-| schema 与作品映射 | 均通过（`SCHEMA_VALID`、`WORK_MAPPING_VALID`） |
-| 3 个未确认 canonical 渠道组合 | 134 行均有稳定原始来源身份，可判断起点发生性且非零重复风险为 0；只形成作品总额警告（`WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL`） |
-| canonical 处理 | 没有猜测、反推或回填 canonical 映射；作品—渠道门禁继续 `PARTIAL_NOT_ACTIVE` |
-| 总表/分表差异 | 分表确有 3 条总表不存在的 2026-05 非零事实，但对应作品均不在 2026-03 动态 Core80；本次作品总额相关差异为 0 行（`OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING`） |
-| 动态 Core80 范围核对 | 使用起点可见重述现金重算，共 43 部作品；没有读取 future outcome（`WORK_TOTAL_SCOPE_ASSESSMENT_COMPLETE`） |
-| 可重建缓存 | 缺失但可从源权威与冻结代码自动重建（`CACHE_MISS_REBUILDABLE`） |
-| 历史收据 | 缺失只告警，不阻断（`OPTIONAL_PROVENANCE_MISSING`） |
+- 134 行、3 个未确认 canonical 渠道组合都有稳定原始来源身份，能够判断起点前发生性且没有非零重复风险；它们只形成作品总额警告（`WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL`），没有猜测或回填 canonical 映射。
+- 分表比总表多出的 3 条 2026-05 非零事实确实影响全账守恒，但对应作品均不在 2026-03 动态 Core80；本次作品总额评价相关差异为 0 行（`OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING`）。
+- 作品总额源权威可用（`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL`）；作品—渠道门禁继续部分且未激活（`PARTIAL_NOT_ACTIVE`）。
+- 作品总额可重建缓存已由权威源与冻结代码重建；该缓存的历史 receipt 缺失不构成阻断。冻结参数谱系的历史 provenance 则已核验可用。
 
-因此作品总额源权威可用（`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL`）。这不表示作品—渠道门禁已激活，也不修复全账层面的 3 条差异；它只证明这些差异不会改变本次动态 Core80 的作品总额 actual、现金带或 R0/R2 同案例关系。
+## 结果前工程恢复
 
-## 结果前工程失败与恢复
+首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 7 次纯工程停止：
 
-首次授权运行已经打开作品总额权威事实，但在构造预测、评分或 bootstrap 之前先后发生三次纯工程停止：第一次是请求起点与历史支持起点重复拼接（`m2_hpsr_rebuilt_work_case_duplicate`）；完成普通提交、精确提交 Linux/Windows CI 后继续同一次授权评价，第二次因历史冻结残差边界重建与当前作品总额评价错误共用了来源权威口径而停止（`hpsr02_residual_bound_rebuild_not_reconciled`）；再次完成提交与双平台 CI 后，第三次在历史全账渠道导出阶段被当前窗口 3 条范围外分表事实阻断（`m2_core_revenue_manual_command_failed:node.exe`；`HISTORICAL_GLOBAL_CHANNEL_EXPORT_BLOCKED_BY_THREE_CURRENT_WINDOW_OUT_OF_SCOPE_SPLIT_FACTS`）。三次尝试的候选预测、科学评价、bootstrap 和完整合法结果仍均为 0；receipt 状态均为结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`），没有冻结科学结果。
+1. 请求起点与历史支持起点重复拼接（`m2_hpsr_rebuilt_work_case_duplicate`）
+2. 历史冻结边界与当前作品总额评价错误共用了来源权威口径（`hpsr02_residual_bound_rebuild_not_reconciled`）
+3. 历史全账渠道导出被当前窗口三条范围外分表事实阻断（`m2_core_revenue_manual_command_failed:node.exe`）
+4. 不可变冻结参数尚未形成可验证加载工件（`M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER`）
+5. 错误尝试从当前原始事实重建历史冻结参数谱系（`hpsr02_parameter_lineage_snapshot_invalid`）
+6. 完整私有参数谱系对象越过了推理入口的路径隔离门禁（`hpsr02_private_or_absolute_path_forbidden`）
+7. 独立评价来源门禁字段语义与实际 outcome 状态不一致（`hpsr02_independent_source_gate_invalid`）
 
-三次工程恢复均没有形成候选预测或模型结果。随后在新的精确提交 Linux/Windows CI 通过后，单独执行了不产生候选预测、评分或 bootstrap 的冻结边界复核。该复核把当前权威源限制到原开发最大可见截止月 2026-02，仍无法复现公开冻结 provenance 的 577 行输入门禁（`hpsr02_residual_bound_rebuild_not_reconciled`）。
+其中 2 次参数完整性门禁在读取新 future actual 前停止；其余 5 次虽已进入授权的作品总额事实处理，但候选预测、科学评价、bootstrap 和完整结果仍均为 0。审计状态保持结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`）。恢复先消除重复起点，再把不可变冻结模型参数与当前账单源权威解耦：评价入口只加载经过摘要与既有冻结运行记录核验的参数，不再从当前账单重算边界。模型、人口、基线、门限和已打开 outcome 均未被改写。
 
-## 冻结边界来源冲突与人工决策
 
-只读多重集比较证明：截至 2026-02，旧冻结来源与当前来源的作品×月份行数和金额总额完全一致，但渠道行级拆分并不一致；两侧各有 732 行差异，涉及 421 部作品、82 个月、21 个渠道身份和 721 个作品×月份组合。由于当前模型人口要求起点时已有成熟来源渠道，这种拆分变化会影响冻结 HPSR01 边界的重建，不能再归类为只影响展示或只影响非活动作品—渠道评价的警告。
+## 不可变冻结参数与渠道谱系漂移
 
-当前任务禁止重估 residual bound，也禁止把旧电脑派生缓存或历史 receipt 自动当成源权威，因此不能用结果导向方式选择旧或新拆分。已在 Git ignored private 目录生成一项中文决策表（`M2-hpsr02-source-authority-decision-table-private-v0.2.json`）；公开报告不包含原始身份、金额、digest 或本机路径。推荐提供与冻结谱系匹配的原分成权威账单快照；若无法提供，则需要在新任务中明确决定是否升格现存冻结事实为该谱系的私有源权威，或终止 HPSR02。
+- 三项边界属于不可变冻结模型参数（Immutable Frozen Model Parameter，`IMMUTABLE_FROZEN_MODEL_PARAMETER`），恰好包括 positive base floor、q05 与 q95；具体数值不公开。
+- 参数来源状态为 `IMMUTABLE_FROZEN_MODEL_PARAMETER_VALIDATED`，本次加载方式为 `DIRECT_VALIDATED_ARTIFACT_LOAD`；参数谱系快照状态为 `PARAMETER_LINEAGE_SNAPSHOT_VALIDATED`。
+- 参数推导范围仍为 2023-03 至 2025-09，最大已打开开发起点为 2026-02；输入与有限支持均为 577 行。
+- 参数恢复身份为 `FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`。它是摘要绑定谱系的确定性恢复，不是训练、调参或边界重估；当前账单、later-origin outcome 与前瞻最终留出均未参与参数生成。
+- 当前环境没有面向该 capability 的用户托管加密备份机制；未创建未加密备份（`NOT_AVAILABLE_FOR_THIS_CAPABILITY_NO_UNENCRYPTED_BACKUP_CREATED`）。
+- 历史与当前作品×月份行数及金额守恒，但渠道行级多重集两侧各有 732 行差异，登记为 `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`。涉及 421 部作品、82 个月、21 个渠道身份和 721 个作品×月份。
+- 2026-03 输入与 2026-04 至 2026-06 作品总额 actual 继续使用当前人工复核账单；旧谱系不替换当前 actual。本结果因此是冻结模型在渠道身份漂移下的真实独立迁移检验。
 
-## 执行前冻结边界
+## 人口与实际现金
 
-- origin：2026-03；horizon：3 个月；actual window：2026-04 至 2026-06；
-- H50/M30 逐行精确使用冻结 LG01；L20 使用 HPSR01 已冻结的有界残差修正；`alpha=1`；
-- 不训练新模型、不调参、不搜索 alpha、不重估 residual bound、不选模；
-- 不读取 2026-07 以后 actual，不打开 2026-06 前瞻最终留出，不执行第二起点或 HPSR03；
-- actual outcome 已在结果前工程尝试中打开；候选预测、科学评价、bootstrap 和完整结果仍为 0；
-- 首次独立评价当前由冻结边界来源冲突阻断；未获得明确来源决策前不得继续。
+- origin：2026-03；actual window：2026-04、2026-05、2026-06。
+- 全部成熟可评价作品：2692；动态 Core80：43。
+- Core80 实际现金覆盖：78.7891%。
 
-候选预测、科学评价、bootstrap 和完整合法结果均为 0；活动候选与自动化批准保持 `null`，生产就绪为 `false`，前瞻最终留出未打开，作品—渠道门禁保持 `PARTIAL_NOT_ACTIVE`。Draft PR 保持 Open / Draft / Unmerged。机器可读同源状态见 `M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`。
+| 现金带 | 作品数 | actual cash | actual share | R0 absolute error | HPSR01 历史结构 absolute error | HPSR02 absolute error | HPSR02 paired reduction | HPSR02 方向 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| H50 | 3 | 949905.8980 | 53.7874% | 592122.1792 | 592122.1792 | 592122.1792 | 0.0000 | TIED |
+| M30 | 12 | 344557.0653 | 19.5102% | 340236.8538 | 382941.3013 | 340236.8538 | 0.0000 | TIED |
+| L20 | 28 | 471576.3422 | 26.7025% | 205832.0325 | 199936.9176 | 199936.9176 | 5895.1149 | IMPROVED |
 
-## 2026-08-01 参数权威修订（当前）
+## 同案例成绩
 
-上述“等待来源权威决策”的第二个阻断检查点（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）继续作为历史审计记录，不删除、不改写；本节记录用户随后作出的范围更窄决定：
+| 对象 | WAPE | signed bias | absolute bias | MAE | median AE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 冻结 LG01 同案例基线（`M2-WORK-LG01`） | 64.4488% | 61.9824% | 61.9824% | 26469.5597 | 7580.3600 |
+| LG01 头部保护分段路由模型 v0.1 历史结构对照（`M2-WORK-HPSR01`） | 66.5331% | 61.4728% | 61.4728% | 27325.5907 | 6879.6656 |
+| LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`） | 64.1150% | 61.1152% | 61.1152% | 26332.4640 | 6879.6656 |
 
-- 当前人工复核分成账单仍是 2026-03 起点可见输入和 2026-04 至 2026-06 作品总额 actual 的源权威（Source Authority，`SOURCE_AUTHORITY`）。
-- outcome 打开前已经冻结的 positive base floor、q05 与 q95 是 HPSR01/HPSR02 不可变冻结模型参数（Immutable Frozen Model Parameter，`IMMUTABLE_FROZEN_MODEL_PARAMETER`），推断时直接加载，不要求从当前账单重新生成。
-- 旧 577 行摘要绑定输入只承担参数谱系快照（Parameter Lineage Snapshot，`PARAMETER_LINEAGE_SNAPSHOT`）与确定性恢复作用；它不替换当前 actual，也不升格为全项目原始账单权威。
-- 参数文件缺失时只允许执行摘要绑定谱系的冻结参数恢复（`FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`）；这不是训练、调参或边界重估。
-- 截至 2026-02 的作品×月份行数和金额守恒、渠道行级两侧各 732 行差异登记为 `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`。它构成冻结模型迁移限制，但不重新阻断作品总额评价。
-- 独立 outcome 已经打开、三个结果前工程失败均保留；在参数门禁前仍不产生候选预测、评分或 bootstrap。参数门禁通过后，本任务已获明确授权继续唯一一次首个独立评价。
+- 配对绝对误差减少：5895.1149；占 actual cash：0.3338%。
+- relative FVA：0.5179%。
+- 2,000 次作品 cluster bootstrap 95% 区间：[-2.4406%, 3.8718%]。
+- HPSR01 历史结构对照相对 R0 的配对绝对误差减少 / relative FVA / 2,000 次 bootstrap 95% 区间：-36809.3326 / -3.2340% / [-14.8035%, 4.3101%]。
+- absolute bias 相对 R0 变化：-0.8673%。
+- 最大单作品误差集中度（R0/HPSR02）：37.9941% / 38.1919%。
+- Top5：68.4552% / 68.8116%；Top10：82.1906% / 82.7539%。
 
-此修订不激活作品—渠道门禁，不授权第二独立起点、前瞻最终留出、HPSR03、production、automation 或 release。
+## 数值与结构门禁
+
+- H50/M30 逐行精确等于冻结 LG01：通过。
+- clip / fallback / nonfinite raw L20：0 / 0 / 0。
+- L20 raw coverage：100.0000%；最终预测全部有限：是。
+- HPSR01 历史结构对照的 clip / fallback / nonfinite / raw coverage：2 / 0 / 0 / 100.0000%。
+- 没有训练新模型、调参、alpha 搜索、残差边界重估或结果后选模；评价只加载不可变冻结参数，并执行冻结公式的 origin-faithful 确定性重建。
+
+## 冻结结果的报告修订
+
+冻结私有结果的逐文件摘要与 43 行预测、43 行评价记录已经复核一致（`FROZEN_RESULT_PUBLIC_REPORTING_CORRECTION_APPLIED`）。历史结构对照的原始有限性应从冻结诊断字段 `cham01B3RawFinite` 读取；43 行均为有限值，因此 raw coverage 从冻结输出中的错误展示 0.0000% 校正为 100.0000%。这只是数值诊断展示修订：最终科学状态、评分指标、现金带指标和结果摘要均未改变；模型、科学评价与 bootstrap 均未重跑。
+
+## 治理与停止
+
+Draft PR #36 保持 Open / Draft / Unmerged。作品总额开发评价不等于 production、automation、release 或财务承诺。第二独立起点未执行，前瞻最终留出未打开；本任务到此停止。

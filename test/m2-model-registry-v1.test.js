@@ -36,8 +36,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 35);
   assert.equal(validation.counts.experimentCount, 22);
-  assert.equal(validation.counts.nonModelIdentifierCount, 123);
-  assert.equal(validation.counts.evaluationCount, 112);
+  assert.equal(validation.counts.nonModelIdentifierCount, 125);
+  assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
 
@@ -97,21 +97,18 @@ test("current roles retain fallback, research baseline and no automation promoti
   );
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.blockedExperiment, null);
-  assert.equal(
-    registry.currentRoles.pendingExperiment,
-    "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
+  assert.equal(registry.currentRoles.pendingExperiment, null);
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /M2-WORK-HPSR02.*已完成唯一一次 2026-03 起点独立评价/u
   );
   assert.match(
     registry.currentRoles.roleInterpretationZh,
-    /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
+    /M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED/u
   );
   assert.match(
     registry.currentRoles.roleInterpretationZh,
-    /PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过/u
-  );
-  assert.match(
-    registry.currentRoles.roleInterpretationZh,
-    /全部 16 个外层选择单元都没有合格 alpha/u
+    /前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空/u
   );
   const historicalChampionAssertions = registry.currentRoles.sourceAssertions
     .filter((item) => /champion/u.test(item.assertion));
@@ -392,7 +389,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
     ["M2-WORK-LG01", "M2-WORK-CHAM01", "M2-WORK-HCRC01"]
   );
   assert.deepEqual(model.successorIds, ["M2-WORK-HPSR02"]);
-  assert.equal(model.evaluations.length, 1);
+  assert.equal(model.evaluations.length, 2);
   assert.equal(
     model.evaluations[0].comparableGroupId,
     "CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11"
@@ -458,7 +455,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR02 immutable parameter authority resumes without promotion", () => {
+test("HPSR02 first independent result freezes inconclusive without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR02"
   );
@@ -477,29 +474,36 @@ test("HPSR02 immutable parameter authority resumes without promotion", () => {
 
   assert.equal(
     model.currentRole,
-    "candidate_pending_immutable_parameter_integrity_gate_not_active"
+    "first_independent_inconclusive_cash_only_research_ended_not_active"
   );
   assert.equal(
     model.evidenceStatus,
-    "work_total_actual_source_reconciled_immutable_parameter_authority_decided_no_complete_result"
+    "first_independent_complete_result_frozen_inconclusive"
   );
   assert.equal(
     model.currentExperimentId,
     "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
   );
-  assert.deepEqual(model.evaluations, []);
+  assert.equal(model.evaluations.length, 1);
+  assert.equal(
+    model.evaluations[0].resultStatus,
+    "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_"
+      + "CASH_ONLY_RESEARCH_ENDED"
+  );
+  assert.equal(model.evaluations[0].WAPE, 0.6411499149761899);
+  assert.equal(model.evaluations[0].relativeWape, 0.0051793719874129816);
   assert.equal(model.automationAuthorized, false);
   assert.equal(model.productionImported, false);
   assert.equal(model.finalHoldoutOpened, false);
   const hpsr02Arm = experiment.arms.find((arm) => arm.armId === "R2");
   assert.equal(
     hpsr02Arm.executionStatus,
-    "RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE"
+    "FIRST_INDEPENDENT_EXECUTED_RESULT_FROZEN"
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.status,
-    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
-      + "PENDING_PRIVATE_INTEGRITY_GATE"
+    "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_"
+      + "CASH_ONLY_RESEARCH_ENDED"
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.priorStatus,
@@ -528,19 +532,23 @@ test("HPSR02 immutable parameter authority resumes without promotion", () => {
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.preResultEngineeringAttemptCount,
-    3
+    7
   );
   assert.deepEqual(
     predecessorExperiment.hpsr02IndependentEvaluation.preResultEngineeringErrorCodes,
     [
       "m2_hpsr_rebuilt_work_case_duplicate",
       "hpsr02_residual_bound_rebuild_not_reconciled",
-      "m2_core_revenue_manual_command_failed:node.exe"
+      "m2_core_revenue_manual_command_failed:node.exe",
+      "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+      "hpsr02_parameter_lineage_snapshot_invalid",
+      "hpsr02_private_or_absolute_path_forbidden",
+      "hpsr02_independent_source_gate_invalid"
     ]
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.frozenBoundSourceStatus,
-    "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT"
+    "IMMUTABLE_FROZEN_MODEL_PARAMETER_VALIDATED"
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.historicalOnlyRowCount,
@@ -560,7 +568,7 @@ test("HPSR02 immutable parameter authority resumes without promotion", () => {
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.scientificEvaluationsExecuted,
-    0
+    1
   );
   assert.equal(
     predecessorExperiment.hpsr02IndependentEvaluation.prospectiveFinalHoldoutOpened,
@@ -571,7 +579,12 @@ test("HPSR02 immutable parameter authority resumes without promotion", () => {
     experiment.predecessorExperimentId,
     "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
-  assert.equal(experiment.k2PrivateEvaluationAuthorized, true);
+  assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
+  assert.equal(experiment.k2AuthorizationConsumed, true);
+  assert.equal(experiment.k2Executed, true);
+  assert.equal(experiment.completeIndependentResultCount, 1);
+  assert.equal(experiment.resultFrozen, true);
+  assert.equal(experiment.cashOnlyResearchEnded, true);
   assert.equal(experiment.independentOutcomeRead, true);
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
@@ -884,21 +897,21 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
   assert.match(status.stdout, /当前实验：无（null）/u);
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
-  assert.match(status.stdout, /没有复现历史数值/u);
-  assert.match(status.stdout, /不是业务整体通过/u);
+  assert.match(status.stdout, /已完成唯一一次 2026-03 起点独立评价/u);
+  assert.match(status.stdout, /结束现金-only 相邻研究/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
   assert.match(status.stdout, /原 v0\.1 合同结果继续是回溯开发不支持/u);
   assert.match(
     status.stdout,
-    /科学解释状态修订为[\s\S]*单起点、57 部作品的证据不足/u
+    /科学解释状态为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE/u
   );
   assert.match(
     status.stdout,
-    /当前待门禁实验：M2 LG01 头部保护尾段修正独立评价 v0\.2/u
+    /当前待门禁实验：无（null）/u
   );
   assert.match(
     status.stdout,
-    /M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE/u
+    /M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED/u
   );
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
@@ -918,6 +931,21 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(
     headCashResidual.stdout,
     /M2_LG01_HEAD_CASH_RESIDUAL_FAIL/u
+  );
+
+  const tailBandCorrection = runQuery("show", "M2-WORK-HPSR02");
+  assert.equal(
+    tailBandCorrection.status,
+    0,
+    tailBandCorrection.stderr
+  );
+  assert.match(
+    tailBandCorrection.stdout,
+    /首个独立起点证据不足，现金相邻研究结束且未激活/u
+  );
+  assert.match(
+    tailBandCorrection.stdout,
+    /现金相邻研究已结束，未激活且未进入生产/u
   );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");

@@ -15,9 +15,12 @@
 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model
 v0.2，`M2-WORK-HPSR02`）在任何独立 outcome 打开前完成了前瞻预注册，并明确标记为
 由回溯诊断启发且在独立结果前预注册
-（`POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED`）。本轮已按授权打开 2026-03 起点的
-三个月作品总额 actual，但三次工程尝试均在候选预测、评分和 bootstrap 前停止，
-没有形成模型成绩。
+（`POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED`）。本轮已按授权完成并冻结唯一一次
+2026-03 起点、三个月、动态 Core80 的独立评价。43 部作品上，冻结 LG01 同案例基线
+WAPE 为 64.4488%，HPSR02 WAPE 为 64.1150%，relative FVA 为 0.5179%，2,000 次
+作品 cluster bootstrap 95% 区间为 [-2.4406%, 3.8718%]。点估计小幅改善，但未达到
+1% 支持门限且区间跨 0，最终为证据不足并结束现金-only 相邻研究
+（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`）。
 
 作品总额门禁（WORK_TOTAL）已经确认可用于开发评价，作品—渠道门禁（WORK_CHANNEL）
 继续为部分证据且未激活（`PARTIAL_NOT_ACTIVE`）。后续只读复核发现，截至 2026-02，
@@ -27,8 +30,8 @@ v0.2，`M2-WORK-HPSR02`）在任何独立 outcome 打开前完成了前瞻预注
 （`PARAMETER_LINEAGE_SNAPSHOT`），当前账单仍是当前起点输入与 WORK_TOTAL actual 的
 源权威。渠道漂移登记为
 `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`，不得据此重算参数或
-替换当前 actual。当前状态为已决定参数权威、等待私有完整性门禁
-（`M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE`）。
+替换当前 actual。参数完整性门禁已通过，唯一授权已经消耗；模型没有被激活，也没有
+授权第二独立起点、前瞻最终留出、HPSR03、自动化、生产或发布。
 
 ## 首页结论
 
@@ -37,11 +40,11 @@ v0.2，`M2-WORK-HPSR02`）在任何独立 outcome 打开前完成了前瞻预注
 | HPSR01 原合同结果是否保留？ | 是；原不支持判定、冻结指标和历史成绩完全保留 |
 | HPSR01 科学解释 | 原机械合同判定正确，但单起点证据在科学上不足，不能判定整个方向失败 |
 | HPSR01 是否重跑？ | 否；模型、预测、评价和 bootstrap 均未重跑 |
-| HPSR02 身份 | 事后诊断启发、独立结果前预注册的唯一主候选结构；独立 outcome 已打开，尚无完整结果，参数门禁后获授权继续，不是活动候选 |
+| HPSR02 身份 | 事后诊断启发、独立结果前预注册的唯一主候选结构；唯一独立结果已冻结为证据不足，现金相邻研究结束，不是活动候选 |
 | HPSR02 唯一结构 | H50、M30 逐行精确使用冻结 LG01；仅 L20 使用 HPSR01 既有冻结有界残差修正 |
 | 是否读取新实际值或 private 行？ | 是；授权的 2026-04 至 2026-06 作品总额 outcome 已在结果前工程尝试中访问，公开报告不含行级身份或金额 |
 | 是否训练、拟合、调参、搜索 alpha 或重估边界？ | 否 |
-| 独立评价检查点 | 已授权且账单窗口完整；参数权威决定已完成，等待私有完整性门禁后继续唯一一次评价 |
+| 独立评价检查点 | 2026-03 起点的唯一完整结果已形成并冻结；无第二起点，禁止重跑 |
 | prospective final holdout | 动态预留起点当前估计为 2026-06，outcome 未打开 |
 | 当前活动候选 / 自动化批准 | `null` / `null` |
 | production ready / final holdout opened | `false` / `false` |
@@ -81,7 +84,7 @@ signed bias -7.2016%。这些数字的身份固定为
 `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`：它们不是行级重评分，不是
 HPSR02 模型成绩，不进入历史排行榜，也不能证明新结构已通过。
 
-## HPSR02 冻结预注册
+## HPSR02 冻结预注册与唯一独立结果
 
 稳定模型 ID 为 `M2-WORK-HPSR02`。当前评价权威是 M2 LG01 头部保护尾段修正独立评价
 v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2，
@@ -91,9 +94,9 @@ v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2�
 
 | 实验臂 | 中文含义 | 当前状态 |
 |---|---|---|
-| R0 | 冻结 LG01 同案例基线 | 已预注册；本检查点未形成评分 |
-| R1 | 冻结 HPSR01 v0.1 历史结构对照 | 已预注册；本检查点未形成评分 |
-| R2 | HPSR02 v0.2 唯一主候选 | 已决定不可变参数权威，等待私有参数门禁（`RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE`） |
+| HPSR02 独立评价实验的 R0 基线臂 | 冻结 LG01 同案例基线 | 已执行并冻结；WAPE 64.4488% |
+| HPSR02 独立评价实验的 R1 历史对照臂 | 冻结 HPSR01 v0.1 历史结构对照 | 已执行并冻结；WAPE 66.5331%，相对基线退化 3.2340% |
+| HPSR02 独立评价实验的 R2 主候选臂 | HPSR02 v0.2 唯一主候选 | 已执行并冻结；WAPE 64.1150%，relative FVA 0.5179%，证据不足 |
 
 人口继续是每个预测起点用当时可见 trailing-12 分成现金动态重算的 Core80 成熟
 老作品，只评价三个月作品总金额。H50 与 M30 必须逐行精确等于 R0；L20 固定
@@ -101,14 +104,16 @@ v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2�
 禁止 global alpha、alpha 搜索、边界重估、跨现金带依赖、作品级选择和结果后
 fallback。
 
-未来一次独立检查点必须在同一动态人口、同一案例键和同一 checkpoint 上比较
-R2 vs R0，并同时报告 R1 vs R0。主要指标、2,000 次作品聚类配对 bootstrap、
-现金带误差、单作品误差集中度和结构守恒均已冻结。
+唯一独立检查点已在同一动态人口、同一案例键和同一 checkpoint 上比较主候选臂与
+基线臂，并同时报告历史结构对照臂与基线臂。主要指标、2,000 次作品聚类配对
+bootstrap、现金带误差、单作品误差集中度和结构守恒均已冻结。H50 与 M30 和基线
+逐行相等；L20 的绝对误差减少 5,895.1149，是候选全部改善来源。
 
-支持、证据混合和不支持的门限详见机器配置。距离任何硬阈值不超过 0.25 个百分点
-时必须报告 `THRESHOLD_SENSITIVE`；若没有同时发生结构失败，则归为证据混合，
-不能据此永久停止整个方向。即使独立检查点未来获得支持，也不能自动授予活动候选、
-自动化、production、final holdout 或发布权限。
+支持、证据混合和不支持的门限详见机器配置。本次分类为证据混合（`MIXED`）：
+没有结构失败，也没有触发不支持条件，但支持条件要求的 relative FVA 至少 1% 和
+bootstrap 下界大于 0 均未满足。依据预注册治理，证据不足即结束本条现金-only
+相邻研究；不得继续 HPSR03，也不得自动授予活动候选、自动化、production、
+final holdout 或发布权限。
 
 ## 独立数据与最终留出集
 
@@ -118,14 +123,15 @@ R2 vs R0，并同时报告 R1 vs R0。主要指标、2,000 次作品聚类配对
 - 本次首个独立后期起点为 `2026-03`；
 - 三个月标签要求权威账单完整到 `2026-06`；
 - 当前权威账单已完整到 `2026-06`，本检查点没有缺失月份；
-- 本次 outcome 已打开，但候选预测、评分和 bootstrap 均未形成；
+- 本次 outcome 已形成唯一一份完整预测、评分和 bootstrap，结果已经冻结；
 - prospective final holdout 起点当前估计为 `2026-06`，需账单完整到
   `2026-09`，outcome 仍未打开。
 
-本次独立评价授权已经使用，不能因工程故障改写为“未授权”。当前停止原因不是账单
-月份缺失；参数权威决定已经完成。参数文件必须先按摘要绑定谱系与既有冻结运行记录
-通过完整性门禁，评价入口随后只能加载参数，不得从当前账单重算。门禁通过后，本任务
-明确授权继续唯一一次候选评价，不再要求新的授权。
+本次独立评价授权已经使用并消耗，不能因先前工程故障改写为“未授权”，也不得再运行
+第二份科学结果。参数文件已按摘要绑定谱系与既有冻结运行记录通过完整性门禁；评价
+入口只加载参数，没有从当前账单重算。历史结构对照 raw coverage 的展示字段随后按
+冻结的 43 行预测工件由 0% 校正为 100%；结果摘要、评分、现金带和科学状态均未改变，
+模型、科学评价和 bootstrap 均未重跑。
 
 ## HPSR02 首次独立检查点来源复核
 
@@ -146,25 +152,28 @@ R2 vs R0，并同时报告 R1 vs R0。主要指标、2,000 次作品聚类配对
 
 | 层次 | 当前状态 |
 |---|---|
-| 已实现 | HPSR02 canonical pure function、公共 synthetic fixture 和合同测试已实现 |
-| 已验证 | 公开 synthetic 验证人口、现金带、H50/M30 精确保护、L20 修正与有限值；来源审计验证作品总额门禁可用并定位渠道谱系漂移 |
-| 已授权 | 本轮一次首次独立评价与必要的结果前工程恢复已授权；参数完整性门禁通过后继续，不授权边界重估、第二起点或下一模型 |
+| 已实现 | HPSR02 canonical pure function、冻结参数加载、公共 synthetic fixture 和合同测试已实现 |
+| 已验证 | 公开 synthetic 与冻结参数完整性门禁通过；唯一独立结果已形成并冻结，来源审计确认作品总额门禁可用并披露渠道谱系漂移 |
+| 已授权 | 唯一一次首次独立评价授权已消耗；当前不授权重跑、边界重估、第二起点、HPSR03 或最终留出 |
 | 可发布 | 否；活动候选、自动化批准、production 与 release 均为空或未授权 |
 
 本轮执行计数：
 
 | 活动 | 次数 |
 |---|---:|
-| 首次独立检查点 outcome 访问 | 1 个检查点（3 次结果前工程尝试） |
+| 首次独立检查点 outcome 访问 | 1 个检查点（7 次结果前工程停止，随后 1 次完整结果） |
 | HPSR01 重跑 | 0 |
-| HPSR02 真实预测 | 0 |
-| 真实模型评价 | 0 |
-| 真实 bootstrap | 0 |
+| HPSR02 真实预测 | 43 |
+| HPSR01 历史结构对照预测 | 43 |
+| 真实模型评价 | 1 |
+| 真实 bootstrap | 1 次执行、2 个同案例比较、各 2,000 次迭代 |
 | 模型训练或拟合 | 0 |
 | 超参数或 alpha 搜索 | 0 |
 | residual bound 重估 | 0 |
-| 冻结边界来源只读诊断 | 1 |
-| 完整合法独立评价结果 | 0 |
+| 不可变冻结参数加载 | 1 |
+| 完整合法独立评价结果 | 1（已冻结） |
+| 第二独立起点 | 0 |
+| HPSR03 开发 | 0 |
 | prospective final holdout 打开 | 0 |
 | production surface 修改 | 0 |
 
@@ -183,7 +192,7 @@ Git 起点、执行 HEAD 和 exact-head CI 均由运行时解析并记录在 PR 
 - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md`
 - `config/m2-model-registry.v1.json`
 
-本索引取代 v0.52 作为当前阅读入口，但不改写 v0.52、HPSR01 v0.1 原报告、
-机器 JSON、receipt、digest、预测、评价或历史 ID。本轮没有形成 HPSR02 候选预测、
-科学评分或 bootstrap，没有执行 6/12/36 个月评价、新作品、未来首次渠道、公司收入、
+本索引取代 v0.52 作为当前阅读入口，但不改写 v0.52、HPSR01 v0.1 原报告、历史
+机器 JSON、receipt、digest、预测、评价或历史 ID。本轮只形成并冻结一次 HPSR02
+首个独立结果；没有执行第二起点、6/12/36 个月评价、新作品、未来首次渠道、公司收入、
 provider、数据库、Canary/full160、release、M3 formal、PR 合并或下一模型开发。

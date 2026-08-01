@@ -359,6 +359,17 @@ export async function runHpsr02IndependentPrivate({ root }) {
       readJson(path.join(root, CORE_AMOUNT_CONFIG)),
       readJson(path.join(root, HPSR02_BOUND_PROVENANCE))
     ]);
+  const receiptPath = path.join(root, HPSR02_INDEPENDENT_RECEIPT);
+  const [priorReceipt, priorPublicCheckpoint] = await Promise.all([
+    readJsonIfPresent(receiptPath),
+    readJsonIfPresent(path.join(root, HPSR02_PUBLIC_RESULT))
+  ]);
+  if (
+    priorReceipt?.completeIndependentResultProduced === true
+    || priorReceipt?.resultFrozen === true
+  ) {
+    throw new Error("hpsr02_independent_complete_result_already_frozen");
+  }
   if (
     hpsr02Config?.model?.stableModelId !== "M2-WORK-HPSR02"
     || hpsr02Config?.authorization
@@ -383,17 +394,6 @@ export async function runHpsr02IndependentPrivate({ root }) {
       boundProof
     });
   const sourceGate = await reconcileHpsr02SourceAuthorityPrivate({ root });
-  const receiptPath = path.join(root, HPSR02_INDEPENDENT_RECEIPT);
-  const [priorReceipt, priorPublicCheckpoint] = await Promise.all([
-    readJsonIfPresent(receiptPath),
-    readJsonIfPresent(path.join(root, HPSR02_PUBLIC_RESULT))
-  ]);
-  if (
-    priorReceipt?.completeIndependentResultProduced === true
-    || priorReceipt?.resultFrozen === true
-  ) {
-    throw new Error("hpsr02_independent_complete_result_already_frozen");
-  }
   const priorPreResultEngineeringAttempt =
     mergeHpsr02PreResultEngineeringAttempts({
       priorReceipt,
@@ -1053,10 +1053,10 @@ function buildHpsr02PublicResult({
     }),
     experiment: Object.freeze({
       displayNameZh:
-        "M2 LG01 头部保护分段路由与独立后期起点验证 v0.1",
+        "M2 LG01 头部保护尾段修正独立评价 v0.2",
       displayNameEn:
-        "M2 LG01 Head-Protected Segmented Router and Independent "
-          + "Later-Origin Validation v0.1",
+        "M2 LG01 Head-Protected Tail-Band Correction Independent "
+          + "Evaluation v0.2",
       stableExperimentId:
         "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02",
       baselineModelId: "M2-WORK-LG01",
@@ -1119,7 +1119,10 @@ function buildHpsr02PublicResult({
       laterOriginOutcomeUsed: false,
       prospectiveFinalHoldoutOutcomeUsed: false,
       residualBoundReestimationExecuted: false,
-      historicalFrozenRunRecordExactlyReconciled: true
+      historicalFrozenRunRecordExactlyReconciled: true,
+      encryptedBackupMechanismStatus:
+        "NOT_AVAILABLE_FOR_THIS_CAPABILITY_"
+          + "NO_UNENCRYPTED_BACKUP_CREATED"
     }),
     channelLineageTransfer: Object.freeze({
       status: parameterGate.channelLineageDriftStatus,
@@ -1253,14 +1256,33 @@ function renderHpsr02ChineseReport(value) {
           hpsr02_residual_bound_rebuild_not_reconciled:
             "历史冻结边界与当前作品总额评价错误共用了来源权威口径",
           "m2_core_revenue_manual_command_failed:node.exe":
-            "历史全账渠道导出被当前窗口三条范围外分表事实阻断"
+            "历史全账渠道导出被当前窗口三条范围外分表事实阻断",
+          M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER:
+            "不可变冻结参数尚未形成可验证加载工件",
+          hpsr02_parameter_lineage_snapshot_invalid:
+            "错误尝试从当前原始事实重建历史冻结参数谱系",
+          hpsr02_private_or_absolute_path_forbidden:
+            "完整私有参数谱系对象越过了推理入口的路径隔离门禁",
+          hpsr02_independent_source_gate_invalid:
+            "独立评价来源门禁字段语义与实际 outcome 状态不一致"
         };
         const reason = reasons[attempt.errorCode]
           ?? "结果前工程步骤停止";
         return `${index + 1}. ${reason}（\`${attempt.errorCode}\`）`;
       });
-      return `\n## 结果前工程恢复\n\n首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 ${recoveryValue.attemptCount} 次纯工程停止：\n\n${attempts.join("\n")}\n\n这些尝试均已读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；审计状态保持结果前工程失败、可恢复（\`${recoveryValue.status}\`）。恢复先消除重复起点，再把不可变冻结模型参数与当前账单源权威解耦：评价入口只加载经过摘要与既有冻结运行记录核验的参数，不再从当前账单重算边界。模型、人口、基线、门限和已打开 outcome 均未被改写。\n`;
+      const futureActualReadCount = recoveryValue.attempts.filter(
+        (attempt) => attempt.futureActualOutcomeRead === true
+      ).length;
+      const futureActualNotReadCount =
+        recoveryValue.attemptCount - futureActualReadCount;
+      return `\n## 结果前工程恢复\n\n首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 ${recoveryValue.attemptCount} 次纯工程停止：\n\n${attempts.join("\n")}\n\n其中 ${futureActualNotReadCount} 次参数完整性门禁在读取新 future actual 前停止；其余 ${futureActualReadCount} 次虽已进入授权的作品总额事实处理，但候选预测、科学评价、bootstrap 和完整结果仍均为 0。审计状态保持结果前工程失败、可恢复（\`${recoveryValue.status}\`）。恢复先消除重复起点，再把不可变冻结模型参数与当前账单源权威解耦：评价入口只加载经过摘要与既有冻结运行记录核验的参数，不再从当前账单重算边界。模型、人口、基线、门限和已打开 outcome 均未被改写。\n`;
     })();
+  const reportingAmendment = (
+    value.reportingAmendments === null
+    || value.reportingAmendments === undefined
+  )
+    ? ""
+    : `\n## 冻结结果的报告修订\n\n冻结私有结果的逐文件摘要与 43 行预测、43 行评价记录已经复核一致（\`${value.reportingAmendments.status}\`）。历史结构对照的原始有限性应从冻结诊断字段 \`${value.reportingAmendments.sourceField}\` 读取；43 行均为有限值，因此 raw coverage 从冻结输出中的错误展示 ${percent(value.reportingAmendments.originalRawCoverage)} 校正为 ${percent(value.reportingAmendments.correctedRawCoverage)}。这只是数值诊断展示修订：最终科学状态、评分指标、现金带指标和结果摘要均未改变；模型、科学评价与 bootstrap 均未重跑。\n`;
   return `# M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
 ## 首页结论
@@ -1282,7 +1304,7 @@ function renderHpsr02ChineseReport(value) {
 - 134 行、3 个未确认 canonical 渠道组合都有稳定原始来源身份，能够判断起点前发生性且没有非零重复风险；它们只形成作品总额警告（\`WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL\`），没有猜测或回填 canonical 映射。
 - 分表比总表多出的 3 条 2026-05 非零事实确实影响全账守恒，但对应作品均不在 2026-03 动态 Core80；本次作品总额评价相关差异为 0 行（\`OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING\`）。
 - 作品总额源权威可用（\`SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL\`）；作品—渠道门禁继续部分且未激活（\`PARTIAL_NOT_ACTIVE\`）。
-- 可重建缓存已由权威源与冻结代码重建；历史 receipt 缺失不构成阻断。
+- 作品总额可重建缓存已由权威源与冻结代码重建；该缓存的历史 receipt 缺失不构成阻断。冻结参数谱系的历史 provenance 则已核验可用。
 ${recovery}
 
 ## 不可变冻结参数与渠道谱系漂移
@@ -1291,6 +1313,7 @@ ${recovery}
 - 参数来源状态为 \`${value.frozenParameterAuthority.status}\`，本次加载方式为 \`${value.frozenParameterAuthority.loadMode}\`；参数谱系快照状态为 \`${value.frozenParameterAuthority.lineageStatus}\`。
 - 参数推导范围仍为 2023-03 至 2025-09，最大已打开开发起点为 2026-02；输入与有限支持均为 ${value.frozenParameterAuthority.inputRowCount} 行。
 - 参数恢复身份为 \`${value.frozenParameterAuthority.recoveryIdentity}\`。它是摘要绑定谱系的确定性恢复，不是训练、调参或边界重估；当前账单、later-origin outcome 与前瞻最终留出均未参与参数生成。
+- 当前环境没有面向该 capability 的用户托管加密备份机制；未创建未加密备份（\`${value.frozenParameterAuthority.encryptedBackupMechanismStatus}\`）。
 - 历史与当前作品×月份行数及金额守恒，但渠道行级多重集两侧各有 732 行差异，登记为 \`${value.channelLineageTransfer.status}\`。涉及 421 部作品、82 个月、21 个渠道身份和 721 个作品×月份。
 - 2026-03 输入与 2026-04 至 2026-06 作品总额 actual 继续使用当前人工复核账单；旧谱系不替换当前 actual。本结果因此是冻结模型在渠道身份漂移下的真实独立迁移检验。
 
@@ -1327,6 +1350,7 @@ ${bandRows.join("\n")}
 - L20 raw coverage：${percent(evaluation.numeric.rawL20Coverage)}；最终预测全部有限：${evaluation.numeric.allFinalPredictionsFinite ? "是" : "否"}。
 - HPSR01 历史结构对照的 clip / fallback / nonfinite / raw coverage：${evaluation.numeric.historicalR1.clipCount} / ${evaluation.numeric.historicalR1.fallbackCount} / ${evaluation.numeric.historicalR1.nonfiniteRawCount} / ${percent(evaluation.numeric.historicalR1.rawCoverage)}。
 - 没有训练新模型、调参、alpha 搜索、残差边界重估或结果后选模；评价只加载不可变冻结参数，并执行冻结公式的 origin-faithful 确定性重建。
+${reportingAmendment}
 
 ## 治理与停止
 
@@ -1362,6 +1386,25 @@ function mergeHpsr02PreResultEngineeringAttempts({
   } else if (publicRecovery?.errorCode) {
     attempts.push(publicRecovery);
   }
+  attempts.push(
+    {
+      errorCode:
+        "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+      futureActualOutcomeRead: false
+    },
+    {
+      errorCode: "hpsr02_parameter_lineage_snapshot_invalid",
+      futureActualOutcomeRead: false
+    },
+    {
+      errorCode: "hpsr02_private_or_absolute_path_forbidden",
+      futureActualOutcomeRead: true
+    },
+    {
+      errorCode: "hpsr02_independent_source_gate_invalid",
+      futureActualOutcomeRead: true
+    }
+  );
   if (
     priorReceipt?.status
       === "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"

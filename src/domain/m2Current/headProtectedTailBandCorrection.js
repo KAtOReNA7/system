@@ -424,11 +424,19 @@ export function evaluateHpsr02IndependentEvaluation({
     historicalRouterResult.r1RawRouterRows,
     "R1"
   );
+  const r1DiagnosticByWork = independentWorkIndex(
+    historicalRouterResult.d1RawDiagnosticRows,
+    "D1"
+  );
   const r2ByWork = independentWorkIndex(routerResult.r2Rows, "R2");
   const core80Ids = [...routerResult.population.core80WorkIds];
   if (
     !sameIndependentValues([...r0ByWork.keys()], core80Ids)
     || !sameIndependentValues([...r1ByWork.keys()], core80Ids)
+    || !sameIndependentValues(
+      [...r1DiagnosticByWork.keys()],
+      core80Ids
+    )
     || !sameIndependentValues([...r2ByWork.keys()], core80Ids)
     || !sameIndependentValues(
       historicalRouterResult.population.core80WorkIds,
@@ -441,10 +449,13 @@ export function evaluateHpsr02IndependentEvaluation({
   const privateRows = core80Ids.map((standardWorkId) => {
     const r0 = r0ByWork.get(standardWorkId);
     const r1 = r1ByWork.get(standardWorkId);
+    const r1Diagnostic = r1DiagnosticByWork.get(standardWorkId);
     const r2 = r2ByWork.get(standardWorkId);
     if (
       r0.cashBandId !== r1.cashBandId
       || r0.cashBandId !== r2.cashBandId
+      || r1Diagnostic.cashBandId !== r1.cashBandId
+      || typeof r1Diagnostic.rawPredictionFinite !== "boolean"
     ) {
       throw new Error("hpsr02_independent_cash_band_mismatch");
     }
@@ -468,7 +479,7 @@ export function evaluateHpsr02IndependentEvaluation({
       r1FallbackToLg01: r1.fallbackToLg01,
       r1FallbackReason: r1.fallbackReason,
       r1NumericStatus: r1.numericStatus,
-      r1RawPredictionFinite: r1.rawPredictionFinite ?? null,
+      r1RawPredictionFinite: r1Diagnostic.rawPredictionFinite,
       r2PointEstimate: r2.pointEstimate,
       r2BoundTriggered: r2.boundTriggered,
       r2CorrectionApplied: r2.correctionApplied,
@@ -848,17 +859,17 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
       !== "USER_INSTRUCTION_M2_HPSR02_FROZEN_PARAMETER_"
         + "AUTHORITY_AND_RESUME_2026_08_01"
     || config?.authorization?.independentK2EvaluationAuthorizedNow
-      !== true
+      !== false
     || config?.authorization?.newPrivateActualReadAuthorizedNow
-      !== true
+      !== false
     || config?.authorization?.modelTrainingAuthorizedNow !== false
     || config?.authorization?.alphaSearchAuthorizedNow !== false
     || config?.authorization?.residualBoundReestimationAuthorizedNow
       !== false
     || config?.authorization?.immutableFrozenParameterDirectUseAuthorizedNow
-      !== true
+      !== false
     || config?.authorization
-      ?.digestBoundParameterLineageRecoveryAuthorizedNow !== true
+      ?.digestBoundParameterLineageRecoveryAuthorizedNow !== false
     || config?.authorization?.currentBillParameterDerivationAuthorizedNow
       !== false
     || config?.authorization?.executionBlockedBySourceAuthorityDecision
@@ -867,10 +878,25 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
       !== false
     || config?.authorization?.productionAuthorized !== false
     || config?.authorization?.mergeAuthorized !== false
+    || config?.authorization?.authorizationConsumed !== true
+    || config?.currentExecutionStatus
+      !== HPSR02_FINAL_STATUSES.MIXED
+    || config?.currentWorkflowStatus
+      !== "M2_HPSR02_FIRST_INDEPENDENT_COMPLETE_RESULT_FROZEN_"
+        + "CASH_ONLY_RESEARCH_ENDED"
+    || config?.experiment?.independentK2Executed !== true
+    || config?.experiment?.completeIndependentResultProduced !== true
+    || config?.experiment?.completeIndependentResultCount !== 1
+    || config?.experiment?.finalResult?.status
+      !== HPSR02_FINAL_STATUSES.MIXED
+    || config?.experiment?.finalResult?.resultFrozen !== true
     || config?.governance?.activeCandidate !== null
     || config?.governance?.approvedForAutomation !== null
     || config?.governance?.productionReady !== false
     || config?.governance?.finalHoldoutOpened !== false
+    || config?.governance?.independentK2Executed !== true
+    || config?.governance?.cashOnlyResearchEnded !== true
+    || config?.governance?.hpsr03Authorized !== false
     || config?.implementation?.privateRunnerCreated !== true
     || config?.implementation?.realEvaluationEntrypointCreated !== true
   ) {

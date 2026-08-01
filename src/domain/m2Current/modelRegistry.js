@@ -802,6 +802,8 @@ function roleZh(role) {
       "冻结边界来源权威冲突，等待明确决策且未激活",
     candidate_pending_immutable_parameter_integrity_gate_not_active:
       "已决定不可变冻结参数权威，等待私有完整性门禁且未激活",
+    first_independent_inconclusive_cash_only_research_ended_not_active:
+      "首个独立起点证据不足，现金相邻研究结束且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -820,6 +822,12 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (value === "FROZEN_SAME_CASE_BASELINE_FIRST_INDEPENDENT") {
+    return "首个独立起点冻结同案例基线";
+  }
+  if (value === "HISTORICAL_STRUCTURE_COMPARATOR_FIRST_INDEPENDENT") {
+    return "首个独立起点冻结历史结构对照";
+  }
   if (
     value
       === "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
