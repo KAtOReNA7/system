@@ -1,0 +1,126 @@
+{
+  "schema": "m2.current.psc02.development_evaluation_public.v0.1",
+  "asOf": "2026-08-01",
+  "status": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+  "decisionClass": "PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE",
+  "modelId": "M2-CHAN-PSC02",
+  "rawCandidateId": "M2-CHAN-PSC02-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "execution": {
+    "attemptCount": 1,
+    "resultBeforeEngineeringAttemptCount": 1,
+    "firstCompletePrimaryRawResultFormed": false,
+    "frozenPrimaryRawResultExists": false,
+    "receiptSchema": "m2.current.psc02.development_replay_receipt.private.v0.1",
+    "receiptFilePublished": false,
+    "receiptIdentityRecordedPrivately": true,
+    "candidateFitStarted": false,
+    "realPredictionGenerated": false,
+    "predictionRowsProduced": 0,
+    "outerOutcomeOpened": false,
+    "candidateMetricsComputed": false,
+    "bootstrapExecuted": false
+  },
+  "preExecution": {
+    "exactHead": "21218d7b2132d2ca755b33511c308b4b3066b781",
+    "branch": "codex/m2-psc02-origin-visible-cash-anchor-development-v0-1",
+    "pullRequestNumber": 40,
+    "linuxCheck": "SUCCESS",
+    "windowsCheck": "SUCCESS",
+    "codeSha256": "538dd6d11be7151d924f653a11714828d7c9c745973ffe665a62436447c26029",
+    "configSha256": "2d7f2e824129624d08be8259d4149cab60306276daf38496eadace76f74559bd",
+    "preregistrationSha256": "6eb69a7d7f3125b993b8defc2e89186caf04f20a7de9ecc20e7fb12e057f3108",
+    "anchorSchemaSha256": "350211e3775edc8d37adcbbbaa3378f758cecca213dbf046e1c883ee7b3f98bd"
+  },
+  "privateAuthority": {
+    "sourceFilesPresent": true,
+    "componentRevisionTimeSchemaReady": false,
+    "missingNonDerivableFields": [
+      "componentId",
+      "revisionId",
+      "effectiveAt",
+      "availableAt"
+    ],
+    "ledgerPartitionReconciliationStatus": "FAILED_CLOSED",
+    "ledgerPartitionReconciliationError": "total ledger row multiset differs from the reviewed split: missing=0, extra=3",
+    "frozenPsc01ReceiptCount": 1,
+    "frozenPsc01ManifestValid": true,
+    "frozenPsc01RowCount": 3318819,
+    "frozenPsc01DigestPresent": true,
+    "frozenLg01ComparatorPresent": true,
+    "frozenLg01ScoresRead": false,
+    "rowLevelPrivateDataPublished": false,
+    "privateDigestPublished": false
+  },
+  "arms": {
+    "anchorOnlyDiagnostic": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+      "role": "MECHANISM_ATTRIBUTION_ONLY_NOT_CANDIDATE",
+      "status": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED",
+      "metrics": null
+    },
+    "logRatioDiagnostic": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1",
+      "role": "MECHANISM_ATTRIBUTION_ONLY_NOT_CANDIDATE",
+      "status": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED",
+      "metrics": null
+    },
+    "primary": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P",
+      "candidateId": "M2-CHAN-PSC02-RAW",
+      "status": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED",
+      "metrics": null,
+      "pairedBootstrap": null
+    }
+  },
+  "correctnessGates": {
+    "cashAuthoritySchema": "FAILED_CLOSED",
+    "ledgerPartitionReconciliation": "FAILED_CLOSED",
+    "occurrenceBinary64Parity": "NOT_EXECUTED_BEFORE_PREDICTION",
+    "exactPsc01CaseCoverage": "NOT_EXECUTED_BEFORE_PREDICTION",
+    "noTimeLeakage": "NOT_EVALUABLE_WITHOUT_VALID_AUTHORITY",
+    "occurrenceAppliedOnce": "PUBLIC_SYNTHETIC_VERIFIED_ONLY",
+    "anchorAppliedOnce": "PUBLIC_SYNTHETIC_VERIFIED_ONLY",
+    "horizonSummedOnce": "PUBLIC_SYNTHETIC_VERIFIED_ONLY",
+    "taxonomyReportOnly": "PUBLIC_IMPLEMENTATION_VERIFIED",
+    "noLg01PredictionDependency": "PUBLIC_IMPLEMENTATION_VERIFIED",
+    "rawCandidatePreserved": "NO_RAW_CANDIDATE_RESULT_FORMED"
+  },
+  "metrics": {
+    "primary": null,
+    "strict": null,
+    "horizons": null,
+    "namedPlatforms": null,
+    "mechanisms": null,
+    "anchorFallbackTiers": null,
+    "topCashWorks": null,
+    "normalizedChannelComposition": null,
+    "psc01SameCase": null,
+    "lg01SameCase": null,
+    "bootstrap": null,
+    "suppressionReason": "NO_CANDIDATE_RESULT_SOURCE_AUTHORITY_BLOCKED"
+  },
+  "interpretation": {
+    "modelPerformanceEvaluated": false,
+    "candidateFailedOnMetrics": false,
+    "designDirectionSupportedByPrivateOutcome": false,
+    "independentEvaluationRequestSupported": false,
+    "nextAction": "RESTORE_OR_PROVIDE_AUTHENTIC_REVISIONED_COMPONENT_AUTHORITY_UNDER_SEPARATE_SCOPE_THEN_REQUIRE_NEW_EXACT_HEAD_CI_BEFORE_ANY_RETRY"
+  },
+  "boundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false,
+    "productionModified": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "databaseUsed": false,
+    "apiModified": false,
+    "providerUsed": false,
+    "financialUseAuthorized": false
+  }
+}

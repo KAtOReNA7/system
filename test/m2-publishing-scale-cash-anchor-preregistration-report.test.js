@@ -23,7 +23,7 @@ const paths = {
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
   clarification:
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
-  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.55.md"
+  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
 };
 const config = await readJson(paths.config);
 const schema = await readJson(paths.schema);
@@ -105,7 +105,7 @@ test("semantic validator binds all current contracts", async () => {
   }), true);
 });
 
-test("Model Registry records an experiment design without inventing a model or score", () => {
+test("Model Registry preserves the preregistration and maps the later authorized model without a score", () => {
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(
@@ -116,14 +116,14 @@ test("Model Registry records an experiment design without inventing a model or s
     (item) => item.experimentId === config.experimentId
   );
   assert.ok(experiment);
-  assert.deepEqual(experiment.modelIds, []);
-  assert.equal(experiment.modelCreated, false);
+  assert.deepEqual(experiment.modelIds, ["M2-CHAN-PSC02"]);
+  assert.equal(experiment.modelCreated, true);
   assert.equal(experiment.realPredictionGenerated, false);
   assert.equal(experiment.evaluationExecuted, false);
-  assert.ok(experiment.arms.every((arm) => arm.modelId === null));
+  assert.ok(experiment.arms.every((arm) => arm.modelId === "M2-CHAN-PSC02"));
   assert.equal(
     registry.models.some((model) => /PSC02/u.test(model.stableModelId)),
-    false
+    true
   );
   assert.equal(
     registry.models.flatMap((model) => model.evaluations).some(
@@ -131,22 +131,31 @@ test("Model Registry records an experiment design without inventing a model or s
     ),
     false
   );
-  assert.equal(
+  assert.deepEqual(
     registry.models.find((model) => model.stableModelId === "M2-CHAN-PSC01")
-      .successorIds.length,
-    0
+      .successorIds,
+    ["M2-CHAN-PSC02"]
   );
 });
 
-test("README, state index, and catalog expose the preregistration without promotion", async () => {
+test("README, state index, and catalog preserve preregistration lineage after the source-authority stop", async () => {
   const catalog = await readText(
     "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md"
   );
-  for (const value of [readme, state, catalog]) {
+  for (const value of [readme, state]) {
     assert.match(value, /M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01/u);
-    assert.match(value, new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u"));
   }
-  assert.match(readme, /没有创建模型、真实实现、拟合或评价/u);
+  assert.match(catalog, /M2-CHAN-PSC02/u);
+  assert.match(
+    await readText(
+      "docs/analysis/m2-current/"
+        + "M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md"
+    ),
+    new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u")
+  );
+  assert.match(readme, /M2-CHAN-PSC02-RAW/u);
+  assert.match(state, /PSC02_DEVELOPMENT_NOT_SUPPORTED/u);
+  assert.match(state, /PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE/u);
   assert.match(state, /activeCandidate=null/u);
   assert.match(state, /approvedForAutomation=null/u);
   assert.match(state, /finalHoldoutOpened=false/u);

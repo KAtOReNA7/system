@@ -35,6 +35,7 @@
     "diagnose:m2:channel-experts",
     "diagnose:m2:channel-generative",
     "diagnose:m2:publishing-scale-channel",
+    "diagnose:m2:publishing-scale-cash-anchor",
     "diagnose:m2:core-revenue-manual",
     "diagnose:m2:layered-revenue-composition",
     "diagnose:m2:core-legacy-population",

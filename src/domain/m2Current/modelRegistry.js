@@ -416,11 +416,11 @@ export function renderM2ModelCatalog(registry) {
   const rootCauseAuditSection = auditedModels.length === 0
     ? []
     : [
-      "## 模型根因审计与未来设计状态",
+      "## 模型根因审计与审计形成时的后续设计状态",
       "",
-      "根因审计是冻结模型的证据治理，不是新模型、实验臂或成绩行；未来设计状态也不自动授予实现或评价权限。",
+      "根因审计是冻结模型的证据治理，不是新模型、实验臂或成绩行；表内后续设计状态是审计形成时的历史状态，不覆盖后来另行授权的当前映射。",
       "",
-      "| 冻结模型（稳定 ID） | 审计活动 | 根因类别（机器状态） | 未来设计状态 |",
+      "| 冻结模型（稳定 ID） | 审计活动 | 根因类别（机器状态） | 审计形成时的后续设计状态 |",
       "|---|---|---|---|",
       ...auditedModels.map((model) => (
         `| ${escapeTable(model.displayNameZh)}（${code(model.stableModelId)}）`
@@ -428,7 +428,7 @@ export function renderM2ModelCatalog(registry) {
         + ` | 估计器尺度收缩已确认，但实现正确（${
           code(model.rootCauseAudit.category)
         }）`
-        + ` | 有证据支持另行预注册设计，但未授权（${
+        + ` | 审计形成时有证据支持另行预注册设计但未授权（${
           code(model.rootCauseAudit.psc02DesignStatus)
         }） |`
       )),
@@ -806,12 +806,16 @@ function roleZh(role) {
       "实现阻断且无候选结果",
     blocked_development_model_no_candidate_outcome:
       "开发执行阻断且无候选结果",
+    blocked_execution_incomplete_no_candidate_outcome:
+      "真实执行不完整且无候选结果",
     development_model_recovery_ready_no_private_outcome:
       "恢复就绪且尚无真实私有结果",
     preregistered_exploratory_candidate_not_executed:
       "探索性候选已预注册但尚未执行",
     implemented_exploratory_candidate_not_executed:
       "探索性候选已实现并通过合成验证但尚未执行",
+    inactive_development_candidate_not_evaluated:
+      "开发候选核心已实现、尚未评价且未激活",
     implemented_awaiting_independent_evaluation:
       "已实现并等待独立评价",
     retrospective_development_unsupported_stop_before_independent_k2:

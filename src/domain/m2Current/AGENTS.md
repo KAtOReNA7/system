@@ -78,14 +78,29 @@ This directory is the only implementation home for current M2 model logic.
   begins in the work-balanced log1p empirical parent and is amplified by
   hierarchical amount shrinkage, while implementation and same-case
   comparator integrity passed. The origin-visible arithmetic cash-anchor and
-  quasi-Gamma offset design is now preregistered only as experiment design
-  `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`, with status
-  `M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED`.
-  It freezes PSC01 occurrence, keeps taxonomy `REPORT_ONLY`, and has only a
-  disconnected public synthetic reference harness. Do not create a successor
-  model ID, connect a runtime, read private input, fit, tune, predict, evaluate,
-  bootstrap, or register a candidate/evaluation row without separate explicit
-  authorization.
+  quasi-Gamma offset design remains frozen as preregistration
+  `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`; the separately authorized
+  implementation is model `M2-CHAN-PSC02`, with exactly one raw candidate
+  variant `M2-CHAN-PSC02-RAW`. It freezes PSC01 occurrence, keeps taxonomy
+  `REPORT_ONLY`, and keeps the anchor-only and log-ratio arms attribution-only.
+  A public synthetic pass is not model evidence. The public mathematical core
+  exists, but the real runner has no reachable complete candidate path: the
+  component adapter, historical snapshot selection, private D0/D1/P orchestration,
+  atomic freeze, deferred comparators, metrics, and bootstrap chain are absent or
+  unwired. Current execution status is
+  `PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT`.
+  The single authorized historical development replay stopped before fit,
+  prediction, outcome access, metrics, or bootstrap. Its receipt and historical
+  `PSC02_DEVELOPMENT_NOT_SUPPORTED` result remain immutable. A recovery audit
+  classified componentId/revisionId/effectiveAt/availableAt as `NOT_RECOVERABLE`
+  and found zero reconstructable snapshots across the 24 frozen origins, so the
+  current authority status is
+  `PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY`
+  with `NO_MODEL_PERFORMANCE_EVIDENCE`. Never synthesize those fields, retry
+  PSC02, score an available-only subset, replace the raw candidate with a
+  diagnostic arm, or treat the blocker as model performance. Any future amount
+  model requires a new preregistration and authorization and may use only frozen,
+  proven origin-visible PSC01 population and training information.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

@@ -41,6 +41,21 @@ CHANNEL_GENERATIVE_CONFIG_PATH = (
 PUBLISHING_SCALE_CHANNEL_CONFIG_PATH = (
     ROOT / "config" / "m2-current-publishing-scale-channel.v0.1.json"
 )
+PSC02_DEVELOPMENT_CONFIG_PATH = (
+    ROOT
+    / "config"
+    / "m2-current-publishing-scale-channel-origin-visible-cash-anchor-development.v0.1.json"
+)
+PSC02_PREREGISTRATION_CONFIG_PATH = (
+    ROOT
+    / "config"
+    / "m2-current-publishing-scale-channel-origin-visible-cash-anchor-preregistration.v0.1.json"
+)
+PSC02_ANCHOR_SCHEMA_PATH = (
+    ROOT
+    / "config"
+    / "m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json"
+)
 CORE_REVENUE_MANUAL_CONFIG_PATH = (
     ROOT / "config" / "m2-current-core-revenue-manual.v0.1.json"
 )
@@ -1718,6 +1733,195 @@ def _publishing_scale_config_self_test() -> dict[str, Any]:
     }
 
 
+def _psc02_metadata_precheck() -> dict[str, Any]:
+    """Inspect only schemas, receipts and file headers before exact-head CI."""
+    from human_ledger_partition import discover_partition_sources
+
+    implementation = json.loads(
+        PSC02_DEVELOPMENT_CONFIG_PATH.read_text(encoding="utf-8")
+    )
+    preregistration = json.loads(
+        PSC02_PREREGISTRATION_CONFIG_PATH.read_text(encoding="utf-8")
+    )
+    anchor_schema = json.loads(
+        PSC02_ANCHOR_SCHEMA_PATH.read_text(encoding="utf-8")
+    )
+    if (
+        implementation.get("schema")
+        != "m2.current.publishing_scale_channel_origin_visible_cash_anchor_development.v0.1"
+        or implementation.get("modelId") != "M2-CHAN-PSC02"
+        or implementation.get("rawCandidateId") != "M2-CHAN-PSC02-RAW"
+        or preregistration.get("preregistrationId")
+        != "M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01"
+        or anchor_schema.get("$id")
+        != "m2.current.publishing_scale_channel_origin_visible_cash_anchor_schema.v0.1"
+    ):
+        raise HumanAnchoredMaterializationError(
+            "psc02 public contract binding differs"
+        )
+    sources = discover_partition_sources(ROOT / "data")
+    sales_header = list(
+        formal.pd.read_excel(sources.sales_share, nrows=0).columns
+    )
+    required = list(
+        implementation["sourceAuthority"]["requiredComponentFields"]
+    )
+    direct_presence = {
+        field: field in sales_header for field in required
+    }
+    non_derivable = [
+        field
+        for field in ("componentId", "revisionId", "effectiveAt", "availableAt")
+        if not direct_presence.get(field, False)
+    ]
+
+    psc01_directory = (
+        ROOT / implementation["frozenComparators"]["psc01Directory"]
+    )
+    prefix = implementation["frozenComparators"][
+        "psc01CompletedReceiptPrefix"
+    ]
+    receipts = []
+    for receipt_path in sorted(psc01_directory.glob(f"{prefix}*.json")):
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        receipts.append((receipt_path, receipt))
+    complete = [
+        value for value in receipts
+        if value[1].get("evaluationComplete") is True
+        and value[1].get("interpretableRawCandidateEvaluationProduced")
+        is True
+        and value[1].get("candidateOutputFrozen") is True
+    ]
+    frozen_manifest_valid = False
+    frozen_manifest_row_count = 0
+    frozen_manifest_digest_present = False
+    if len(complete) == 1:
+        receipt = complete[0][1]
+        manifest_name = receipt.get("outputFiles", {}).get(
+            "evaluationManifest"
+        )
+        manifest_path = psc01_directory / str(manifest_name)
+        if manifest_path.is_file():
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            frozen_manifest_valid = (
+                manifest.get("schema")
+                == implementation["frozenComparators"][
+                    "psc01EvaluationManifestSchema"
+                ]
+                and manifest.get("modelId") == "M2-CHAN-PSC01"
+                and manifest.get("candidateId") == "M2-CHAN-PSC01-RAW"
+                and manifest.get("actualDefinitionId")
+                == preregistration["immutableScientificScope"][
+                    "actualDefinitionId"
+                ]
+            )
+            frozen_manifest_row_count = int(manifest.get("rowCount", 0))
+            frozen_manifest_digest_present = (
+                isinstance(manifest.get("sha256"), str)
+                and len(manifest["sha256"]) == 64
+            )
+
+    lg01_rows = ROOT / implementation["frozenComparators"]["lg01Rows"]
+    lg01_manifest = ROOT / implementation["frozenComparators"][
+        "lg01Manifest"
+    ]
+    psc01_ready = (
+        len(complete) == 1
+        and frozen_manifest_valid
+        and frozen_manifest_row_count > 0
+        and frozen_manifest_digest_present
+    )
+    lg01_ready = lg01_rows.is_file() and lg01_manifest.is_file()
+    source_schema_ready = not non_derivable
+    status = (
+        "M2_PSC02_PRIVATE_METADATA_PRECHECK_READY"
+        if psc01_ready and lg01_ready and source_schema_ready
+        else "M2_PSC02_PRIVATE_METADATA_PRECHECK_SOURCE_AUTHORITY_BLOCKED"
+    )
+    return {
+        "schema": "m2.current.psc02.private_metadata_precheck.v0.1",
+        "status": status,
+        "modelId": "M2-CHAN-PSC02",
+        "experimentId":
+            "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+        "evidenceClass": "DEVELOPMENT_REPLAY",
+        "cashAuthority": {
+            "sourceFilesPresent": all(
+                path.is_file() for path in sources.all()
+            ),
+            "salesShareHeaderInspected": True,
+            "requiredFieldPresence": direct_presence,
+            "nonDerivableRequiredFieldsMissing": non_derivable,
+            "schemaReady": source_schema_ready,
+        },
+        "frozenPsc01": {
+            "completedFrozenReceiptCount": len(complete),
+            "manifestValid": frozen_manifest_valid,
+            "rowCount": frozen_manifest_row_count,
+            "digestPresent": frozen_manifest_digest_present,
+            "ready": psc01_ready,
+        },
+        "frozenLg01": {
+            "rowsPresent": lg01_rows.is_file(),
+            "manifestPresent": lg01_manifest.is_file(),
+            "ready": lg01_ready,
+            "scoresRead": False,
+        },
+        "actualDefinitionId": preregistration[
+            "immutableScientificScope"
+        ]["actualDefinitionId"],
+        "privateRowValuesRead": 0,
+        "candidateFitStarted": False,
+        "realPredictionGenerated": False,
+        "outerOutcomeOpened": False,
+        "candidateMetricsComputed": False,
+        "privateOutputWrites": 0,
+    }
+
+
+def _psc02_authority_execution_precheck() -> dict[str, Any]:
+    """Validate authority at execution time without fitting or predicting."""
+    from calibrate_cleaned_bills import REAL_BILL_COLUMNS
+    from human_ledger_partition import (
+        HumanLedgerPartitionError,
+        discover_partition_sources,
+        validate_partition,
+    )
+
+    metadata = _psc02_metadata_precheck()
+    sources = discover_partition_sources(ROOT / "data")
+    reconciliation_status = "PASSED"
+    reconciliation_error = None
+    try:
+        validate_partition(sources, REAL_BILL_COLUMNS)
+    except HumanLedgerPartitionError as error:
+        reconciliation_status = "FAILED_CLOSED"
+        reconciliation_error = str(error)
+    ready = (
+        metadata["status"] == "M2_PSC02_PRIVATE_METADATA_PRECHECK_READY"
+        and reconciliation_status == "PASSED"
+    )
+    return {
+        **metadata,
+        "schema": "m2.current.psc02.authority_execution_precheck.v0.1",
+        "status": (
+            "M2_PSC02_PRIVATE_AUTHORITY_READY_FOR_CONTROLLED_REPLAY"
+            if ready
+            else "M2_PSC02_PRIVATE_SOURCE_AUTHORITY_FAILED_CLOSED_BEFORE_PREDICTION"
+        ),
+        "cashAuthority": {
+            **metadata["cashAuthority"],
+            "partitionReconciliationStatus": reconciliation_status,
+            "partitionReconciliationError": reconciliation_error,
+        },
+        "readyForPrediction": ready,
+        "candidateFitStarted": False,
+        "realPredictionGenerated": False,
+        "outerOutcomeOpened": False,
+        "candidateMetricsComputed": False,
+    }
+
+
 def _build_channel_generative_rows(
     cases: Iterable[Mapping[str, Any]],
     histories: Mapping[str, Mapping[str, Any]],
@@ -2951,6 +3155,10 @@ if __name__ == "__main__":
         result = _publishing_scale_preflight()
     elif arguments == ["--publishing-scale-config-self-test"]:
         result = _publishing_scale_config_self_test()
+    elif arguments == ["--psc02-metadata-precheck"]:
+        result = _psc02_metadata_precheck()
+    elif arguments == ["--psc02-authority-execution-precheck"]:
+        result = _psc02_authority_execution_precheck()
     elif (
         len(arguments) == 3
         and arguments[0] == "--publishing-scale-prepare"

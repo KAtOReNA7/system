@@ -51,6 +51,7 @@ test("catalog defines one private-free core capability and scoped private capabi
     "m2-current-channel-experts",
     "m2-current-publishing-scale-channel",
     "m2-current-publishing-scale-channel-controlled-retry-v2",
+      "m2-current-publishing-scale-cash-anchor-development",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
