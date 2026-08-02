@@ -1,6 +1,6 @@
 {
   "schemaVersion": "development-capability-catalog.v0.1",
-  "catalogVersion": "2026-07-30",
+  "catalogVersion": "2026-08-02",
   "principles": {
     "coreDevelopmentMustNotRequirePrivateArtifacts": true,
     "missingPrivateArtifactsBlockOnlyOwningCapability": true,
@@ -1139,7 +1139,7 @@
     },
     {
       "id": "m2-current-publishing-scale-cash-anchor-development",
-      "description": "Audit the consumed PSC02 historical DEVELOPMENT_REPLAY. The only authorized attempt stopped before fit, prediction and outcome access because authentic component/revision/time authority and ledger-partition reconciliation failed closed; no retry is authorized.",
+      "description": "Audit-only PSC02 capability. Public mathematical primitives exist, but the real runner success path is incomplete and the historical origin-visible component/revision/time authority is not recoverable; the single pre-prediction attempt is preserved and no retry is authorized.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [
         {
@@ -1202,8 +1202,8 @@
         "npm run diagnose:m2:publishing-scale-cash-anchor",
         "npm run precheck:m2:current:publishing-scale-cash-anchor"
       ],
-      "recovery": "Restore only authentic PRIVATE_SOURCE_AUTHORITY with component, revision, effectiveAt and availableAt lineage. Derived PSC01/LG01 caches may be rebuilt only from their frozen code and authorities. Never synthesize historical revision metadata, score an anchor-available subset or fabricate receipts. Any retry requires a separate scope, explicit user authorization and new exact-head Linux/Windows CI.",
-      "authorization": "USER_AUTHORIZED_SINGLE_PSC02_CONTROLLED_DEVELOPMENT_REPLAY_CONSUMED_SOURCE_AUTHORITY_BLOCKED_2026_08_01"
+      "recovery": "The existing historical PSC02 authority is not recoverable: do not synthesize componentId, revisionId, effectiveAt, availableAt or origin snapshots, and do not retry PSC02. A separately preregistered future amount model may use only already frozen and proven origin-visible PSC01 population and training information under new authorization. Preserve all historical receipts and frozen evidence.",
+      "authorization": "PSC02_AUDIT_ONLY_HISTORICAL_REPLAY_BLOCKED_SOURCE_AUTHORITY_NOT_RECOVERABLE_NO_RETRY_AUTHORIZED_2026_08_02"
     },
     {
       "id": "m2-current-channel-generative",

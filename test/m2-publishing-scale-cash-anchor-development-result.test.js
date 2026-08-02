@@ -14,7 +14,7 @@ const decisionPath =
   "docs/analysis/m2-current/"
     + "M2-publishing-scale-channel-origin-visible-cash-anchor-"
     + "implementation-and-result-decision-v0.1.md";
-const statePath = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md";
+const statePath = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md";
 
 const result = await readJson(resultPath);
 const registry = await readJson("config/m2-model-registry.v1.json");
@@ -132,9 +132,24 @@ test("Model Registry and capability catalog close PSC02 without inventing an eva
     (value) => value.experimentId
       === "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02"
   );
-  assert.equal(model.currentRole, "blocked_development_model_no_candidate_outcome");
+  assert.equal(model.currentRole, "blocked_execution_incomplete_no_candidate_outcome");
   assert.deepEqual(model.evaluations, []);
-  assert.equal(experiment.resultStatus, "PSC02_DEVELOPMENT_NOT_SUPPORTED");
+  assert.equal(
+    experiment.resultStatus,
+    "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY"
+  );
+  assert.equal(
+    experiment.historicalAttemptStatus,
+    "PSC02_DEVELOPMENT_NOT_SUPPORTED"
+  );
+  assert.equal(
+    experiment.executionCompletenessStatus,
+    "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT"
+  );
+  assert.equal(
+    experiment.modelPerformanceEvidenceStatus,
+    "NO_MODEL_PERFORMANCE_EVIDENCE"
+  );
   assert.equal(experiment.realPredictionGenerated, false);
   assert.equal(experiment.evaluationExecuted, false);
   assert.ok(experiment.arms.every((arm) => (
@@ -156,7 +171,10 @@ test("Model Registry and capability catalog close PSC02 without inventing an eva
   const capability = capabilityCatalog.capabilities.find(
     (value) => value.id === "m2-current-publishing-scale-cash-anchor-development"
   );
-  assert.match(capability.authorization, /CONSUMED_SOURCE_AUTHORITY_BLOCKED/u);
+  assert.match(
+    capability.authorization,
+    /AUDIT_ONLY_HISTORICAL_REPLAY_BLOCKED_SOURCE_AUTHORITY_NOT_RECOVERABLE/u
+  );
   assert.ok(!capability.canonicalValidationCommands.includes(
     "npm run develop:m2:current:publishing-scale-cash-anchor"
   ));

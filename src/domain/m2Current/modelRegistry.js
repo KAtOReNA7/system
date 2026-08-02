@@ -806,6 +806,8 @@ function roleZh(role) {
       "实现阻断且无候选结果",
     blocked_development_model_no_candidate_outcome:
       "开发执行阻断且无候选结果",
+    blocked_execution_incomplete_no_candidate_outcome:
+      "真实执行不完整且无候选结果",
     development_model_recovery_ready_no_private_outcome:
       "恢复就绪且尚无真实私有结果",
     preregistered_exploratory_candidate_not_executed:

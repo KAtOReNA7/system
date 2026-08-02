@@ -19,7 +19,7 @@ export const M2_PSC02_RAW_CANDIDATE_ID = "M2-CHAN-PSC02-RAW";
 export const M2_PSC02_IMPLEMENTATION_SCHEMA =
   "m2.current.publishing_scale_channel_origin_visible_cash_anchor_development.v0.1";
 export const M2_PSC02_IMPLEMENTATION_STATUS =
-  "M2_PSC02_CORE_IMPLEMENTED_CONTROLLED_DEVELOPMENT_REPLAY_AUTHORIZED_NOT_EXECUTED";
+  "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT";
 
 const ARM_IDS = m2Psc02ReferenceArmIds();
 const MECHANISMS = Object.freeze([
@@ -96,6 +96,30 @@ export function validateM2Psc02DevelopmentConfig(
     implementation?.executionWindow?.maximumCompletePrimaryRawResults,
     1,
     "single_complete_result",
+    failures
+  );
+  equal(
+    implementation?.executionWindow?.controlledDevelopmentReplayAuthorized,
+    false,
+    "controlled_replay_not_authorized",
+    failures
+  );
+  equal(
+    implementation?.executionWindow?.authorizationStatus,
+    "HISTORICAL_SINGLE_ATTEMPT_CONSUMED_NO_RETRY_AUTHORIZED",
+    "historical_attempt_authorization_consumed",
+    failures
+  );
+  equal(
+    implementation?.executionWindow?.historicalAttemptCount,
+    1,
+    "historical_attempt_count",
+    failures
+  );
+  equal(
+    implementation?.executionWindow?.completePrimaryRawResultFormed,
+    false,
+    "no_complete_primary_raw_result",
     failures
   );
   equal(

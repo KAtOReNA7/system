@@ -83,21 +83,24 @@ This directory is the only implementation home for current M2 model logic.
   implementation is model `M2-CHAN-PSC02`, with exactly one raw candidate
   variant `M2-CHAN-PSC02-RAW`. It freezes PSC01 occurrence, keeps taxonomy
   `REPORT_ONLY`, and keeps the anchor-only and log-ratio arms attribution-only.
-  A public synthetic pass is not model evidence. Real prediction or outcome
-  access requires a clean pushed Draft-PR exact HEAD with successful Linux and
-  Windows CI plus authentic component/revision/time source authority. Never
-  score an available-only subset, replace the raw candidate with a diagnostic
-  arm, or treat a source-authority blocker as a model performance failure.
-  The single authorized historical development replay has been consumed and
-  stopped before fit, prediction, outcome access, metrics, or bootstrap because
-  authentic component/revision/effectiveAt/availableAt authority is absent and
-  ledger-partition reconciliation failed closed. Its current result is
-  `PSC02_DEVELOPMENT_NOT_SUPPORTED` with decision class
-  `PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE`; all three experiment
-  arms are `NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED`, no raw candidate
-  result exists, and no retry is authorized. Restoring authority requires a
-  separate scope, explicit authorization, and a new exact-head dual-platform CI
-  gate before any execution attempt.
+  A public synthetic pass is not model evidence. The public mathematical core
+  exists, but the real runner has no reachable complete candidate path: the
+  component adapter, historical snapshot selection, private D0/D1/P orchestration,
+  atomic freeze, deferred comparators, metrics, and bootstrap chain are absent or
+  unwired. Current execution status is
+  `PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT`.
+  The single authorized historical development replay stopped before fit,
+  prediction, outcome access, metrics, or bootstrap. Its receipt and historical
+  `PSC02_DEVELOPMENT_NOT_SUPPORTED` result remain immutable. A recovery audit
+  classified componentId/revisionId/effectiveAt/availableAt as `NOT_RECOVERABLE`
+  and found zero reconstructable snapshots across the 24 frozen origins, so the
+  current authority status is
+  `PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY`
+  with `NO_MODEL_PERFORMANCE_EVIDENCE`. Never synthesize those fields, retry
+  PSC02, score an available-only subset, replace the raw candidate with a
+  diagnostic arm, or treat the blocker as model performance. Any future amount
+  model requires a new preregistration and authorization and may use only frozen,
+  proven origin-visible PSC01 population and training information.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

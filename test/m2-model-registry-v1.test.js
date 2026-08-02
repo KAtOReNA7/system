@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 36);
   assert.equal(validation.counts.experimentCount, 23);
-  assert.equal(validation.counts.nonModelIdentifierCount, 135);
+  assert.equal(validation.counts.nonModelIdentifierCount, 138);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
@@ -96,7 +96,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     "M2-WORK-LG01"
   );
   assert.equal(registry.currentRoles.activeExperiment, null);
-  assert.equal(registry.currentRoles.blockedExperiment, null);
+  assert.equal(
+    registry.currentRoles.blockedExperiment,
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02"
+  );
   assert.equal(registry.currentRoles.pendingExperiment, null);
   assert.match(
     registry.currentRoles.roleInterpretationZh,
@@ -228,7 +231,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);

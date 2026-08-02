@@ -1,8 +1,8 @@
 {
   "schema": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_development.v0.1",
   "version": "0.1.0",
-  "asOf": "2026-08-01",
-  "status": "M2_PSC02_CORE_IMPLEMENTED_CONTROLLED_DEVELOPMENT_REPLAY_AUTHORIZED_NOT_EXECUTED",
+  "asOf": "2026-08-02",
+  "status": "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT",
   "modelId": "M2-CHAN-PSC02",
   "rawCandidateId": "M2-CHAN-PSC02-RAW",
   "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
@@ -29,7 +29,12 @@
     "firstCompletePrimaryRawResultMustFreeze": true,
     "infrastructureAttemptsBeforeCompleteResultRequireReceipt": true,
     "rerunAfterCompletePrimaryRawResultAllowed": false,
-    "outcomeDrivenDesignChangeAllowed": false
+    "outcomeDrivenDesignChangeAllowed": false,
+    "controlledDevelopmentReplayAuthorized": false,
+    "authorizationStatus": "HISTORICAL_SINGLE_ATTEMPT_CONSUMED_NO_RETRY_AUTHORIZED",
+    "historicalAttemptCount": 1,
+    "historicalAttemptStatus": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+    "completePrimaryRawResultFormed": false
   },
   "runtimeBinding": {
     "cleanWorktreeRequired": true,

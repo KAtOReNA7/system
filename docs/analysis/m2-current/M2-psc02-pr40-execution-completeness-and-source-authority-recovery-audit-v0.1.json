@@ -1,0 +1,393 @@
+{
+  "schema": "m2.current.psc02.pr40_execution_completeness_and_source_authority_recovery_audit.v0.1",
+  "asOf": "2026-08-02",
+  "status": "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY",
+  "decisionBranch": "D1",
+  "modelId": "M2-CHAN-PSC02",
+  "rawCandidateId": "M2-CHAN-PSC02-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+  "currentStatuses": {
+    "sourceAuthority": "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY",
+    "modelPerformanceEvidence": "NO_MODEL_PERFORMANCE_EVIDENCE",
+    "executionCompleteness": "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT"
+  },
+  "historicalAttempt": {
+    "resultStatus": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+    "decisionClass": "PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE",
+    "authorityRole": "HISTORICAL_PRE_PREDICTION_ATTEMPT_RECORD",
+    "receiptPreservedByteIdentical": true,
+    "attemptCount": 1,
+    "candidateFitStarted": false,
+    "realPredictionGenerated": false,
+    "predictionRowsProduced": 0,
+    "outerOutcomeOpened": false,
+    "candidateMetricsComputed": false,
+    "bootstrapExecuted": false,
+    "completePrimaryRawResultFormed": false
+  },
+  "executionCallGraph": [
+    "npm run develop:m2:current:publishing-scale-cash-anchor",
+    "scripts/m2-current/run_m2_human_anchored_development.mjs --publishing-scale-cash-anchor",
+    "scripts/m2-current/publishing_scale_cash_anchor_execution.mjs#runM2Psc02ControlledDevelopmentReplay",
+    "scripts/m2-current/materialize_human_anchored_cases.py --psc02-authority-execution-precheck",
+    "src/domain/m2Current/publishingScaleCashAnchorDevelopment.js"
+  ],
+  "runnerFinding": {
+    "authorityNotReadyPath": "HISTORICAL_PATH_GENERATED_AUTHORITY_BLOCKED_PUBLIC_RESULT",
+    "authorityReadyPath": "HISTORICAL_PATH_UNCONDITIONALLY_FAILED_WITHOUT_COMPATIBLE_COMPONENT_ADAPTER",
+    "completePrimaryRawResultPathReachable": false,
+    "currentReplayCommandBehavior": "FAIL_CLOSED_BEFORE_GIT_PREFLIGHT_PRIVATE_DIRECTORY_OR_RECEIPT_ACCESS"
+  },
+  "executionCompletenessMatrix": [
+    {
+      "stage": 1,
+      "name": "component_authority_adapter",
+      "publicPrimitive": "ABSENT",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 2,
+      "name": "origin_visible_component_revision_snapshot_selection",
+      "publicPrimitive": "CONTRACT_ONLY",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 3,
+      "name": "monthly_natural_key_aggregation",
+      "publicPrimitive": "PRESENT",
+      "realRunner": "NOT_WIRED_TO_PRIVATE_AUTHORITY",
+      "complete": false
+    },
+    {
+      "stage": 4,
+      "name": "anchor_materialization_and_six_level_fallback",
+      "publicPrimitive": "PRESENT_AND_SYNTHETIC_VERIFIED",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 5,
+      "name": "frozen_psc01_occurrence_join",
+      "publicPrimitive": "PARITY_AND_COVERAGE_HELPERS_PRESENT",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 6,
+      "name": "D0_anchor_only_execution",
+      "publicPrimitive": "PREDICTION_PRIMITIVE_PRESENT",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 7,
+      "name": "D1_nested_fit_and_prediction",
+      "publicPrimitive": "FIT_AND_PREDICTION_PRIMITIVES_PRESENT",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 8,
+      "name": "P_nested_fit_and_prediction",
+      "publicPrimitive": "FIT_CROSS_FIT_AND_PREDICTION_PRIMITIVES_PRESENT",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 9,
+      "name": "occurrence_binary64_parity",
+      "publicPrimitive": "PRESENT_AND_SYNTHETIC_VERIFIED",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 10,
+      "name": "exact_psc01_case_coverage",
+      "publicPrimitive": "PRESENT_AND_SYNTHETIC_VERIFIED",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 11,
+      "name": "monthly_to_horizon_aggregation",
+      "publicPrimitive": "PRESENT",
+      "realRunner": "NOT_WIRED",
+      "complete": false
+    },
+    {
+      "stage": 12,
+      "name": "P_raw_prediction_atomic_freeze",
+      "publicPrimitive": "OUTPUT_NAMES_ONLY",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 13,
+      "name": "deferred_psc01_lg01_comparator_read",
+      "publicPrimitive": "PRECHECK_AVAILABILITY_ONLY",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 14,
+      "name": "complete_metrics_and_group_diagnostics",
+      "publicPrimitive": "PARTIAL_SCORING_HELPER_ONLY",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 15,
+      "name": "paired_whole_work_bootstrap_2000",
+      "publicPrimitive": "CONTRACT_ONLY",
+      "realRunner": "MISSING",
+      "complete": false
+    },
+    {
+      "stage": 16,
+      "name": "private_manifest_receipt_digest_and_frozen_outputs",
+      "publicPrimitive": "OUTPUT_CONTRACT_AND_HISTORICAL_ATTEMPT_RECEIPT_ONLY",
+      "realRunner": "INCOMPLETE_NO_SUCCESS_ATOMIC_FREEZE",
+      "complete": false
+    }
+  ],
+  "sourceAuthorityRecovery": {
+    "overallStatus": "NOT_RECOVERABLE_FOR_HISTORICAL_REPLAY",
+    "fieldAssessments": [
+      {
+        "field": "componentId",
+        "classification": "NOT_RECOVERABLE",
+        "sourceEvidence": "CURRENT_LEDGER_SNAPSHOT_HAS_NO_NATIVE_COMPONENT_ID_OR_UPSTREAM_RECORD_IDENTITY",
+        "uniqueness": "CANNOT_DISTINGUISH_TWO_LEGITIMATE_IDENTICAL_POSTINGS",
+        "timeCoverage": "CURRENT_SNAPSHOT_ONLY",
+        "failureReason": "ROW_HASH_OR_ROW_POSITION_WOULD_CREATE_SYNTHETIC_IDENTITY"
+      },
+      {
+        "field": "revisionId",
+        "classification": "NOT_RECOVERABLE",
+        "sourceEvidence": "NO_COMPONENT_OR_MONTHLY_NATURAL_KEY_REVISION_LINEAGE",
+        "uniqueness": "CURRENT_WORKBOOK_DIGEST_IDENTIFIES_ONLY_ONE_CURRENT_SNAPSHOT",
+        "timeCoverage": "CURRENT_SNAPSHOT_ONLY",
+        "failureReason": "SNAPSHOT_DIGEST_CANNOT_BE_REINTERPRETED_AS_HISTORICAL_REVISION"
+      },
+      {
+        "field": "effectiveAt",
+        "classification": "NOT_RECOVERABLE",
+        "sourceEvidence": "NO_NATIVE_BUSINESS_EFFECTIVE_TIME_OR_PRIOR_UPSTREAM_CONTRACT",
+        "uniqueness": "NOT_APPLICABLE_WITHOUT_SOURCE_SEMANTICS",
+        "timeCoverage": "NONE",
+        "failureReason": "CASH_MONTH_CANNOT_BE_REPURPOSED_AS_EFFECTIVE_AT"
+      },
+      {
+        "field": "availableAt",
+        "classification": "NOT_RECOVERABLE",
+        "sourceEvidence": "NO_HISTORICAL_EXPORT_IMPORT_RECEIPT_OR_IMMUTABLE_SNAPSHOT_ARRIVAL_RECORD",
+        "uniqueness": "NOT_APPLICABLE_WITHOUT_ARRIVAL_LINEAGE",
+        "timeCoverage": "NONE",
+        "failureReason": "FILE_MTIME_COPY_TIME_GIT_TIME_AND_AUDIT_READ_TIME_ARE_NOT_AVAILABILITY_AUTHORITY"
+      }
+    ],
+    "workbookStructure": {
+      "visibleSheetCountPerWorkbook": 1,
+      "hiddenSourceSheetsFound": false,
+      "namedSourceTablesFound": false,
+      "formulaOrExternalConnectionSourceFound": false,
+      "upstreamIdentityOrArrivalMetadataFound": false
+    },
+    "historicalSnapshots": {
+      "immutableHistoricalSnapshotsFound": false,
+      "revisionLineageFound": false,
+      "availabilityLineageFound": false,
+      "currentInputDigestsUsableAsHistoricalLineage": false
+    },
+    "originCoverage": {
+      "primaryOrigins": [
+        "2021-12",
+        "2022-01",
+        "2022-02",
+        "2022-03",
+        "2022-04",
+        "2022-05",
+        "2022-06",
+        "2022-07",
+        "2022-08",
+        "2022-09",
+        "2022-10",
+        "2022-11",
+        "2022-12"
+      ],
+      "strictOrigins": [
+        "2023-03",
+        "2023-06",
+        "2023-09",
+        "2023-12",
+        "2024-03",
+        "2024-06",
+        "2024-09",
+        "2024-12",
+        "2025-03",
+        "2025-06",
+        "2025-09"
+      ],
+      "totalFrozenOrigins": 24,
+      "reconstructableOrigins": 0,
+      "allOriginsAuthenticallyReconstructable": false
+    }
+  },
+  "ledgerPartitionAudit": {
+    "method": "DETERMINISTIC_CANONICAL_MULTISET_DIFFERENCE",
+    "missingFromPartition": 0,
+    "extraInPartition": 3,
+    "extraUniqueCanonicalKeys": 3,
+    "classification": "SALES_SHARE_ONLY_ADDITIVE_AMOUNT_VARIANTS_ABSENT_FROM_TOTAL_LEDGER",
+    "exactDuplicates": false,
+    "legitimateSplitOrReplacement": false,
+    "classificationDrift": false,
+    "emptyOrFormattingDifference": false,
+    "numericNormalizationDifference": false,
+    "comparisonKeyOmission": false,
+    "cashType": "SALES_SHARE",
+    "reversalInvolved": false,
+    "buyoutInvolved": false,
+    "unallocatedResidualInvolved": false,
+    "sameNonAmountDimensionsAsTotalRows": true,
+    "correspondingTotalRowsAlsoRetainedInPartition": true,
+    "deletingExtraRowsWouldChangeCash": true,
+    "deletingExtraRowsWouldRestoreRowAndAmountConservation": true,
+    "extraMultisetSha256": "928d47ff67f6e7ef57a4c919dc3770baf4217797dde72e38137704349eecc9f2",
+    "privacy": "AGGREGATE_ONLY_NO_ROW_VALUE_WORK_NAME_AMOUNT_OR_LOCAL_PATH_PUBLISHED"
+  },
+  "publicDiagnostic": {
+    "schema": "m2.current.psc02.execution_completeness_public.v0.1",
+    "status": "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT",
+    "modelId": "M2-CHAN-PSC02",
+    "rawCandidateId": "M2-CHAN-PSC02-RAW",
+    "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+    "primaryArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P",
+    "diagnosticArmIds": [
+      "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+      "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1"
+    ],
+    "evidenceClass": "EXECUTION_INTEGRITY_AND_SOURCE_AUTHORITY_RECOVERY_AUDIT",
+    "syntheticDiagnostic": {
+      "schema": "m2.current.psc02.implementation_diagnostic.v0.1",
+      "status": "M2_PSC02_PUBLIC_SYNTHETIC_IMPLEMENTATION_VERIFIED",
+      "modelId": "M2-CHAN-PSC02",
+      "rawCandidateId": "M2-CHAN-PSC02-RAW",
+      "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+      "arms": {
+        "anchorOnlyDiagnostic": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+        "logRatioDiagnostic": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1",
+        "primary": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P"
+      },
+      "scaleEquivarianceFactor": 10,
+      "occurrenceMultiplyCount": 1,
+      "anchorApplyCount": 1,
+      "taxonomyUsed": false,
+      "lg01PredictionUsed": false,
+      "estimatorSwitchUsed": false,
+      "privateRowsUsed": false,
+      "realOutcomeUsed": false,
+      "independentEvaluationOpened": false,
+      "finalHoldoutOpened": false,
+      "productionModified": false
+    },
+    "implementation": {
+      "publicMathematicalCorePresent": true,
+      "publicSyntheticContractVerified": true,
+      "frozenPsc01OccurrencePassThrough": true,
+      "originVisibleCashAnchor": true,
+      "anchorFallbackOrder": [
+        "WORK_CHANNEL",
+        "WORK_MECHANISM",
+        "WORK",
+        "CHANNEL_POOL",
+        "MECHANISM_POOL",
+        "GLOBAL_POOL"
+      ],
+      "residualFeatureCount": 18,
+      "residualBasisCopiedFromPsc01": true,
+      "nestedPrimaryWorkSelection": true,
+      "strictRollingTimeSelection": true,
+      "gammaFitLinearPredictorClipUsed": false,
+      "finalPredictionResidualClip": [-30, 30],
+      "diagnosticArmsMayReplacePrimary": false,
+      "taxonomy": "REPORT_ONLY",
+      "lg01PredictionDependency": false,
+      "realComponentAuthorityAdapterPresent": false,
+      "realOriginVisibleSnapshotSelectorPresent": false,
+      "realMonthlyMaterializationOrchestrated": false,
+      "realD0D1POrchestratorPresent": false,
+      "realComparatorMetricBootstrapOrchestratorPresent": false,
+      "realRunnerSuccessPathReachable": false
+    },
+    "execution": {
+      "privateMetadataOnlyPrecheckAllowed": true,
+      "completePrimaryRawResultMaximum": 1,
+      "exactHeadLinuxWindowsCiRequiredBeforePrediction": true,
+      "controlledDevelopmentReplayAuthorized": false,
+      "historicalAttemptPreserved": true,
+      "candidateFitStarted": false,
+      "realPredictionGenerated": false,
+      "outerOutcomeOpened": false,
+      "candidateMetricsComputed": false,
+      "bootstrapExecuted": false,
+      "candidateResultExists": false,
+      "modelPerformanceEvaluated": false
+    },
+    "authority": {
+      "recoveryStatus": "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY",
+      "fieldStatus": {
+        "componentId": "NOT_RECOVERABLE",
+        "revisionId": "NOT_RECOVERABLE",
+        "effectiveAt": "NOT_RECOVERABLE",
+        "availableAt": "NOT_RECOVERABLE"
+      },
+      "reconstructableOriginCount": 0,
+      "totalFrozenOriginCount": 24
+    },
+    "boundaries": {
+      "taxonomy": "REPORT_ONLY",
+      "lg01ModelInputAllowed": false,
+      "independentEvaluationAuthorized": false,
+      "laterOriginAuthorized": false,
+      "finalHoldoutOpened": false,
+      "productionReady": false,
+      "productionModified": false,
+      "automationAuthorized": false,
+      "releaseAuthorized": false,
+      "databaseAllowed": false,
+      "apiAllowed": false,
+      "providerAllowed": false,
+      "financialUseAllowed": false,
+      "activeCandidate": null,
+      "approvedForAutomation": null
+    }
+  },
+  "nextDirection": {
+    "supported": "SEPARATELY_PREREGISTER_A_NEW_AMOUNT_MODEL_USING_ONLY_ALREADY_FROZEN_AND_PROVEN_ORIGIN_VISIBLE_PSC01_POPULATION_AND_TRAINING_INFORMATION",
+    "designedOrImplementedInThisAudit": false,
+    "psc02RetrySupported": false
+  },
+  "boundaries": {
+    "realFitExecuted": false,
+    "realPredictionGenerated": false,
+    "outerOutcomeOpened": false,
+    "lg01ScoresRead": false,
+    "candidateMetricsComputed": false,
+    "bootstrapExecuted": false,
+    "privateAttemptModifiedOrRerun": false,
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationAuthorized": false,
+    "laterOriginAuthorized": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "databaseUsed": false,
+    "providerUsed": false,
+    "financialUseAuthorized": false
+  }
+}

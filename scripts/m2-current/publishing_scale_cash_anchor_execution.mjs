@@ -31,8 +31,8 @@ const BUSINESS_CONFIG = "config/m2-business-acceptance-contract.v1.json";
 const IMPLEMENTATION_SOURCE =
   "src/domain/m2Current/publishingScaleCashAnchorDevelopment.js";
 const MATERIALIZER = "scripts/m2-current/materialize_human_anchored_cases.py";
-const READINESS_JSON =
-  "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.json";
+const AUDIT_JSON =
+  "docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.json";
 const EVALUATION_JSON =
   "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json";
 const EVALUATION_MD =
@@ -52,8 +52,8 @@ export async function runM2Psc02PublicDiagnostic({root, verify = false}) {
     businessAcceptanceContract: contracts.businessAcceptanceContract
   });
   const result = Object.freeze({
-    schema: "m2.current.psc02.implementation_readiness_public.v0.1",
-    status: "M2_PSC02_IMPLEMENTED_AWAITING_EXACT_HEAD_CI_AND_CONTROLLED_DEVELOPMENT_REPLAY",
+    schema: "m2.current.psc02.execution_completeness_public.v0.1",
+    status: "PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT",
     modelId: M2_PSC02_MODEL_ID,
     rawCandidateId: M2_PSC02_RAW_CANDIDATE_ID,
     experimentId: contracts.implementation.experimentId,
@@ -61,9 +61,11 @@ export async function runM2Psc02PublicDiagnostic({root, verify = false}) {
     diagnosticArmIds: Object.freeze([
       ...contracts.implementation.diagnosticArmIds
     ]),
-    evidenceClass: "DEVELOPMENT_REPLAY",
+    evidenceClass: "EXECUTION_INTEGRITY_AND_SOURCE_AUTHORITY_RECOVERY_AUDIT",
     syntheticDiagnostic: diagnostic,
     implementation: Object.freeze({
+      publicMathematicalCorePresent: true,
+      publicSyntheticContractVerified: true,
       frozenPsc01OccurrencePassThrough: true,
       originVisibleCashAnchor: true,
       anchorFallbackOrder: Object.freeze([
@@ -80,25 +82,49 @@ export async function runM2Psc02PublicDiagnostic({root, verify = false}) {
       ]),
       diagnosticArmsMayReplacePrimary: false,
       taxonomy: "REPORT_ONLY",
-      lg01PredictionDependency: false
+      lg01PredictionDependency: false,
+      realComponentAuthorityAdapterPresent: false,
+      realOriginVisibleSnapshotSelectorPresent: false,
+      realMonthlyMaterializationOrchestrated: false,
+      realD0D1POrchestratorPresent: false,
+      realComparatorMetricBootstrapOrchestratorPresent: false,
+      realRunnerSuccessPathReachable: false
     }),
     execution: Object.freeze({
       privateMetadataOnlyPrecheckAllowed: true,
       completePrimaryRawResultMaximum: 1,
       exactHeadLinuxWindowsCiRequiredBeforePrediction: true,
+      controlledDevelopmentReplayAuthorized: false,
+      historicalAttemptPreserved: true,
+      candidateFitStarted: false,
       realPredictionGenerated: false,
       outerOutcomeOpened: false,
-      candidateMetricsComputed: false
+      candidateMetricsComputed: false,
+      bootstrapExecuted: false,
+      candidateResultExists: false,
+      modelPerformanceEvaluated: false
+    }),
+    authority: Object.freeze({
+      recoveryStatus:
+        "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY",
+      fieldStatus: Object.freeze({
+        componentId: "NOT_RECOVERABLE",
+        revisionId: "NOT_RECOVERABLE",
+        effectiveAt: "NOT_RECOVERABLE",
+        availableAt: "NOT_RECOVERABLE"
+      }),
+      reconstructableOriginCount: 0,
+      totalFrozenOriginCount: 24
     }),
     boundaries: Object.freeze({...contracts.implementation.boundaries})
   });
   if (verify) {
-    const expected = JSON.parse(await readFile(
-      path.join(root, READINESS_JSON),
+    const audit = JSON.parse(await readFile(
+      path.join(root, AUDIT_JSON),
       "utf8"
     ));
-    if (stableJson(expected) !== stableJson(result)) {
-      throw new Error("m2_psc02_implementation_readiness_artifact_drift");
+    if (stableJson(audit.publicDiagnostic) !== stableJson(result)) {
+      throw new Error("m2_psc02_execution_completeness_artifact_drift");
     }
   }
   process.stdout.write(`${JSON.stringify(result)}\n`);
@@ -117,6 +143,14 @@ export async function runM2Psc02MetadataPrecheck({root}) {
 export async function runM2Psc02ControlledDevelopmentReplay({root}) {
   const contracts = await readContracts(root);
   validateM2Psc02DevelopmentConfig(contracts.implementation, contracts);
+  if (
+    contracts.implementation.executionWindow
+      .controlledDevelopmentReplayAuthorized !== true
+  ) {
+    throw new Error(
+      "m2_psc02_historical_replay_not_authorized_execution_incomplete"
+    );
+  }
   const gitPreflight = verifyM2PublishingScaleGitAndCiPreflight({root});
   const privateDirectory = resolvePrivateDirectory(
     root,

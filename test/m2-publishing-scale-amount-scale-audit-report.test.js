@@ -133,7 +133,7 @@ test("PSC01 audit stays frozen while current governance maps its PSC02 successor
   const registry = readJson(registryPath);
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
   );
   const model = registry.models.find(
     (value) => value.stableModelId === "M2-CHAN-PSC01"

@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -25,6 +25,9 @@
   - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.md`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-and-result-decision-v0.1.md`
+  - `docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.json`
+  - `docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-psc02-pr40-pre-result-status-correction-v0.1.md`
 - M2 分层收入组合模型开发结论：
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json`
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md`
@@ -301,6 +304,16 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
+- 出版行业渠道起点可见现金锚金额模型 v0.1（`M2-CHAN-PSC02`）只有公共数学核心与
+  synthetic 合同；真实 runner 的完整候选成功路径未实现。`componentId`、
+  `revisionId`、`effectiveAt`、`availableAt` 和 24 个冻结起点的历史 snapshot 均
+  不可从现有资料恢复，当前状态为
+  `PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY`、
+  `PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT` 和
+  `NO_MODEL_PERFORMANCE_EVIDENCE`。唯一历史预测前 attempt、其 receipt 与
+  `PSC02_DEVELOPMENT_NOT_SUPPORTED` 原样保留；不得伪造 adapter、重放 PSC02 或将
+  public primitive 写成真实端到端实现。后续新金额模型只能在独立预注册与授权下使用
+  已冻结且已证明 origin-visible 的 PSC01 人口与训练信息。
 - `config/m2-business-acceptance-contract.v1.json` 是 M2 开发业务验收门限的数值
   唯一权威：Core80 是硬门禁，Core90 是完整披露的敏感性人口；业务可用性与候选
   优越性分开，候选优越性使用合同中的 `AND` 规则。H36 只能作为带永久历史非前瞻
