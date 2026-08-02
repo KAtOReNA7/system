@@ -57,6 +57,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
       "m2-head-protected-segmented-router",
+      "m2-core80-cross-model-real-business-evaluation",
       "m3-private-materials",
     ],
   );

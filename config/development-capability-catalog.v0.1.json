@@ -1546,6 +1546,58 @@
       "authorization": "HISTORICAL_USER_AUTHORIZATION_CONSUMED_HPSR02_FIRST_INDEPENDENT_RESULT_FROZEN_2026_08_01"
     },
     {
+      "id": "m2-core80-cross-model-real-business-evaluation",
+      "description": "Run the explicitly authorized M2-CMX01 2020–2025 Core80 historical cross-model evaluation from current reviewed sales-share cash authority after the pre-outcome exact-head gates pass.",
+      "privateArtifactClassificationVersion": "v1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "privateOutputs": {
+        "artifactClass": "PRIVATE_DERIVED_CACHE",
+        "directory": "data/private-output/m2-core80-cross-model-real-business-evaluation-v0.1",
+        "gitIgnoredRequired": true,
+        "checkpointResumeRequired": true
+      },
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core80-cross-model-real-business-evaluation",
+        "npm run diagnose:m2:core80-cross-model",
+        "node --test --test-concurrency=1 test/m2-core80-cross-model-evaluation.test.js"
+      ],
+      "recovery": "Rebuild every derived CMX01 partition from the five verified PRIVATE_SOURCE_AUTHORITY roles and the frozen tracked implementation. Missing caches or historical receipts are not blockers. Never fabricate source rows, weaken the ledger verifier, or copy private outputs into Git.",
+      "executionAuthorized": true,
+      "authorization": "CURRENT_USER_TASK_M2_CMX01_HISTORICAL_CROSS_EVALUATION_ONLY_AFTER_PRE_OUTCOME_EXACT_HEAD_CI"
+    },
+    {
       "id": "m3-private-materials",
       "description": "Bootstrap the ignored M3 completion workflow after 3 to 5 user-provided private materials are present.",
       "requiredTools": [],

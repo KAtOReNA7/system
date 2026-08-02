@@ -43,6 +43,7 @@
     "diagnose:m2:core-legacy-horizon-router",
     "diagnose:m2:oa03-current-scope-replication",
     "diagnose:m2:core-legacy-horizon-amount",
+    "diagnose:m2:core80-cross-model",
     "diagnose:m2:lg01-head-cash-residual",
     "diagnose:m2:head-protected-segmented-router",
     "smoke:m2:current:core-legacy-horizon-amount-recovery",
