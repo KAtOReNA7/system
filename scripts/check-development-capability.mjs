@@ -301,6 +301,7 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     && missingSourceAuthority.length === 0
     && parameterRecoverySourceAvailable
   );
+  const executionAuthorized = capability.executionAuthorized !== false;
   return {
     schemaVersion: "development-capability-doctor-result.v0.1",
     capabilityId,
@@ -310,6 +311,7 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
       ? status === "READY"
       : true,
     authorization: capability.authorization,
+    executionAuthorized,
     tools,
     privateArtifacts: artifacts,
     missingPrivateRoles: missingArtifacts.map((artifact) => artifact.role),
@@ -347,7 +349,8 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     ),
     safeToRebuildDerivedCache,
     safeToStartModelAfterRebuild:
-      safeToRebuildDerivedCache
+      executionAuthorized
+      && safeToRebuildDerivedCache
       && (
         missingImmutableFrozenParameters.length === 0
         || safeToRecoverImmutableFrozenParameter
@@ -408,6 +411,7 @@ export function formatCapabilityResult(result) {
   lines.push(
     `Safe to start model after rebuild: ${result.safeToStartModelAfterRebuild}`,
   );
+  lines.push(`Execution authorized: ${result.executionAuthorized}`);
   if (result.status === "BLOCKED_MISSING_PRIVATE_ARTIFACT") {
     lines.push("Core development remains available; only this capability is blocked.");
   }

@@ -40,7 +40,7 @@
 | 当前开发业务验收门限是什么？ | [M2 业务验收合同 v1](config/m2-business-acceptance-contract.v1.json) 已激活 3/6/12/36 个月（H3/H6/H12/H36）development-only 门禁；Core80 是硬门禁，Core90 是非否决敏感性披露 |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败；根因审计确认是**估计器尺度收缩、实现正确**（`ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`），不是“尚未运行”或简单漏乘倍率 |
-| 后续渠道金额设计到哪一步？ | 出版行业渠道起点可见现金锚金额模型 v0.1（Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Model v0.1，`M2-CHAN-PSC02`；raw variant `M2-CHAN-PSC02-RAW`）只有公共数学核心；真实 runner 不完整（`PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT`），四个历史字段和 24 个冻结起点的权威不可恢复（`PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY`），没有模型性能证据（`NO_MODEL_PERFORMANCE_EVIDENCE`） |
+| 后续渠道金额设计到哪一步？ | 出版行业渠道起点可见现金锚金额模型 v0.1（`M2-CHAN-PSC02`）保持历史源权威阻断且无性能证据；出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1，`M2-CHAN-PSC03`）的冻结 raw 真实，但实现合同不一致（`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`），不是有效候选性能证据 |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
 | 最新受控研究结果是什么？ | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`）唯一一次独立评价已冻结：43 部动态 Core80 上 WAPE 为 64.1150%，相对冻结 LG01 基线的 relative FVA 为 0.5179%，bootstrap 95% 区间跨 0，结论为证据不足并结束现金-only 相邻研究（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
@@ -55,7 +55,7 @@
 | M2 自动化 | 自动化被阻断（`AUTOMATION_BLOCKED`） | 没有模型获准自动化，活动候选为空（`activeCandidate=null`） |
 | M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
 | M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
-| M2 出版行业规模适配 | 首个 PSC01 原始候选已冻结失败（`M2_PUBLISHING_SCALE_CORE_FAIL`）；[条件金额尺度根因审计](docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md)和 [PSC02 执行与源恢复审计](docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md)已完成 | PSC02 公共核心存在但真实执行器不完整；历史现金权威不可恢复，唯一历史 attempt 原样保留，没有候选成绩或重试授权 |
+| M2 出版行业规模适配 | PSC01 原始候选冻结失败；PSC02 阻断证据已集成；[PSC03 冻结尾部与合同审计](docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.md)确认实现合同不一致（`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`） | PSC03 历史 raw、评价与失败状态保持冻结，但 `validForCandidateDecision=false`；直接现金尺度假设未被合同一致实现裁决，不授权重放、后继模型或独立评价 |
 | M2 分层收入组合 v0.1 | 已完成首个有效组合开发评价并失败（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） | 12/36 个月主结果失败；年龄带辅助臂和年度分量未完整执行；没有晋升或自动化授权 |
 | M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
 | M2 核心老品全周期路由与已有渠道分配 | 预注册验证已完成（`M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE`） | 合法模型交集的同案例证据已补齐；滚动路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`），已有渠道分配证据混合（`CHANNEL_ALLOCATION_MIXED`） |
@@ -67,7 +67,7 @@
 | M2 LG01 头部保护尾段修正 v0.2 | 唯一独立结果已冻结为证据不足，现金相邻研究结束（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） | 头部 50% 和中部 30% 现金带精确使用冻结 LG01，仅尾部 20% 使用既有冻结修正；作品—渠道门禁仍为 `PARTIAL_NOT_ACTIVE`，第二起点、HPSR03 和 prospective final holdout 均未执行或打开 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.58](docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md)
+最新状态以 [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -85,7 +85,7 @@
 |---|---|---|
 | 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是兼容性现行运行回退模型（compatibility operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛，当前 Core 老品范围没有新增性能支持 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）是研究比较基线（research baseline） | 只用于研究比较，不是 production 晋升 |
-| 渠道预测研究 | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已执行失败 | raw candidate 已冻结；只读根因审计确认估计器尺度收缩且实现正确，后验统一 scalar 不能修复渠道构成；不授权同窗调参或下一修订实现 |
+| 渠道预测研究 | 出版行业规模适配渠道核心（`M2-CHAN-PSC01`）已执行失败；直接现金尺度模型（`M2-CHAN-PSC03`）的冻结 raw 真实但实现合同不一致 | PSC03 历史 raw 只形成一次且不改写；其 primary/strict 数字只描述非一致实现，不是有效候选成绩；`activeCandidate=null` |
 | 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
 | 头部现金残差研究 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`）已执行失败 | 16 个外层选择单元均无合格 alpha，两个 raw 候选均无案例；停止在同一现金特征与同一评价窗内继续微调，不得重跑或外推到 6/12/36 月 |
 | 头部保护分段路由研究 | HPSR01 v0.1 原合同不支持结论保留，科学解释修订为证据不足 | `2025-11` 的 57 个同案例、bootstrap 跨 0 且 H50/M30/L20 异质；不改写原结果，也不把整个方向判死 |
@@ -120,6 +120,8 @@
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） | 研究比较基线（research baseline） | 用于同人口候选比较，不等于 production 晋升 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`） | 组合级参考（portfolio reference） | 3/6/12 月必须分别评价，组合结果不能分配回作品 |
 | 渠道预测 | 出版行业适配渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | 已执行失败候选 | raw candidate 已冻结；不允许同窗 outcome-driven 调参 |
+| 渠道预测 | 出版行业渠道起点可见现金锚金额模型 v0.1（Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Model v0.1，`M2-CHAN-PSC02`） | 历史执行不完整且源权威阻断 | 没有模型性能证据；不得重试、补造四字段或把阻断解释为性能失败 |
+| 渠道预测 | 出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1，`M2-CHAN-PSC03`） | 冻结 raw 真实但实现合同不一致、不是有效候选证据（`invalid_frozen_candidate_evidence_contract_mismatch`；`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`） | 历史 `PSC03_DEVELOPMENT_NOT_SUPPORTED` 与全部指标不改写；`validForCandidateDecision=false`，不重放、不创建后继模型，`activeCandidate=null` |
 | 周期路由 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`） | 已执行失败候选 | 没有稳定优于各周期最强单模型，不是 selected pipeline |
 | 头部现金残差 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | 已执行失败候选 | C2/C3 没有 raw 候选案例；selected 只是全量回退冻结 LG01，不能掩盖失败 |
 | 头部保护分段路由 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | 原合同不支持保持，科学解释为证据不足 | 唯一真实回溯结果与机械门限判定冻结；不是整个方向失效的充分证据 |
@@ -179,7 +181,7 @@ q95 为不可变冻结模型参数（`IMMUTABLE_FROZEN_MODEL_PARAMETER`）；旧
 - [HPSR01/HPSR02 现金带归因](docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md)
 - [HPSR02 独立评价前预注册](docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md)
 - [HPSR02 首个独立冻结结果](docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md)
-- [M2 当前状态索引 v0.58](docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md)
+- [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
 
 出版行业规模适配渠道核心（`M2-CHAN-PSC01-RAW`）已完成首个完整、同人口、可解释的
 原始候选评价，共冻结 `3,318,819` 行预测：
@@ -213,6 +215,30 @@ top cash works、渠道构成或 bootstrap 结果，也没有完整原始候选�
 （`NO_MODEL_PERFORMANCE_EVIDENCE`）；不授权重试或独立评价。
 历史预注册身份 `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01` 继续保留且未被回写。
 
+出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Channel Direct-Cash
+Conditional Amount Model v0.1，`M2-CHAN-PSC03`；原始候选 `M2-CHAN-PSC03-RAW`；实验
+`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03`）已完成唯一开发重放。它逐位复用
+冻结 PSC01 occurrence，只使用 PSC01 冻结人口、训练信息、18 个起点可见特征、basis、
+actual、origin、horizon 与渠道结构；PSC02 的四个缺失字段和 `extra=3` 从未成为输入或
+门禁。3,318,819 行准 Poisson 唯一原始候选在比较器加载前首次且仅一次原子封存。
+
+| 对象 | Primary WAPE / 预测实际比 | Strict WAPE / 预测实际比 | 身份 |
+|---|---:|---:|---|
+| 算术层级诊断（`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D0`） | 178.1610% / 1.2647 | 265.5676% / 2.2873 | 诊断，不参加选模 |
+| 准 Gamma 方差族诊断（`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D1`） | 93.7931% / 0.9144 | 86.8537% / 0.8833 | 诊断，不参加选模 |
+| 准 Poisson 唯一原始候选（`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/P`） | 54.2647% / 0.8265 | 297.0822% / 3.3527 | `M2-CHAN-PSC03-RAW` |
+
+主口径相对 PSC01 的 FVA 为 41.2775%，但 strict FVA 为 -224.5617%；相对 LG01 的
+primary / strict FVA 分别为 -22.4658% / -619.6537%。strict H3 预测/实际比达到
+25.4492。统一作品实际总额后的渠道构成有所改善，但该 scalar 使用评价 actual，只是
+事后诊断（`POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE_NOT_CANDIDATE_SCORE`）。Core80 全要求
+周期的 2,000 次作品级 bootstrap 95% 区间为 [-14.4218%, 1.8034%]，跨 0。以上是
+历史冻结非一致实现的结果，`PSC03_DEVELOPMENT_NOT_SUPPORTED` 与原指标均不改写。
+后续只读审计确认实现遗漏支持合同中的稳定性门禁、父层收缩和连续条件金额收缩，
+当前为 `PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`；raw 不是有效候选性能证据，
+直接现金尺度假设未被合同一致实现裁决。不授权重放、后继模型、独立评价、later-origin、
+final holdout、taxonomy、production 或 automation。
+
 详细证据：
 
 - [出版规模渠道开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md)
@@ -223,7 +249,13 @@ top cash works、渠道构成或 bootstrap 结果，也没有完整原始候选�
 - [出版规模渠道起点可见现金锚金额开发重放结论](docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.md)
 - [PSC02 PR #40 执行完整性与源权威恢复审计](docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md)
 - [PSC02 PR #40 结果前状态纠正](docs/analysis/m2-current/M2-psc02-pr40-pre-result-status-correction-v0.1.md)
-- [M2 当前状态索引 v0.58](docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md)
+- [PSC03 直接现金尺度准 Poisson 结果前预注册](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md)
+- [PSC03 公共 synthetic 机器诊断](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json)
+- [PSC03 唯一开发重放结果](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md)
+- [PSC03 实现与结果决策](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md)
+- [PSC03 冻结尾部爆炸与合同一致性审计](docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.md)
+- [PSC03 结果权威纠正](docs/analysis/m2-current/M2-psc03-result-authority-correction-v0.1.md)
+- [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -254,7 +286,7 @@ top cash works、渠道构成或 bootstrap 结果，也没有完整原始候选�
    区分开发业务可用性、候选优越性和发布授权；
 3. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-4. 最后读 [M2 当前状态索引 v0.58](docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md)，
+4. 最后读 [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -438,12 +470,12 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.58](docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md) |
+| 最新状态 | [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |
 | 开发业务验收 | [机器合同 v1](config/m2-business-acceptance-contract.v1.json) · [中文合同与 H36 验证](docs/analysis/m2-current/M2-business-acceptance-contract-v1.md) |
-| 出版规模渠道实验 | [开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md) · [可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md) · [条件金额尺度根因审计](docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md) · [起点可见现金锚金额预注册](docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md) · [PSC02 历史实现就绪记录](docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.md) · [PSC02 历史开发重放结论](docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.md) · [PSC02 当前执行与源恢复审计](docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md) |
+| 出版规模渠道实验 | [开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md) · [可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md) · [条件金额尺度根因审计](docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.md) · [PSC02 起点可见现金锚金额预注册](docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md) · [PSC02 当前执行与源恢复审计](docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md) · [PSC03 直接现金尺度结果前预注册](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md) · [PSC03 唯一开发重放结果](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md) |
 | 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) |
 | 核心老品全周期 | [同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
 | 核心老品分周期金额 | [预注册](docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md) · [冻结开发评价](docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md) · [有限极端外推披露](docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json) |

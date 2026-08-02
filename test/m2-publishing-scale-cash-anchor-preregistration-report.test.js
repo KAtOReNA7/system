@@ -23,7 +23,7 @@ const paths = {
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
   clarification:
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
-  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md"
 };
 const config = await readJson(paths.config);
 const schema = await readJson(paths.schema);
@@ -134,7 +134,7 @@ test("Model Registry preserves the preregistration and maps the later authorized
   assert.deepEqual(
     registry.models.find((model) => model.stableModelId === "M2-CHAN-PSC01")
       .successorIds,
-    ["M2-CHAN-PSC02"]
+    ["M2-CHAN-PSC02", "M2-CHAN-PSC03"]
   );
 });
 

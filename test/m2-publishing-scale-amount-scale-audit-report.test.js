@@ -129,17 +129,17 @@ test("PSC01 oracle and normalized composition remain diagnostics", () => {
   assert.equal(report.authorizationBoundaries.finalHoldoutOpened, false);
 });
 
-test("PSC01 audit stays frozen while current governance maps its PSC02 successor", () => {
+test("PSC01 audit stays frozen while current governance maps its successors", () => {
   const registry = readJson(registryPath);
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md"
   );
   const model = registry.models.find(
     (value) => value.stableModelId === "M2-CHAN-PSC01"
   );
   assert.ok(model);
-  assert.deepEqual(model.successorIds, ["M2-CHAN-PSC02"]);
+  assert.deepEqual(model.successorIds, ["M2-CHAN-PSC02", "M2-CHAN-PSC03"]);
   assert.equal(
     model.rootCauseAudit.category,
     "ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT"
