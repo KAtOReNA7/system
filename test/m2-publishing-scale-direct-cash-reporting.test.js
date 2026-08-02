@@ -30,6 +30,9 @@ const publicDiagnostic = readJson(
 const publicEvaluation = readJson(
   "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json"
 );
+const finalCiReceipt = readJson(
+  "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-final-ci-receipt-v0.1.json"
+);
 
 test("PSC03 public preregistration maps one stable model, candidate and experiment", () => {
   assert.doesNotThrow(() => validateM2Psc03Preregistration({
@@ -176,6 +179,20 @@ test("PSC03 public replay aggregates enforce the preregistered privacy threshold
   visit(publicEvaluation);
   assert.equal(published, 215);
   assert.equal(suppressed, 9);
+});
+
+test("PSC03 result content has a first-attempt dual-platform exact-head CI receipt", () => {
+  assert.equal(finalCiReceipt.status, "PSC03_FINAL_RESULT_EXACT_HEAD_CI_PASSED");
+  assert.equal(finalCiReceipt.modelId, "M2-CHAN-PSC03");
+  assert.equal(finalCiReceipt.resultStatus, "PSC03_DEVELOPMENT_NOT_SUPPORTED");
+  assert.equal(finalCiReceipt.ci.headSha, finalCiReceipt.validatedResultHead);
+  assert.equal(finalCiReceipt.ci.attempt, 1);
+  assert.equal(finalCiReceipt.ci.linux, "SUCCESS");
+  assert.equal(finalCiReceipt.ci.windows, "SUCCESS");
+  assert.equal(finalCiReceipt.ci.sameShaRerunUsed, false);
+  assert.equal(finalCiReceipt.integrity.primaryRawRepeated, false);
+  assert.equal(finalCiReceipt.receiptBoundary.modelReplayAuthorized, false);
+  assert.equal(finalCiReceipt.receiptBoundary.finalPrHeadCiRequiredAfterReceiptCommit, true);
 });
 
 test("PSC03 current public entrypoints retain Chinese-first identity and current-state mapping", () => {

@@ -168,6 +168,7 @@ provider、automation、release 与财务使用继续关闭。不得依据已打
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.json`
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-pre-execution-ci-receipt-v0.1.json`
+- `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-final-ci-receipt-v0.1.json`
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json`
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md`
 - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md`
