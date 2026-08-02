@@ -147,8 +147,9 @@ export async function runM2Psc03MetadataPrecheck({root}) {
       evaluationSha256: frozen.evaluationSha256,
       digestMatchesManifest: frozen.digestMatchesManifest,
       sourceAndTrainingInputsReadable: frozen.preparedBundleReady,
-      target: contracts.preregistration.target,
-      actualDefinitionId: contracts.preregistration.actualDefinitionId,
+      target: contracts.preregistration.immutableScientificScope.target,
+      actualDefinitionId:
+        contracts.preregistration.immutableScientificScope.actualDefinitionId,
       originContractBound: true,
       horizonContractBound: true,
       populationIdentityBound: true
@@ -423,7 +424,8 @@ async function materializeFrozenRows(context) {
       strictTrainingAndEvaluationMonthlyRowCount: strictRows.length,
       strictEvaluationMonthlyRowCount: strictEvaluationRows.length,
       expectedPredictionRowCount: expectedPredictionRows,
-      actualDefinitionId: contracts.preregistration.actualDefinitionId,
+      actualDefinitionId:
+        contracts.preregistration.immutableScientificScope.actualDefinitionId,
       restatementPrimary: primaryRestated.audit,
       restatementStrict: strictRestated.audit,
       psc02ComponentFieldsRead: false,
@@ -442,7 +444,9 @@ async function loadFrozenOccurrence(context, materialized) {
         row?.schema
           !== "m2.current.publishing_scale_channel_evaluation_private_row.v0.2"
         || row?.candidateId !== "M2-CHAN-PSC01-RAW"
-        || row?.actualDefinitionId !== context.contracts.preregistration.actualDefinitionId
+        || row?.actualDefinitionId
+          !== context.contracts.preregistration.immutableScientificScope
+            .actualDefinitionId
       ) {
         throw new Error("m2_psc03_frozen_occurrence_row_contract_invalid");
       }

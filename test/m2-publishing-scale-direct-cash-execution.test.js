@@ -222,6 +222,20 @@ test("PSC03 runner source contains no PSC02 ledger field dependency", async () =
   assert.match(source, /comparatorLoadedAfterPrimarySeal/u);
 });
 
+test("PSC03 runner reads target identity from the immutable scientific scope", async () => {
+  const source = await readFile(
+    path.join(root, "scripts/m2-current/publishing_scale_direct_cash_execution.mjs"),
+    "utf8"
+  );
+  assert.doesNotMatch(source, /preregistration\.actualDefinitionId/u);
+  assert.doesNotMatch(source, /preregistration\.target/u);
+  assert.match(
+    source,
+    /preregistration\.immutableScientificScope\.actualDefinitionId/u
+  );
+  assert.match(source, /preregistration\.immutableScientificScope\.target/u);
+});
+
 function caseRows(multiplier) {
   const rows = [];
   for (let work = 0; work < 25; work += 1) {
