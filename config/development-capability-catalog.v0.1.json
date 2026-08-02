@@ -1206,6 +1206,51 @@
       "authorization": "PSC02_AUDIT_ONLY_HISTORICAL_REPLAY_BLOCKED_SOURCE_AUTHORITY_NOT_RECOVERABLE_NO_RETRY_AUTHORIZED_2026_08_02"
     },
     {
+      "id": "m2-current-publishing-scale-direct-cash-development",
+      "description": "Audit the consumed PSC03 development replay and its frozen raw seal using the public result plus local private evidence when present. The read-only audit confirmed PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED: preserve the authentic raw and historical PSC03_DEVELOPMENT_NOT_SUPPORTED result, but do not treat it as valid candidate performance evidence. This capability authorizes no model execution, successor, independent evaluation, later-origin, final holdout, production or automation.",
+      "executionAuthorized": false,
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [
+        {
+          "id": "git",
+          "command": "git",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "gh",
+          "command": "gh",
+          "versionArgs": ["--version"]
+        }
+      ],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "frozen-psc01-evaluation-population-occurrence-and-receipt",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/m2-current-publishing-scale-channel"
+        },
+        {
+          "role": "frozen-lg01-comparator-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-lg01-comparator-manifest-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-publishing-scale-direct-cash-development",
+        "npm run diagnose:m2:publishing-scale-direct-cash",
+        "node --test test/m2-publishing-scale-direct-cash-frozen-audit.test.js"
+      ],
+      "recovery": "The sole PSC03 development replay is consumed and frozen. Preserve the private raw, manifest, atomic seal, receipts and event logs plus the tracked historical PSC03_DEVELOPMENT_NOT_SUPPORTED result. Current authority is PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED and PSC03_FROZEN_RAW_PRESERVED_BUT_NOT_VALID_CANDIDATE_PERFORMANCE_EVIDENCE. If local private evidence is absent, keep the tracked public result and report the evidence gap; never recreate predictions, infer private rows, rerun PSC03 or manufacture a conforming replacement.",
+      "authorization": "PSC03_FROZEN_AUDIT_ONLY_CONTRACT_MISMATCH_CONFIRMED_NO_SUCCESSOR_OR_REPLAY_AUTHORIZED_2026_08_02"
+    },
+    {
       "id": "m2-current-channel-generative",
       "description": "Audit the consumed Channel Generative v0.2 independent G1 private capability and its prerequisite-blocked receipt. The one-time execution authorization is closed; frozen G0 remains only an unexecuted paired outer-case comparator.",
       "requiredTools": [],
@@ -1499,6 +1544,64 @@
       },
       "recovery": "Use current manually reviewed bills only as SOURCE_AUTHORITY for origin-visible input and WORK_TOTAL actual. Load the immutable positive-base-floor/q05/q95 parameter directly; if absent, recover it only from a validated digest-bound PARAMETER_LINEAGE_SNAPSHOT and reconcile the existing frozen run record. Never derive the parameter from current bills. Missing disposable caches rebuild automatically; missing historical receipt warns when the immutable parameter plus minimal lineage remain valid. Recovery restores parameter capability only and does not authorize another HPSR02 scientific evaluation, a second origin, final holdout, or HPSR03.",
       "authorization": "HISTORICAL_USER_AUTHORIZATION_CONSUMED_HPSR02_FIRST_INDEPENDENT_RESULT_FROZEN_2026_08_01"
+    },
+    {
+      "id": "m2-core80-cross-model-real-business-evaluation",
+      "description": "Verify the completed and frozen M2-CMX01 2020–2025 Core80 historical cross-model evaluation and its ignored private delivery package without rerunning any model or metric.",
+      "privateArtifactClassificationVersion": "v1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "privateOutputs": {
+        "artifactClass": "PRIVATE_DERIVED_CACHE",
+        "directory": "data/private-output/m2-core80-cross-model-real-business-evaluation-v0.1",
+        "gitIgnoredRequired": true,
+        "checkpointResumeRequired": true
+      },
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core80-cross-model-real-business-evaluation",
+        "npm run diagnose:m2:core80-cross-model",
+        "node --test --test-concurrency=1 test/m2-core80-cross-model-evaluation.test.js",
+        "npm run check:m2:current:core80-cross-model-private",
+        "npm run report:m2:current:core80-cross-model-wide",
+        "npm run report:m2:current:core80-cross-model-delivery"
+      ],
+      "recovery": "Rebuild every derived CMX01 partition from the five verified PRIVATE_SOURCE_AUTHORITY roles and the frozen tracked implementation. Missing caches or historical receipts are not blockers. Never fabricate source rows, weaken the ledger verifier, or copy private outputs into Git.",
+      "executionAuthorized": false,
+      "authorizationConsumed": true,
+      "resultFrozen": true,
+      "resultStatus": "M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING",
+      "authorization": "HISTORICAL_USER_AUTHORIZATION_CONSUMED_M2_CMX01_RESULT_FROZEN_2026_08_02"
     },
     {
       "id": "m3-private-materials",

@@ -91,7 +91,7 @@ test("historical audit keeps its snapshot while the registry advances", () => {
     .map((group) => group.comparableGroupId)
     .sort();
 
-  assert.equal(evaluationCount, 115);
+  assert.equal(evaluationCount, 116);
   assert.equal(audit.registryCoverage.evaluationCount, 45);
   assert.ok(evaluationCount > audit.registryCoverage.evaluationCount);
   assert.equal(
@@ -177,7 +177,7 @@ test("evaluation contract remains a proposal and public aggregates are not overc
 test("historical audit state records zero execution and registry may advance", () => {
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
   );
   assert.equal(audit.executionBoundary.modelExecutionCount, 0);
   assert.equal(audit.executionBoundary.modelTrainingCount, 0);

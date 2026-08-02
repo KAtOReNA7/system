@@ -1,0 +1,201 @@
+{
+  "schema": "m2.current.publishing_scale_channel_direct_cash_preregistration.v0.1",
+  "preregistrationId": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "displayNameZh": "出版行业渠道直接现金尺度条件金额模型 v0.1",
+  "displayNameEn": "Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1",
+  "status": "PREREGISTERED_BEFORE_ANY_PSC03_PRIVATE_OUTCOME",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "researchQuestion": "With the frozen PSC01 occurrence, population, origins, horizons, actual definition, 18 origin-visible features and channel structure, can a direct cash-scale log-link quasi-likelihood repair conditional-amount scale collapse without materially worsening channel composition and while satisfying the frozen LG01 same-case candidate-superiority contract?",
+  "frozenPredecessor": {
+    "modelId": "M2-CHAN-PSC01",
+    "rawCandidateId": "M2-CHAN-PSC01-RAW",
+    "rootCauseStatus": "ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT",
+    "monthlyPredictionRowCount": 3318819,
+    "primary": {
+      "originStart": "2021-12",
+      "originEnd": "2022-12",
+      "originCount": 13,
+      "horizons": [36],
+      "workCaseCount": 12039,
+      "workCount": 1125
+    },
+    "strict": {
+      "origins": [
+        "2023-03", "2023-06", "2023-09", "2023-12",
+        "2024-03", "2024-06", "2024-09", "2024-12",
+        "2025-03", "2025-06", "2025-09"
+      ],
+      "horizons": [3, 6, 12, 18, 24],
+      "workCaseCount": 74320,
+      "workCount": 2650
+    }
+  },
+  "immutableScientificScope": {
+    "target": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "predictionGrain": "work_x_canonical_channel_x_origin_x_future_month",
+    "uniqueCaseKey": "standardWorkId|channelUid|origin|futureMonthIndex",
+    "maturityPolicy": "frozen_PSC01_mature_origin_observed_channel_population",
+    "core80Role": "PRIMARY_HARD_GATE",
+    "core90Role": "DISCLOSED_SENSITIVITY_NOT_A_VETO",
+    "futureFirstSeenPolicy": "frozen_PSC01_policy_no_new_identity_feature",
+    "taxonomyRole": "REPORT_ONLY",
+    "privacyMinimumCases": 30,
+    "privacyMinimumWorks": 20
+  },
+  "allowedAuthority": {
+    "frozenPsc01MonthlyPopulation": true,
+    "frozenPsc01OccurrenceProbability": true,
+    "frozenPsc01FeatureOrderAndValues": true,
+    "frozenPsc01BasisProfiles": true,
+    "frozenPsc01TrainingOriginsAndLabelAvailability": true,
+    "frozenPsc01RawComparatorAfterPrimarySeal": true,
+    "frozenLg01SameCaseComparatorAfterPrimarySeal": true,
+    "psc02ComponentLedger": false,
+    "componentIdRequired": false,
+    "revisionIdRequired": false,
+    "effectiveAtRequired": false,
+    "availableAtRequired": false,
+    "psc02MissingZeroExtraThreeIsGate": false
+  },
+  "occurrenceContract": {
+    "sourceModelId": "M2-CHAN-PSC01",
+    "fullKeyJoin": true,
+    "binary64AbsoluteTolerance": 0,
+    "binary64RelativeTolerance": 0,
+    "duplicateKeysRejectedOnBothSides": true,
+    "appliedExactlyOnce": true,
+    "refit": false,
+    "recalibrate": false,
+    "transform": false
+  },
+  "conditionalAmountTraining": {
+    "strictlyPositiveRowsOnly": true,
+    "zeroRowsExcluded": true,
+    "basicWeight": "EQUAL_PER_LEGAL_POSITIVE_MONTHLY_CASE_NORMALIZED_WITHIN_NODE",
+    "equalTotalWeightPerWork": false,
+    "actualCashWeight": false,
+    "futureCashWeight": false,
+    "topWorkWeight": false,
+    "outerOutcomeWeight": false
+  },
+  "featureContract": {
+    "source": "config/m2-current-publishing-scale-channel.v0.1.json#/featureOrder",
+    "featureCount": 18,
+    "orderImmutable": true,
+    "basisSource": "config/m2-current-publishing-scale-channel.v0.1.json#/basisProfiles",
+    "normalization": "PSC01_TRAINING_SIDE_STANDARDIZATION",
+    "taxonomyFeatureUsed": false,
+    "lg01PredictionDependency": false
+  },
+  "hierarchy": {
+    "levels": ["GLOBAL_POOLED_PARENT", "MECHANISM", "NAMED_PLATFORM"],
+    "namedPlatforms": [
+      "ximalaya", "wechat_reading", "fanqie_audio", "missevan", "manbo"
+    ],
+    "childOffset": "LOG_PARENT_MEAN_FIXED_COEFFICIENT_ONE",
+    "supportContract": "M2-PUBLISHING-SCALE-SUPPORT-01",
+    "supportInsufficientFallback": "NEAREST_ELIGIBLE_PARENT",
+    "childNumericalFailureFallback": "SAME_ESTIMATOR_NEAREST_ELIGIBLE_PARENT",
+    "globalNumericalFailure": "FAIL_CLOSED_NO_DIAGNOSTIC_SWITCH"
+  },
+  "arms": {
+    "D0": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D0",
+      "stableArmCode": "ARITHMETIC_HIERARCHY_ONLY",
+      "role": "DIAGNOSTIC_NOT_CANDIDATE",
+      "featuresUsed": false,
+      "positiveMean": "CASE_BALANCED_WEIGHTED_ARITHMETIC_MEAN",
+      "mayBecomeFallbackCandidate": false
+    },
+    "D1": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D1",
+      "stableArmCode": "DIRECT_QUASI_GAMMA_HIERARCHY",
+      "role": "VARIANCE_FAMILY_DIAGNOSTIC_NOT_CANDIDATE",
+      "link": "LOG",
+      "objective": "sum_i w_i*(y_i/mu_i+log(mu_i))+0.5*lambda*sum_nonintercept(beta_j^2)",
+      "mayReplacePrimary": false
+    },
+    "P": {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/P",
+      "stableArmCode": "DIRECT_QUASI_POISSON_HIERARCHY",
+      "role": "SOLE_RAW_CANDIDATE",
+      "rawCandidateId": "M2-CHAN-PSC03-RAW",
+      "link": "LOG",
+      "objective": "sum_i w_i*(mu_i-y_i*eta_i)+0.5*lambda*sum_nonintercept(beta_j^2)",
+      "monthlyPrediction": "frozen_occurrence_probability_times_conditional_positive_mean",
+      "failureSwitchAllowed": false
+    }
+  },
+  "selection": {
+    "lambdaGrid": [1, 3],
+    "tieTolerance": 1e-12,
+    "tieBreak": "LARGER_LAMBDA",
+    "primaryOuterWorkFolds": 5,
+    "primaryInnerWorkFolds": 3,
+    "primaryInnerRepeats": 3,
+    "strictTrainingRule": "training.origin < outerOrigin && labelAvailableAsOf < outerOrigin",
+    "strictInnerOrigins": "LATEST_THREE_LEGAL_BEFORE_OUTER_MINIMUM_TWO",
+    "primaryMetric": "CASE_BALANCED_MEAN_QUASI_POISSON_UNIT_DEVIANCE_POSITIVE_VALIDATION",
+    "diagnosticMetric": "CASE_BALANCED_MEAN_GAMMA_UNIT_DEVIANCE_POSITIVE_VALIDATION",
+    "outerOutcomeUsedForSelection": false
+  },
+  "numerical": {
+    "solver": "DAMPED_NEWTON_IRLS_WITH_STEP_HALVING",
+    "maximumIterations": 200,
+    "maximumStepHalvings": 20,
+    "coefficientTolerance": 1e-10,
+    "relativeObjectiveTolerance": 1e-12,
+    "pivotTolerance": 1e-12,
+    "interceptPenalized": false,
+    "objectiveMonotonicNonIncrease": true,
+    "finalPredictionEtaClip": [-30, 30],
+    "trainingEtaClip": null,
+    "nonfinitePolicy": "EXPLICIT_NUMERICAL_FAILURE"
+  },
+  "singleApplicationContract": {
+    "occurrenceCount": 1,
+    "parentOffsetPerLayerCount": 1,
+    "childResidualPerLayerCount": 1,
+    "horizonAggregationCount": 1,
+    "exposureCount": 0,
+    "anchorUsed": false,
+    "postHocCalibrationUsed": false,
+    "taxonomyChangesPrediction": false,
+    "lg01InDependencyGraph": false
+  },
+  "developmentEvaluation": {
+    "bootstrapSeed": 20260728,
+    "bootstrapIterations": 2000,
+    "bootstrapCluster": "standardWorkId",
+    "scaleRecoveryAgainstPsc01AllAnd": {
+      "primaryRelativeFvaMinimum": 0.10,
+      "strictRelativeFvaMinimum": 0.10,
+      "primaryPredictionActualRatio": [0.75, 1.25],
+      "eachStrictHorizonPredictionActualRatio": [0.67, 1.50],
+      "normalizedChannelCompositionMaximumWapeDeterioration": 0.02
+    },
+    "lg01CandidateSuperiority": "config/m2-business-acceptance-contract.v1.json#/candidateSuperiority",
+    "businessUsabilitySeparate": true,
+    "postHocActualScalarStatus": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE_NOT_CANDIDATE_SCORE"
+  },
+  "scientificStatusOrder": [
+    "PSC03_DEVELOPMENT_NOT_SUPPORTED",
+    "PSC03_DEVELOPMENT_PROMISING_INDEPENDENT_NOT_READY",
+    "PSC03_FIRST_INDEPENDENT_EVALUATION_REQUEST_SUPPORTED_NOT_AUTHORIZED"
+  ],
+  "closedBoundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false,
+    "taxonomyModel": false,
+    "psc02Replay": false
+  }
+}

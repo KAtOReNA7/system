@@ -156,7 +156,7 @@ test("registry keeps PSC02 scoreless and current public diagnostic is audit-boun
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
   );
   assert.equal(
     audit.publicDiagnostic.status,

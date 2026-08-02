@@ -1,0 +1,114 @@
+{
+  "schema": "m2.current.publishing_scale_channel_direct_cash_development.v0.1",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "preregistrationId": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+  "displayNameZh": "出版行业渠道直接现金尺度条件金额模型 v0.1",
+  "displayNameEn": "Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1",
+  "preregistration": "config/m2-current-publishing-scale-channel-direct-cash-preregistration.v0.1.json",
+  "schemaContract": "config/m2-current-publishing-scale-channel-direct-cash-schema.v0.1.json",
+  "frozenPsc01": {
+    "config": "config/m2-current-publishing-scale-channel.v0.1.json",
+    "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+    "businessAcceptanceContract": "config/m2-business-acceptance-contract.v1.json",
+    "modelId": "M2-CHAN-PSC01",
+    "rawCandidateId": "M2-CHAN-PSC01-RAW",
+    "monthlyRowCount": 3318819,
+    "primaryWorkCaseCount": 12039,
+    "strictWorkCaseCount": 74320,
+    "primaryWorkCount": 1125,
+    "strictWorkCount": 2650,
+    "evaluationDirectory": "data/private-output/m2-current-publishing-scale-channel",
+    "completedReceiptPrefix": "M2-current-publishing-scale-channel-run-receipt-private-v0.2",
+    "evaluationManifestSchema": "m2.current.publishing_scale_channel_evaluation_private_manifest.v0.2"
+  },
+  "frozenLg01": {
+    "modelId": "M2-WORK-LG01",
+    "directory": "data/private-output/m2-current-human-anchored",
+    "rows": "M2-current-channel-experts-evaluation-private-v0.1.ndjson",
+    "manifest": "M2-current-channel-experts-evaluation-manifest-private-v0.1.json",
+    "loadOnlyAfterPrimaryRawSeal": true,
+    "predictionDependency": false
+  },
+  "arms": {
+    "D0": {"code": "ARITHMETIC_HIERARCHY_ONLY", "role": "DIAGNOSTIC_NOT_CANDIDATE"},
+    "D1": {"code": "DIRECT_QUASI_GAMMA_HIERARCHY", "role": "DIAGNOSTIC_NOT_CANDIDATE"},
+    "P": {"code": "DIRECT_QUASI_POISSON_HIERARCHY", "role": "SOLE_RAW_CANDIDATE"}
+  },
+  "selection": {
+    "lambdaGrid": [1, 3],
+    "tieTolerance": 1e-12,
+    "primaryOuterWorkFoldCount": 5,
+    "primaryInnerWorkFoldCount": 3,
+    "primaryInnerWorkFoldRepeats": 3,
+    "innerWorkFoldSalt": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+    "strictOrigins": [
+      "2023-03", "2023-06", "2023-09", "2023-12",
+      "2024-03", "2024-06", "2024-09", "2024-12",
+      "2025-03", "2025-06", "2025-09"
+    ],
+    "strictInnerLatestOriginCount": 3,
+    "strictInnerMinimumOriginCount": 2,
+    "outerOutcomeUsedForSelection": false
+  },
+  "numerical": {
+    "maximumIterations": 200,
+    "maximumStepHalvings": 20,
+    "coefficientTolerance": 1e-10,
+    "relativeObjectiveTolerance": 1e-12,
+    "pivotTolerance": 1e-12,
+    "finalPredictionEtaClip": [-30, 30],
+    "trainingEtaClip": null,
+    "interceptPenalized": false
+  },
+  "evaluation": {
+    "bootstrapSeed": 20260728,
+    "bootstrapIterations": 2000,
+    "privacyMinimumCases": 30,
+    "privacyMinimumWorks": 20,
+    "topRevenueFractions": [0.01, 0.05, 0.10],
+    "scaleRecovery": {
+      "primaryRelativeFvaMinimum": 0.10,
+      "strictRelativeFvaMinimum": 0.10,
+      "primaryPredictionActualRatioMinimum": 0.75,
+      "primaryPredictionActualRatioMaximum": 1.25,
+      "strictHorizonPredictionActualRatioMinimum": 0.67,
+      "strictHorizonPredictionActualRatioMaximum": 1.50,
+      "normalizedCompositionWapeDeteriorationMaximum": 0.02
+    }
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-current-publishing-scale-direct-cash",
+    "attemptReceiptPrefix": "M2-publishing-scale-direct-cash-attempt-receipt-private-v0.1",
+    "D0Raw": "M2-publishing-scale-direct-cash-D0-raw-private-v0.1.ndjson",
+    "D1Raw": "M2-publishing-scale-direct-cash-D1-raw-private-v0.1.ndjson",
+    "PRaw": "M2-publishing-scale-direct-cash-P-raw-private-v0.1.ndjson",
+    "PManifest": "M2-publishing-scale-direct-cash-P-manifest-private-v0.1.json",
+    "evaluation": "M2-publishing-scale-direct-cash-evaluation-private-v0.1.json",
+    "bootstrap": "M2-publishing-scale-direct-cash-bootstrap-private-v0.1.ndjson",
+    "decisionReceipt": "M2-publishing-scale-direct-cash-decision-receipt-private-v0.1.json"
+  },
+  "publicOutputs": {
+    "preregistrationMarkdown": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md",
+    "preregistrationJson": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.json",
+    "publicDiagnostic": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json",
+    "developmentMarkdown": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md",
+    "developmentJson": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json",
+    "decisionMarkdown": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md",
+    "preExecutionReceipt": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-pre-execution-ci-receipt-v0.1.json",
+    "finalCiReceipt": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-final-ci-receipt-v0.1.json"
+  },
+  "closedBoundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false,
+    "productionModified": false,
+    "apiModified": false,
+    "databaseUsed": false,
+    "providerUsed": false
+  }
+}

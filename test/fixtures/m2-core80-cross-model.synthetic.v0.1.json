@@ -1,0 +1,58 @@
+{
+  "schema": "m2.cmx01.synthetic_fixture.v0.1",
+  "frozenExpectedSha256": "5e2824cc737274714c52ea88df9f0a4eb00feef81eecb5c621e9d2e320283772",
+  "rows": [
+    {
+      "population": "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+      "forecastOrigin": "2020-12",
+      "targetStart": "2021-01",
+      "targetEnd": "2021-03",
+      "horizonMonths": 3,
+      "standardWorkId": "SYNTHETIC_W1",
+      "modelId": "SYNTHETIC_A",
+      "actualCash": 100,
+      "predictedCash": 90,
+      "featureCutoff": "2020-12",
+      "trainingMaximumLabelAvailableAsOf": "2020-12"
+    },
+    {
+      "population": "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+      "forecastOrigin": "2020-12",
+      "targetStart": "2021-01",
+      "targetEnd": "2021-03",
+      "horizonMonths": 3,
+      "standardWorkId": "SYNTHETIC_W1",
+      "modelId": "SYNTHETIC_B",
+      "actualCash": 100,
+      "predictedCash": 110,
+      "featureCutoff": "2020-12",
+      "trainingMaximumLabelAvailableAsOf": "2020-12"
+    },
+    {
+      "population": "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+      "forecastOrigin": "2021-01",
+      "targetStart": "2021-02",
+      "targetEnd": "2021-04",
+      "horizonMonths": 3,
+      "standardWorkId": "SYNTHETIC_W2",
+      "modelId": "SYNTHETIC_A",
+      "actualCash": 50,
+      "predictedCash": 40,
+      "featureCutoff": "2021-01",
+      "trainingMaximumLabelAvailableAsOf": "2021-01"
+    },
+    {
+      "population": "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+      "forecastOrigin": "2021-01",
+      "targetStart": "2021-02",
+      "targetEnd": "2021-04",
+      "horizonMonths": 3,
+      "standardWorkId": "SYNTHETIC_W2",
+      "modelId": "SYNTHETIC_B",
+      "actualCash": 50,
+      "predictedCash": 70,
+      "featureCutoff": "2021-01",
+      "trainingMaximumLabelAvailableAsOf": "2021-01"
+    }
+  ]
+}

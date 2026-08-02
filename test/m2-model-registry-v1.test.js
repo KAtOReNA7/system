@@ -34,11 +34,11 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 36);
-  assert.equal(validation.counts.experimentCount, 23);
-  assert.equal(validation.counts.nonModelIdentifierCount, 138);
-  assert.equal(validation.counts.evaluationCount, 115);
-  assert.equal(validation.counts.comparabilityGroupCount, 59);
+  assert.equal(validation.counts.modelCount, 37);
+  assert.equal(validation.counts.experimentCount, 25);
+  assert.equal(validation.counts.nonModelIdentifierCount, 139);
+  assert.equal(validation.counts.evaluationCount, 116);
+  assert.equal(validation.counts.comparabilityGroupCount, 65);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -114,7 +114,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     /前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空/u
   );
   const historicalChampionAssertions = registry.currentRoles.sourceAssertions
-    .filter((item) => /champion/u.test(item.assertion));
+    .filter((item) => (
+      item.historicalAssertion === true
+      && /champion/u.test(item.assertion)
+    ));
   assert.equal(historicalChampionAssertions.length, 2);
   assert.equal(
     historicalChampionAssertions.every(
@@ -231,7 +234,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -897,8 +900,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：36 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：37 个/u);
   assert.match(list.stdout, /M2-CHAN-PSC02/u);
+  assert.match(list.stdout, /M2-CHAN-PSC03/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
   assert.match(list.stdout, /M2-WORK-HPSR01/u);
@@ -907,7 +911,15 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /当前实验：无（null）/u);
+  assert.match(
+    status.stdout,
+    /当前实验：无（null）/u
+  );
+  assert.match(status.stdout, /PSC03_DEVELOPMENT_NOT_SUPPORTED/u);
+  assert.match(
+    status.stdout,
+    /PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED/u
+  );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /已完成唯一一次 2026-03 起点独立评价/u);
   assert.match(status.stdout, /结束现金-only 相邻研究/u);
