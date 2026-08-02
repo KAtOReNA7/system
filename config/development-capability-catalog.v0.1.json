@@ -1547,7 +1547,7 @@
     },
     {
       "id": "m2-core80-cross-model-real-business-evaluation",
-      "description": "Run the explicitly authorized M2-CMX01 2020–2025 Core80 historical cross-model evaluation from current reviewed sales-share cash authority after the pre-outcome exact-head gates pass.",
+      "description": "Verify the completed and frozen M2-CMX01 2020–2025 Core80 historical cross-model evaluation and its ignored private delivery package without rerunning any model or metric.",
       "privateArtifactClassificationVersion": "v1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1591,11 +1591,17 @@
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-core80-cross-model-real-business-evaluation",
         "npm run diagnose:m2:core80-cross-model",
-        "node --test --test-concurrency=1 test/m2-core80-cross-model-evaluation.test.js"
+        "node --test --test-concurrency=1 test/m2-core80-cross-model-evaluation.test.js",
+        "npm run check:m2:current:core80-cross-model-private",
+        "npm run report:m2:current:core80-cross-model-wide",
+        "npm run report:m2:current:core80-cross-model-delivery"
       ],
       "recovery": "Rebuild every derived CMX01 partition from the five verified PRIVATE_SOURCE_AUTHORITY roles and the frozen tracked implementation. Missing caches or historical receipts are not blockers. Never fabricate source rows, weaken the ledger verifier, or copy private outputs into Git.",
-      "executionAuthorized": true,
-      "authorization": "CURRENT_USER_TASK_M2_CMX01_HISTORICAL_CROSS_EVALUATION_ONLY_AFTER_PRE_OUTCOME_EXACT_HEAD_CI"
+      "executionAuthorized": false,
+      "authorizationConsumed": true,
+      "resultFrozen": true,
+      "resultStatus": "M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING",
+      "authorization": "HISTORICAL_USER_AUTHORIZATION_CONSUMED_M2_CMX01_RESULT_FROZEN_2026_08_02"
     },
     {
       "id": "m3-private-materials",

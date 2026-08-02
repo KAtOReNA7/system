@@ -1,0 +1,117 @@
+# 2020–2025 Core80 全模型真实业务横评 v0.1
+
+> 英文原名：M2 Core80 Cross-Model Real-Business Evaluation v0.1；稳定活动 ID：`M2-CMX01`；机器状态码：`M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING`。
+
+## 业务结论
+
+本轮完成的是历史横评，不是模型开发或激活。所有 21 个正式变体跨全部周期没有共同案例（`NO_GLOBAL_COMMON_MATCHED_CASES`），根因是冻结模型的周期与合法起点支持不相容；因此不能诚实地产生一个“全模型、全周期、六年统一冠军”。周期、年度或主要渠道排名翻转分别为 `true`、`true`、`true`，当前决策为不同模型适配不同业务切片（`DIFFERENT_MODELS_FIT_DIFFERENT_BUSINESS_SLICES`）。
+
+即使局部共同同案切片存在第一名，也只属于历史证据（`HISTORICAL_ONLY_NOT_ACTIVATED`），不得替换学习型全局金额基线（Learned Global Amount Model，`M2-WORK-LG01`）、修改 active candidate、进入生产或打开 final holdout。
+
+## 运行范围与真实性
+
+- Model Registry 共 37 项；结果前逐项裁决后，14 个登记模型正式参赛，展开为 21 个稳定变体。
+- 实际运行 2020–2025、70 个月度起点、235 个起点×周期单元；H3/H6/H12/H36 均按成熟结果完整运行，没有季度抽样。
+- 覆盖 2615 部合格老作品、38 个 canonical 渠道、237595 个作品案例和 621466 个作品×渠道案例。
+- actual 固定为开发可建模冲销重述分成现金（`M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01`）。逐模型 actual 完全一致、训练标签不晚于 origin、动态 Core80 起点可见、预测有限数、作品与渠道现金守恒均已通过。
+- 私有逐行结果、标题、ID 与绝对金额仅存在 Git ignored 派生缓存；公开报告不披露 MAE/RMSE 的绝对金额尺度。
+
+## 年度 H12 共同同案第一名
+
+各年只在当年存在合法预测的参与者共同案例上排序，参与集合不同，不得把各年 WAPE 直接跨年混成一个冠军。
+
+| 目标年 | 共同同案结论 |
+|---:|---|
+| 2020 | 无可公开共同同案结果（`NO_PRIVACY_ELIGIBLE_COMMON_MATCHED_RESULT`） |
+| 2021 | 并列：`M2-BASE-CLASSIC01/seasonal_naive`、`M2-WORK-CCR01/NESTED_CANONICAL_CHANNEL`，WAPE 50.1903%，30 案/30 部 |
+| 2022 | `M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL`，WAPE 20.0190%，42 案/42 部 |
+| 2023 | `M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 28.7751%，46 案/46 部 |
+| 2024 | `M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 35.7818%，47 案/47 部 |
+| 2025 | 并列：`M2-WORK-HR01/REGISTERED_HORIZON_ROUTER`、`M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 30.1336%，58 案/58 部 |
+
+## 周期共同同案第一名
+
+| 周期 | 共同同案结论 |
+|---:|---|
+| H3 | `M2-WORK-CHAM01/B3`，WAPE 25.3790%，486 案/75 部 |
+| H6 | `M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 28.0991%，439 案/74 部 |
+| H12 | `M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 32.6455%，305 案/66 部 |
+| H36 | 并列：`M2-WORK-HR01/REGISTERED_HORIZON_ROUTER`、`M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`，WAPE 35.0675%，704 案/69 部 |
+
+## 主要渠道原生能力第一名
+
+以下只比较原生作品×渠道模型，统一分配器组合另列为诊断，不冒充原生渠道能力。
+
+| 业务渠道 | 原生同粒度模型自身覆盖第一名 |
+|---|---|
+| 喜马拉雅 | `M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL` |
+| 微信读书 | `M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL` |
+| 番茄畅听 | `M2-CHAN-SCL01/A6_RAW` |
+| 猫耳 | 隐私阈值下无可公开结果（`SUPPRESSED_PRIVACY_THRESHOLD`） |
+| 漫播 | 隐私阈值下无可公开结果（`SUPPRESSED_PRIVACY_THRESHOLD`） |
+
+## LG01 两两同案配对 bootstrap
+
+差值定义为“候选 WAPE − LG01 WAPE”；负值表示候选更好。每一对只用完全相同案例，按作品×forecast origin 联合分块，固定种子 20260802，5000 次，并作 Holm 校正。不同模型覆盖范围不同，因此本表是逐对证据，不是全体共同榜。
+
+| 候选稳定变体 ID | 点差 | 95% 区间 | 候选更好概率 | Holm p |
+|---|---:|---:|---:|---:|
+| `M2-BASE-CLASSIC01/ADIDA` | 10.1821% | [7.6856%, 13.0083%] | 0.0000% | 0.0080 |
+| `M2-BASE-CLASSIC01/Croston` | 12.5112% | [9.6696%, 15.7655%] | 0.0000% | 0.0080 |
+| `M2-BASE-CLASSIC01/SBA` | 11.5982% | [9.0783%, 14.4633%] | 0.0000% | 0.0080 |
+| `M2-BASE-CLASSIC01/TSB` | 10.0674% | [7.5830%, 12.8585%] | 0.0000% | 0.0080 |
+| `M2-BASE-CLASSIC01/seasonal_naive` | 13.9567% | [11.4600%, 16.8139%] | 0.0000% | 0.0080 |
+| `M2-BASE-CLASSIC01/zero` | 67.7741% | [64.4286%, 70.9614%] | 0.0000% | 0.0080 |
+| `M2-CHAN-PSC01-RAW` | 65.4705% | [58.4652%, 71.0050%] | 0.0000% | 0.0080 |
+| `M2-CHAN-SCL01/A6_RAW` | 15.3560% | [11.5702%, 19.3614%] | 0.0000% | 0.0080 |
+| `M2-WORK-CCR01/NESTED_CANONICAL_CHANNEL` | 14.8300% | [12.2289%, 17.9596%] | 0.0000% | 0.0080 |
+| `M2-WORK-CHAM01/B1` | 16.6803% | [9.8935%, 25.8523%] | 0.0000% | 0.0080 |
+| `M2-WORK-CHAM01/B2` | 14.6763% | [8.6246%, 22.4776%] | 0.0000% | 0.0080 |
+| `M2-WORK-CHAM01/B3` | 9.5472% | [6.6171%, 12.3366%] | 0.0000% | 0.0080 |
+| `M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL` | 6869.8068% | [456.9666%, 21073.1884%] | 0.0000% | 0.0080 |
+| `M2-WORK-HP01/RAW_HIERARCHICAL_POSITIVE_ORIGINAL` | 67.0768% | [58.8302%, 75.8326%] | 0.0000% | 0.0080 |
+| `M2-WORK-HR01/REGISTERED_HORIZON_ROUTER` | 4.4668% | [2.8370%, 6.5410%] | 0.0000% | 0.0080 |
+| `M2-WORK-MAN01/FAITHFUL_FIXED_FORMULA` | 11.1812% | [9.1272%, 13.0510%] | 0.0000% | 0.0080 |
+| `M2-WORK-MCR01/FROZEN_MANUAL_CHANNEL_RULE` | 5.3907% | [2.9011%, 7.6959%] | 0.0200% | 0.0080 |
+| `M2-WORK-OR01/FULLY_RAW_OCCURRENCE_REVERSAL` | 63.6400% | [55.5819%, 72.1773%] | 0.0000% | 0.0080 |
+| `M2-WORK-TSB01/RAW_TSB_OCCURRENCE` | 3.1181% | [-0.4288%, 6.7419%] | 4.2800% | 0.0864 |
+| `M2-WORK-TSBB01/RAW_TSB_LG01_BLEND` | 0.9546% | [0.0282%, 1.9310%] | 2.1400% | 0.0864 |
+
+## 未参赛登记项
+
+| 稳定模型 ID | 中文名（英文名） | 状态 | 原因码 |
+|---|---|---|---|
+| `M2-WORK-B4` | 旧现金生命周期公式（Legacy Cash Lifecycle Formula） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ALIGNMENT_ONLY_ENTRYPOINT_NO_STANDALONE_PREDICTION_GENERATOR` |
+| `M2-WORK-SEG01` | 作品分群向下校准模型 v0.1（Segmented Downward Calibration v0.1） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION` |
+| `M2-WORK-HRC02` | 作品层级稳健校准模型 v0.2（Hierarchical Robust Calibration v0.2） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION` |
+| `M2-WORK-OA03` | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `DEPENDS_ON_NONREPLAYABLE_B4_BASE_PREDICTIONS_OUTSIDE_FROZEN_SPARSE_CASES` |
+| `M2-WORK-GHG01` | 全局门槛广义线性模型（Global Regularized Hurdle GLM） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS` |
+| `M2-WORK-TWD01` | 全局 Tweedie 提升树桩模型（Tweedie Boosted Stumps） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS` |
+| `M2-WORK-HGB01` | 门槛梯度提升树桩模型（Hurdle Gradient-Boosted Stumps） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS` |
+| `M2-WORK-GDE04` | 全局分布组合安全回退管线 v0.4（Global Distributional Ensemble Safe-Fallback Pipeline v0.4） | `ALIAS_OR_DUPLICATE_NOT_INDEPENDENT_MODEL` | `SELECTED_PIPELINE_RETURNS_EXISTING_FALLBACK_AND_CANNOT_COUNT_AS_INDEPENDENT_RAW_MODEL` |
+| `M2-PORT-ETS01` | 组合现金 ETS/Holt-Winters 模型（Portfolio ETS/Holt-Winters） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `PORTFOLIO_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS` |
+| `M2-WORK-HSC01` | 历史状态校准模型（Historical-State Calibration） | `EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE` | `POST_HOC_HISTORICAL_STATUS_CALIBRATION_WITH_UNPROVEN_AS_OF_STATE` |
+| `M2-PORT-LRC01` | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `PORTFOLIO_COMPONENT_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS` |
+| `M2-WORK-LC01` | 生命周期五状态模型（Lifecycle-Aware Five-State Model） | `EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE` | `REVIVAL_STATE_ROUTING_IS_POST_HOC_FROM_COMPLETED_PRIOR_EXPERIMENT` |
+| `M2-CHAN-GEN02` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core） | `EXCLUDED_NO_CANDIDATE_OUTPUT` | `BLOCKED_BEFORE_FIRST_CANDIDATE_PREDICTION` |
+| `M2-CHAN-PSC02` | 出版行业渠道起点可见现金锚金额模型 v0.1（Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Model v0.1） | `EXCLUDED_NO_CANDIDATE_OUTPUT` | `REAL_RUNNER_INCOMPLETE_AND_NO_CANDIDATE_RESULT` |
+| `M2-CHAN-PSC03` | 出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1） | `FORENSIC_ONLY_INVALID_CONTRACT` | `FROZEN_RAW_AUTHENTIC_BUT_IMPLEMENTATION_CONTRACT_MISMATCH_NO_RERUN` |
+| `M2-WORK-C1TE01` | C1 透明组合模型（C1 Transparent Ensemble） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ARCHIVE_HISTORICAL_TARGET_NOT_CURRENT_CASH_TARGET` |
+| `M2-WORK-C2R01` | 旧买断收入路由模型（Legacy C2-R Revenue Route） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ARCHIVE_BUYOUT_TARGET_OUTSIDE_M2_SCOPE` |
+| `M2-WORK-C2R101` | 正式现金路由分治模型（Formal-Cash Route-Specific Model C2-R.1） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL` |
+| `M2-WORK-C2IM01` | C2 活跃度与间歇模型组合（C2 Activity and Intermittent Model Mix） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL` |
+| `M2-WORK-C3IR01` | C3 内部特征残差校正模型（C3 Internal-Feature Residual Correction） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL` |
+| `M2-WORK-HCRC01` | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1） | `EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE` | `POST_HOC_HEAD_RESIDUAL_DESIGN_AND_FROZEN_DEVELOPMENT_SELECTION` |
+| `M2-WORK-HPSR01` | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1） | `EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE` | `FROZEN_BOUNDS_DERIVED_FROM_LATER_OPENED_DEVELOPMENT_ROWS_RETROSPECTIVE_ONLY` |
+| `M2-WORK-HPSR02` | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2） | `EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION` | `UNIQUE_2026_03_INDEPENDENT_EVALUATION_FROZEN_CASH_ONLY_RESEARCH_ENDED_NO_RERUN` |
+
+## 冻结附录
+
+- LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`）的唯一 2026-03/H3 独立评价未重跑：LG01 WAPE 64.4488%，HPSR02 WAPE 64.1150%，relative FVA 0.5179%，bootstrap 95% 区间 [-2.4406%, 3.8718%]，结论仍为研究结束且不确定（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`）。
+- 出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Direct-Cash Conditional Amount Model v0.1，`M2-CHAN-PSC03`）未重跑；冻结 raw 只保留在法证附录，因实现合同不一致而不是有效候选性能证据（`PSC03_FROZEN_RAW_PRESERVED_BUT_NOT_VALID_CANDIDATE_PERFORMANCE_EVIDENCE`）。
+
+## 决策边界
+
+当前状态是历史横评完成、等待独立业务决策（`M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING`）。`activeCandidate`、`approvedForAutomation` 仍为空；`productionReady=false`、`finalHoldoutOpened=false`。本轮没有训练、调参、新模型、PSC03/HPSR02 重跑、production、automation、release 或 M3 formal。
+
+机器可读结果保存在同目录 JSON；私有 Excel、SQLite、CSV 分区、数据字典、manifest 与本地 HTML 的精确路径只在用户最终反馈中提供，不写入 Git。

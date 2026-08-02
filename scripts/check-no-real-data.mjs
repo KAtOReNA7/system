@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const MAX_TEXT_BYTES = 2 * 1024 * 1024;
+const MAX_TEXT_BYTES = 8 * 1024 * 1024;
 const SCANNER_SELF = "scripts/check-no-real-data.mjs";
 const SCANNER_TEST = "test/check-no-real-data.test.js";
 

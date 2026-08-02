@@ -35,10 +35,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\ncontent\n")
   );
   assert.equal(validation.counts.modelCount, 37);
-  assert.equal(validation.counts.experimentCount, 24);
-  assert.equal(validation.counts.nonModelIdentifierCount, 138);
+  assert.equal(validation.counts.experimentCount, 25);
+  assert.equal(validation.counts.nonModelIdentifierCount, 139);
   assert.equal(validation.counts.evaluationCount, 116);
-  assert.equal(validation.counts.comparabilityGroupCount, 59);
+  assert.equal(validation.counts.comparabilityGroupCount, 65);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -114,7 +114,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     /前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空/u
   );
   const historicalChampionAssertions = registry.currentRoles.sourceAssertions
-    .filter((item) => /champion/u.test(item.assertion));
+    .filter((item) => (
+      item.historicalAssertion === true
+      && /champion/u.test(item.assertion)
+    ));
   assert.equal(historicalChampionAssertions.length, 2);
   assert.equal(
     historicalChampionAssertions.every(
@@ -231,7 +234,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);

@@ -219,6 +219,7 @@ export function strictRollingM2HumanAnchoredTsb(
   ))].sort().filter((origin) => origin >= start);
   const output = [];
   const selections = [];
+  const innerStateCache = new Map();
   for (const outerOrigin of origins) {
     const training = rows.filter((row) => (
       row.origin < outerOrigin
@@ -240,7 +241,8 @@ export function strictRollingM2HumanAnchoredTsb(
     const selection = selectM2HumanAnchoredTsbParameters(
       training,
       baseConfig,
-      candidateConfig
+      candidateConfig,
+      innerStateCache
     );
     const state = fitM2HumanAnchoredTsbState(
       training,
@@ -631,7 +633,8 @@ export function buildM2HumanAnchoredTsbSyntheticDiagnostic(
 function selectM2HumanAnchoredTsbParameters(
   rows,
   baseConfig,
-  candidateConfig
+  candidateConfig,
+  innerStateCache = null
 ) {
   const grid = buildM2HumanAnchoredTsbParameterGrid(candidateConfig);
   const minimumRows = positiveInteger(
@@ -666,17 +669,33 @@ function selectM2HumanAnchoredTsbParameters(
     if (training.length < minimumRows || validation.length === 0) {
       continue;
     }
-    let learnedGlobalParameters;
-    let reversalState;
-    try {
-      learnedGlobalParameters = learnM2HumanAnchoredParameters(
-        training,
-        baseConfig
-      ).parameters;
-      reversalState = fitM2HumanAnchoredReversal(training, baseConfig);
-    } catch {
+    let cached = innerStateCache?.get(innerOrigin);
+    if (cached !== undefined && cached.trainingRowCount !== training.length) {
+      throw new Error("m2_human_anchored_tsb_inner_cache_scope_drift");
+    }
+    if (cached === undefined) {
+      try {
+        cached = Object.freeze({
+          trainingRowCount: training.length,
+          learnedGlobalParameters: learnM2HumanAnchoredParameters(
+            training,
+            baseConfig
+          ).parameters,
+          reversalState: fitM2HumanAnchoredReversal(training, baseConfig)
+        });
+      } catch {
+        cached = Object.freeze({
+          trainingRowCount: training.length,
+          unavailable: true
+        });
+      }
+      innerStateCache?.set(innerOrigin, cached);
+    }
+    if (cached.unavailable === true) {
       continue;
     }
+    const learnedGlobalParameters = cached.learnedGlobalParameters;
+    const reversalState = cached.reversalState;
     const prepared = validation.map((row) => {
       const learned = forecastM2HumanAnchoredBase(
         row,

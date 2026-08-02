@@ -107,7 +107,7 @@ test("PSC03 audit governance preserves history and invalidates only candidate in
     ),
     readFile("config/m2-model-registry.v1.json", "utf8"),
     readFile(
-      "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md",
+      "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md",
       "utf8"
     ),
     readFile("AGENTS.md", "utf8"),
@@ -168,7 +168,7 @@ test("PSC03 audit governance preserves history and invalidates only candidate in
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
   );
   for (const text of [stateIndex, rootRules, scopedRules]) {
     assert.match(text, /PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED/u);

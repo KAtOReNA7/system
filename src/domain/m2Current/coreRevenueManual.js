@@ -443,8 +443,9 @@ export function runCoreRevenueManualRolling({
       }));
       continue;
     }
-    const minimumSourceSerial = Math.min(
-      ...featureSource.map((row) => monthToSerial(row.month))
+    const minimumSourceSerial = featureSource.reduce(
+      (minimum, row) => Math.min(minimum, monthToSerial(row.month)),
+      Number.POSITIVE_INFINITY
     );
     const visible = featureSource.filter(
       (row) => monthToSerial(row.month) <= originSerial

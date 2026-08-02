@@ -39,6 +39,7 @@
 | 当前研究比较基线是什么？ | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） |
 | 当前开发业务验收门限是什么？ | [M2 业务验收合同 v1](config/m2-business-acceptance-contract.v1.json) 已激活 3/6/12/36 个月（H3/H6/H12/H36）development-only 门禁；Core80 是硬门禁，Core90 是非否决敏感性披露 |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
+| 2020–2025 全模型横评有统一冠军吗？ | 没有。37 项登记审计后，14 个模型、21 个稳定变体完成 70 个合法月度起点的历史横评；全体跨周期共同案例为 0，周期、年度和主要渠道排名均翻转，结论是**不同模型适配不同业务切片**（`DIFFERENT_MODELS_FIT_DIFFERENT_BUSINESS_SLICES`） |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败；根因审计确认是**估计器尺度收缩、实现正确**（`ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`），不是“尚未运行”或简单漏乘倍率 |
 | 后续渠道金额设计到哪一步？ | 出版行业渠道起点可见现金锚金额模型 v0.1（`M2-CHAN-PSC02`）保持历史源权威阻断且无性能证据；出版行业渠道直接现金尺度条件金额模型 v0.1（Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1，`M2-CHAN-PSC03`）的冻结 raw 真实，但实现合同不一致（`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`），不是有效候选性能证据 |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
@@ -53,6 +54,7 @@
 | M2 开发业务验收合同 v1 | 四周期门限已激活（`M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY`） | 只回答绝对误差是否进入开发业务可接受范围；不等于候选优越、production、automation 或 release |
 | M2 发布与自动化门禁 | Canary 失败（`CANARY_FAIL`） | 尚未达到自动化或发布要求；不与 development-only 业务验收混写 |
 | M2 自动化 | 自动化被阻断（`AUTOMATION_BLOCKED`） | 没有模型获准自动化，活动候选为空（`activeCandidate=null`） |
+| M2 Core80 全模型历史横评 | [2020–2025 完整横评](docs/analysis/m2-current/M2-core80-cross-model-real-business-evaluation-v0.1.md)已完成（`M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING`） | 14 个模型/21 个稳定变体没有统一历史冠军；切片第一名只属于历史证据，不改变模型角色或授权 |
 | M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
 | M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
 | M2 出版行业规模适配 | PSC01 原始候选冻结失败；PSC02 阻断证据已集成；[PSC03 冻结尾部与合同审计](docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.md)确认实现合同不一致（`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`） | PSC03 历史 raw、评价与失败状态保持冻结，但 `validForCandidateDecision=false`；直接现金尺度假设未被合同一致实现裁决，不授权重放、后继模型或独立评价 |
@@ -67,7 +69,7 @@
 | M2 LG01 头部保护尾段修正 v0.2 | 唯一独立结果已冻结为证据不足，现金相邻研究结束（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） | 头部 50% 和中部 30% 现金带精确使用冻结 LG01，仅尾部 20% 使用既有冻结修正；作品—渠道门禁仍为 `PARTIAL_NOT_ACTIVE`，第二起点、HPSR03 和 prospective final holdout 均未执行或打开 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
+最新状态以 [M2 当前状态索引 v0.62](docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -85,6 +87,7 @@
 |---|---|---|
 | 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是兼容性现行运行回退模型（compatibility operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛，当前 Core 老品范围没有新增性能支持 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）是研究比较基线（research baseline） | 只用于研究比较，不是 production 晋升 |
+| 历史横评 | 2020–2025 Core80 全模型真实业务横评（`M2-CMX01`）已完成 | 37 项登记审计、14 模型/21 变体；无统一历史冠军，结果等待独立业务决策，不是模型或激活活动 |
 | 渠道预测研究 | 出版行业规模适配渠道核心（`M2-CHAN-PSC01`）已执行失败；直接现金尺度模型（`M2-CHAN-PSC03`）的冻结 raw 真实但实现合同不一致 | PSC03 历史 raw 只形成一次且不改写；其 primary/strict 数字只描述非一致实现，不是有效候选成绩；`activeCandidate=null` |
 | 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
 | 头部现金残差研究 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`）已执行失败 | 16 个外层选择单元均无合格 alpha，两个 raw 候选均无案例；停止在同一现金特征与同一评价窗内继续微调，不得重跑或外推到 6/12/36 月 |
@@ -140,6 +143,43 @@
 
 ## 最新研究结论
 
+### 2020–2025 Core80 全模型真实业务横评
+
+最新历史横评（M2 Core80 Cross-Model Real-Business Evaluation v0.1，`M2-CMX01`）
+完整覆盖 70 个合法月度预测起点和 235 个起点×周期单元，没有季度抽样；共评价
+2,615 部合格老作品、38 个 canonical 渠道、237,595 个作品案例和 621,466 个
+作品×渠道案例。37 项 Model Registry 登记经过结果前资格审计后，14 个模型展开为
+21 个稳定变体。
+
+> [!NOTE]
+> 全部 21 个变体跨 H3/H6/H12/H36 的共同案例数为 0
+> （`NO_GLOBAL_COMMON_MATCHED_CASES`）。因此本项目没有“全模型、全周期、六年统一
+> 冠军”（`NO_UNIFIED_HISTORICAL_CHAMPION_IDENTIFIED`）；下面只展示各自合法同案
+> 切片，不能跨行直接排名。
+
+| 业务切片 | 历史同案第一名 | WAPE | cases / works |
+|---|---|---:|---:|
+| H3 | 核心老品分周期金额模型 B3（`M2-WORK-CHAM01/B3`） | 25.3790% | 486 / 75 |
+| H6 | 学习型全局金额基线（`M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`） | 28.0991% | 439 / 74 |
+| H12 | 学习型全局金额基线（`M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`） | 32.6455% | 305 / 66 |
+| H36 | 周期路由与学习型全局金额基线并列（`M2-WORK-HR01/REGISTERED_HORIZON_ROUTER`、`M2-WORK-LG01/LEARNED_GLOBAL_COMMON_REVERSAL`） | 35.0675% | 704 / 69 |
+| 喜马拉雅（原生渠道） | 核心收入手册模型（`M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL`） | 28.6801% | 1,248 / 74 |
+| 微信读书（原生渠道） | 核心收入手册模型（`M2-WORK-CRMR01/REGISTERED_NATIVE_WORK_CHANNEL`） | 39.5818% | 771 / 56 |
+| 番茄畅听（原生渠道） | 生命周期感知渠道原始臂（`M2-CHAN-SCL01/A6_RAW`） | 44.2621% | 893 / 50 |
+
+六个年度 H12 切片的第一名也发生翻转：2021 为季节朴素基线与 canonical 渠道递归
+并列，2022 为核心收入手册模型，2023–2024 为学习型全局金额基线，2025 为周期路由
+与学习型全局金额基线并列；2020 因隐私阈值不公开。以学习型全局金额基线
+（`M2-WORK-LG01`）作 5,000 次作品×origin 分块配对 bootstrap 后，没有候选被确认
+显著优于它。
+
+这次横评是历史评价，不是模型开发或选模。切片结果均为仅历史证据且未激活
+（`HISTORICAL_ONLY_NOT_ACTIVATED`）；`activeCandidate=null`、
+`approvedForAutomation=null`、`productionReady=false`、
+`finalHoldoutOpened=false` 保持不变。完整结论见
+[公开横评报告](docs/analysis/m2-current/M2-core80-cross-model-real-business-evaluation-v0.1.md)
+和[机器可读结果](docs/analysis/m2-current/M2-core80-cross-model-real-business-evaluation-v0.1.json)。
+
 M2 业务验收合同 v1 已成为开发业务门限的唯一数值权威。3/6/12 个月
 （H3/H6/H12）门限已激活；36 个月（H36）冻结
 `M2-WORK-LG01`（Human-Anchored Learned Global，人工锚定可学习全局模型）
@@ -181,7 +221,7 @@ q95 为不可变冻结模型参数（`IMMUTABLE_FROZEN_MODEL_PARAMETER`）；旧
 - [HPSR01/HPSR02 现金带归因](docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md)
 - [HPSR02 独立评价前预注册](docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md)
 - [HPSR02 首个独立冻结结果](docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.md)
-- [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
+- [M2 当前状态索引 v0.62](docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md)
 
 出版行业规模适配渠道核心（`M2-CHAN-PSC01-RAW`）已完成首个完整、同人口、可解释的
 原始候选评价，共冻结 `3,318,819` 行预测：
@@ -255,7 +295,7 @@ final holdout、taxonomy、production 或 automation。
 - [PSC03 实现与结果决策](docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md)
 - [PSC03 冻结尾部爆炸与合同一致性审计](docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.md)
 - [PSC03 结果权威纠正](docs/analysis/m2-current/M2-psc03-result-authority-correction-v0.1.md)
-- [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)
+- [M2 当前状态索引 v0.62](docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -286,7 +326,7 @@ final holdout、taxonomy、production 或 automation。
    区分开发业务可用性、候选优越性和发布授权；
 3. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-4. 最后读 [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md)，
+4. 最后读 [M2 当前状态索引 v0.62](docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -470,7 +510,8 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.61](docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md) |
+| 最新状态 | [M2 当前状态索引 v0.62](docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md) |
+| Core80 全模型历史横评 | [公开报告](docs/analysis/m2-current/M2-core80-cross-model-real-business-evaluation-v0.1.md) · [机器结果](docs/analysis/m2-current/M2-core80-cross-model-real-business-evaluation-v0.1.json) · [资格审计](docs/analysis/m2-current/M2-core80-cross-model-eligibility-audit-v0.1.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |

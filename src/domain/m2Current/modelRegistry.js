@@ -528,6 +528,14 @@ export function renderM2ModelCatalog(registry) {
       + `${code(group.evaluationFamily)} |`
     )),
     "",
+    "## 历史横评活动聚合结果",
+    "",
+    "本表登记评价活动的同案聚合切片，不把切片第一名改写成模型角色、活动候选或统一冠军。",
+    "",
+    "| 横评活动（稳定 ID） | 可比组 / 切片 | 切片第一名稳定变体 | WAPE | cases / works | 结果（机器状态） |",
+    "|---|---|---|---:|---:|---|",
+    ...renderHistoricalCrossEvaluationLedger(registry),
+    "",
     "## 成绩总账",
     "",
     "| 可比组 | 模型（稳定 ID） | 评价 / 实验臂 | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
@@ -558,6 +566,29 @@ export function renderM2ModelCatalog(registry) {
     "查询命令只读取公开登记表，不执行模型、训练、私有评价或生产写入。"
   ];
   return `${lines.join("\n")}\n`;
+}
+
+function renderHistoricalCrossEvaluationLedger(registry) {
+  return (registry.experiments ?? []).flatMap((experiment) => (
+    (experiment.aggregateResults ?? []).map((result) => {
+      const winners = result.winnerVariantIds.length === 0
+        ? "无可公开结果"
+        : result.winnerVariantIds.map(code).join("、");
+      const wape = result.WAPE === null
+        ? "未发布（null）"
+        : `${(Number(result.WAPE) * 100).toFixed(4)}%`;
+      return `| ${escapeTable(experiment.displayNameZh)}（${code(
+        experiment.experimentId
+      )}）`
+        + ` | ${code(result.comparableGroupId)} / ${escapeTable(result.sliceId)}`
+        + ` | ${winners}`
+        + ` | ${wape}`
+        + ` | ${displayCount(result.caseCount)} / ${displayCount(result.workCount)}`
+        + ` | ${resultStatusZh(result.resultStatus)}（${code(
+          result.resultStatus
+        )}） |`;
+    })
+  ));
 }
 
 function bestWapeModel(left, right, pairs) {
@@ -863,6 +894,15 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (value === "HISTORICAL_ONLY_NOT_ACTIVATED") {
+    return "仅历史证据且未激活";
+  }
+  if (value === "NO_PRIVACY_ELIGIBLE_COMMON_MATCHED_RESULT") {
+    return "隐私阈值下无可公开共同同案结果";
+  }
+  if (value === "M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING") {
+    return "Core80 全模型历史横评完成并等待独立业务决策";
+  }
   if (value === "PSC03_DEVELOPMENT_NOT_SUPPORTED") {
     return "唯一开发重放不支持继续开发";
   }

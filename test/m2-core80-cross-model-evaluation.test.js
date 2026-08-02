@@ -231,3 +231,56 @@ test("private output path is ignored and public scanner rejects leaks", () => {
     /m2_cmx01_public_artifact_contains_private_content/u
   );
 });
+
+test("completed CMX01 public result is frozen and mapped without role promotion", () => {
+  const report = JSON.parse(readFileSync(
+    "docs/analysis/m2-current/"
+      + "M2-core80-cross-model-real-business-evaluation-v0.1.json",
+    "utf8"
+  ));
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId
+        === "M2-EXP-CORE80-CROSS-MODEL-REAL-BUSINESS-EVALUATION-01"
+    )
+  );
+  const stateIndex = readFileSync(
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md",
+    "utf8"
+  );
+
+  assert.equal(
+    report.status,
+    "M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING"
+  );
+  assert.equal(
+    report.historicalChampionStatus,
+    "NO_UNIFIED_HISTORICAL_CHAMPION_IDENTIFIED"
+  );
+  assert.equal(report.universe.originHorizonCells, 235);
+  assert.equal(report.universe.origins, 70);
+  assert.equal(report.universe.works, 2615);
+  assert.equal(report.universe.channels, 38);
+  assert.equal(report.variants.length, 21);
+  assert.equal(new Set(report.variants.map((item) => item.modelId)).size, 14);
+  assert.equal(
+    report.conclusions.globalAllVariantCommonCaseCount,
+    0
+  );
+  assert.equal(
+    report.conclusions.decision,
+    "DIFFERENT_MODELS_FIT_DIFFERENT_BUSINESS_SLICES"
+  );
+  assert.equal(report.boundaries.productionAuthorized, false);
+  assert.equal(report.boundaries.automationAuthorized, false);
+  assert.equal(report.boundaries.finalHoldoutOpened, false);
+  assert.equal(experiment.modelRolesChanged, false);
+  assert.equal(experiment.aggregateResults.length, 13);
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+  assert.match(
+    stateIndex,
+    /M2_CMX01_HISTORICAL_CROSS_EVALUATION_COMPLETE_DECISION_PENDING/u
+  );
+  assert.equal(assertCmx01PublicSafe(report), true);
+});

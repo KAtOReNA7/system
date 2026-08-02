@@ -14,7 +14,7 @@ const decisionPath =
   "docs/analysis/m2-current/"
     + "M2-publishing-scale-channel-origin-visible-cash-anchor-"
     + "implementation-and-result-decision-v0.1.md";
-const statePath = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md";
+const statePath = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md";
 
 const result = await readJson(resultPath);
 const registry = await readJson("config/m2-model-registry.v1.json");
