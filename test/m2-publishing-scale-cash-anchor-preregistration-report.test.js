@@ -23,7 +23,7 @@ const paths = {
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
   clarification:
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
-  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.59.md"
+  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.60.md"
 };
 const config = await readJson(paths.config);
 const schema = await readJson(paths.schema);

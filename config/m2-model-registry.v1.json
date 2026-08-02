@@ -74,7 +74,7 @@
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
     "pendingExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.59.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.60.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -305,11 +305,19 @@
         "assertion": "psc03_direct_cash_quasi_poisson_design_preregistered_and_public_full_path_verified_before_any_private_outcome",
         "scope": "psc03_pre_outcome_development_replay_contract_and_public_implementation",
         "historicalAssertion": false,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json",
+        "assertion": "psc03_single_development_replay_first_complete_raw_frozen_scale_hypothesis_and_candidate_superiority_not_supported",
+        "scope": "psc03_frozen_development_replay_primary_and_strict_work_total_and_work_channel",
+        "historicalAssertion": false,
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）与 LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的冻结失败状态均不改写。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持，科学解释状态为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已完成唯一一次 2026-03 起点独立评价，最终为 M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED，证据不足并结束现金-only 相邻研究；positive base floor、q05、q95、七次工程停止和两个历史阻断检查点继续冻结。前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空。出版行业渠道核心（M2-CHAN-PSC01）冻结失败，根因是估计器尺度收缩且实现与同案例比较器完整。出版行业渠道起点可见现金锚金额模型 v0.1（M2-CHAN-PSC02；原始候选 M2-CHAN-PSC02-RAW）只有公共数学核心和 synthetic 合同；真实 runner 缺少可达的 component adapter、历史 snapshot、私有编排、原子封存、指标与 bootstrap 成功路径，当前为 PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT。四个关键字段均不可恢复，24 个冻结起点可重建数为 0，当前源权威状态为 PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY，且没有模型性能证据（NO_MODEL_PERFORMANCE_EVIDENCE）。唯一历史预测前 attempt 的 PSC02_DEVELOPMENT_NOT_SUPPORTED 与 PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE 原样保留；没有重放、评价、production 或自动化授权。出版行业渠道直接现金尺度条件金额模型 v0.1（M2-CHAN-PSC03；原始候选 M2-CHAN-PSC03-RAW）已在任何私有 outcome 前完成预注册和公共 synthetic 完整路径，唯一开发重放尚未执行；它只复用冻结 PSC01 权威，不使用 PSC02 四字段、taxonomy 或 LG01 prediction，并继续保持 inactive。",
-    "activeExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"
+    "roleInterpretationZh": "作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）与 LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的冻结失败状态均不改写。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持，科学解释状态为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已完成唯一一次 2026-03 起点独立评价，最终为 M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED，证据不足并结束现金-only 相邻研究；positive base floor、q05、q95、七次工程停止和两个历史阻断检查点继续冻结。前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空。出版行业渠道核心（M2-CHAN-PSC01）冻结失败，根因是估计器尺度收缩且实现与同案例比较器完整。出版行业渠道起点可见现金锚金额模型 v0.1（M2-CHAN-PSC02；原始候选 M2-CHAN-PSC02-RAW）只有公共数学核心和 synthetic 合同；真实 runner 缺少可达的 component adapter、历史 snapshot、私有编排、原子封存、指标与 bootstrap 成功路径，当前为 PSC02_EXECUTION_IMPLEMENTATION_INCOMPLETE_NO_CANDIDATE_RESULT。四个关键字段均不可恢复，24 个冻结起点可重建数为 0，当前源权威状态为 PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY，且没有模型性能证据（NO_MODEL_PERFORMANCE_EVIDENCE）。唯一历史预测前 attempt 的 PSC02_DEVELOPMENT_NOT_SUPPORTED 与 PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE 原样保留；没有重放、评价、production 或自动化授权。出版行业渠道直接现金尺度条件金额模型 v0.1（M2-CHAN-PSC03；原始候选 M2-CHAN-PSC03-RAW）已完成唯一开发重放并冻结首次完整原始候选；primary WAPE 54.2647%，strict WAPE 297.0822%，尺度假设与候选优越性门禁均未通过，最终为 PSC03_DEVELOPMENT_NOT_SUPPORTED。它不使用 PSC02 四字段、taxonomy 或 LG01 prediction，并继续 inactive；不授权重跑、独立评价、later-origin、final holdout、automation 或 production。",
+    "activeExperiment": null
   },
   "currentEvaluationContract": {
     "version": "2.2",
@@ -3214,21 +3222,60 @@
       ],
       "successorIds": [],
       "rawCandidateVariantId": "M2-CHAN-PSC03-RAW",
-      "currentRole": "inactive_preregistered_development_candidate_not_executed",
-      "evidenceStatus": "public_math_core_and_full_synthetic_runner_verified_private_development_replay_not_executed",
-      "operationalStatus": "inactive_pre_execution_exact_head_ci_required",
+      "currentRole": "failed_development_candidate",
+      "evidenceStatus": "single_authorized_development_replay_complete_first_raw_frozen_gate_fail",
+      "operationalStatus": "development_not_supported_frozen_no_rerun_or_independent_evaluation_authorized",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
-      "developmentWindowReuse": "single_authorized_development_replay_not_yet_consumed",
+      "developmentWindowReuse": "single_authorized_development_replay_consumed_first_complete_raw_frozen",
       "limitationsZh": [
-        "目前只有预注册、公共数学实现与 synthetic 完整成功路径，没有私有候选成绩",
-        "D0 算术层级与 D1 准 Gamma 只作机制诊断，不是候选或 fallback",
-        "P 准 Poisson 是唯一原始候选，数值失败不得切换到诊断臂、PSC01 或 LG01",
+        "唯一开发重放已完成；P 准 Poisson 是唯一原始候选，3,318,819 行 raw 首次且仅一次形成并冻结",
+        "D0 算术层级与 D1 准 Gamma 已执行但只作机制诊断，不是候选或 fallback",
+        "primary WAPE 为 54.2647%，strict WAPE 为 297.0822%；strict H3 预测/实际比为 25.4492",
+        "相对 PSC01 的 primary FVA 为 41.2775%，但 strict FVA 为 -224.5617%；相对 LG01 的 primary 与 strict 均退化",
+        "尺度假设与候选优越性门禁均未通过，Core80 全要求周期作品级 bootstrap 95% 区间跨 0",
         "PSC02 的 componentId、revisionId、effectiveAt、availableAt 与 extra=3 不属于本模型合同",
-        "不具备独立评价、later-origin、final holdout、自动化、生产、发布或财务使用权限"
+        "不具备重跑、独立评价、later-origin、final holdout、自动化、生产、发布或财务使用权限"
       ],
-      "evaluations": []
+      "evaluations": [
+        {
+          "evaluationId": "eval-psc03-development-replay-primary-12039-h36",
+          "datasetVersion": "M2-publishing-scale-channel-direct-cash-v0.1-development-replay-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "publishing-scale-v2.2-primary-1125w-12039c",
+          "comparableGroupId": "CG-PSC01-V22-PRIMARY-12039-H36",
+          "caseCount": 12039,
+          "workCount": 1125,
+          "originCount": 13,
+          "horizons": [36],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "WAPE": 0.5426465402440889,
+          "signedBias": -0.17349406641975057,
+          "baselineModelId": "M2-WORK-LG01",
+          "relativeWape": -0.22465795329241314,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "evidenceClass": "DEVELOPMENT_REPLAY",
+          "reportRef": "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json",
+          "resultStatus": "PSC03_DEVELOPMENT_NOT_SUPPORTED",
+          "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+          "experimentArmId": "P",
+          "rawCandidateId": "M2-CHAN-PSC03-RAW",
+          "strictCaseCount": 74320,
+          "strictWorkCount": 2650,
+          "strictWAPE": 2.9708217440793465,
+          "strictSignedBias": 2.352705188318462,
+          "primaryRelativeFvaVersusPsc01": 0.4127752531859834,
+          "strictRelativeFvaVersusPsc01": -2.2456171567254724,
+          "strictRelativeFvaVersusLg01": -6.1965370944274945,
+          "bootstrapLg01Core80AllRequiredHorizons95Lower": -0.14421801618747473,
+          "bootstrapLg01Core80AllRequiredHorizons95Upper": 0.018033768684655834,
+          "scaleHypothesisStatus": "DIRECT_CASH_SCALE_HYPOTHESIS_NOT_SUPPORTED",
+          "candidateSuperiorityStatus": "CANDIDATE_SUPERIORITY_CONTRACT_NOT_PASSED"
+        }
+      ]
     },
     {
       "stableModelId": "M2-WORK-C1TE01",
@@ -4693,34 +4740,41 @@
           "armId": "D0",
           "displayNameZh": "算术层级诊断",
           "modelId": "M2-CHAN-PSC03",
-          "executionStatus": "PUBLIC_SYNTHETIC_VERIFIED_PRIVATE_NOT_EXECUTED"
+          "executionStatus": "EXECUTED_DIAGNOSTIC_NOT_CANDIDATE"
         },
         {
           "armId": "D1",
           "displayNameZh": "直接准 Gamma 层级方差族诊断",
           "modelId": "M2-CHAN-PSC03",
-          "executionStatus": "PUBLIC_SYNTHETIC_VERIFIED_PRIVATE_NOT_EXECUTED"
+          "executionStatus": "EXECUTED_VARIANCE_FAMILY_DIAGNOSTIC_NOT_CANDIDATE"
         },
         {
           "armId": "P",
           "displayNameZh": "直接准 Poisson 层级唯一原始候选",
           "modelId": "M2-CHAN-PSC03",
-          "executionStatus": "PUBLIC_SYNTHETIC_VERIFIED_PRIVATE_NOT_EXECUTED"
+          "executionStatus": "EXECUTED_FIRST_COMPLETE_RAW_FROZEN_DEVELOPMENT_NOT_SUPPORTED"
         }
       ],
-      "resultStatus": "NOT_EXECUTED",
-      "modelPerformanceEvidenceStatus": "NO_MODEL_PERFORMANCE_EVIDENCE",
+      "resultStatus": "PSC03_DEVELOPMENT_NOT_SUPPORTED",
+      "modelPerformanceEvidenceStatus": "DEVELOPMENT_REPLAY_MODEL_PERFORMANCE_EVIDENCE",
       "currentAuthority": true,
       "modelCreated": true,
-      "realPredictionGenerated": false,
-      "evaluationExecuted": false,
+      "realPredictionGenerated": true,
+      "evaluationExecuted": true,
+      "firstCompleteRawPredictionFormed": true,
+      "rawCandidateRepeated": false,
+      "independentEvidence": false,
       "evidenceRefs": [
         "config/m2-current-publishing-scale-channel-direct-cash-preregistration.v0.1.json",
         "config/m2-current-publishing-scale-channel-direct-cash-schema.v0.1.json",
         "config/m2-current-publishing-scale-channel-direct-cash-development.v0.1.json",
         "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.json",
         "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md",
-        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json"
+        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-pre-execution-ci-receipt-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md"
       ]
     },
     {

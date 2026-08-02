@@ -129,12 +129,15 @@ This directory is the only implementation home for current M2 model logic.
   difference is not a PSC03 population, input, or gate. Preserve the complete
   frozen PSC01 3,318,819-row monthly population; missing or extra rows fail
   closed, and available-only intersection scoring is forbidden.
-- PSC03 is authorized only for one historical `DEVELOPMENT_REPLAY` after a
-  clean pre-execution exact-head Linux/Windows CI. It remains inactive and
-  does not authorize independent evaluation, a later origin, a second replay,
-  final holdout, taxonomy modeling, production, automation, release, or
-  financial use. Once the first complete interpretable raw prediction is
-  formed, freeze it and do not refit or repredict it.
+- PSC03 consumed its sole historical `DEVELOPMENT_REPLAY` after a clean
+  pre-execution exact-head Linux/Windows CI. The first complete 3,318,819-row
+  raw candidate was sealed before comparator loading and was not repeated.
+  Primary WAPE was 54.2647%, strict WAPE was 297.0822%, both the scale and
+  candidate-superiority gates failed, and the frozen status is
+  `PSC03_DEVELOPMENT_NOT_SUPPORTED`. Keep it inactive: do not refit, repredict,
+  rerun, open independent evaluation or a later origin, create an outcome-led
+  successor, or authorize final holdout, taxonomy modeling, production,
+  automation, release, or financial use.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

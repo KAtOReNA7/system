@@ -1,0 +1,17 @@
+{
+  "schema": "m2.current.psc03.pre_execution_ci_receipt.v0.1",
+  "status": "PSC03_PRE_EXECUTION_EXACT_HEAD_CI_PASSED",
+  "modelId": "M2-CHAN-PSC03",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "exactHead": "7a719474291c7b7286decab5bf9c11eb26d88d35",
+  "branch": "codex/m2-psc03-direct-cash-quasi-poisson-development-v0-1",
+  "pullRequestNumber": 41,
+  "linuxCheck": "SUCCESS",
+  "windowsCheck": "SUCCESS",
+  "codeSha256": "b3d58bd51aa6c0f09a6eb94c8b2abc8cf1aec9d002f98958967b8a38b708cb49",
+  "configSha256": "0d3b8de9237d1fd6f747a70b9cc03144d152027be3a67ef530a6262108ce51e4",
+  "preregistrationSha256": "423e623b33bee724ceb2190e606e8afa0c92df923c0996a654eadc929ff5ddd8",
+  "schemaSha256": "2f7a0da65bdb84a581d9b0a07e99b582df912731a77b736df6970baeba9f0812",
+  "occurrenceAuthoritySha256": "e1e06d5a00d46689aff54d32ec55925e5f6dee02e28f7dd233fe1b3aea4ea5ba",
+  "privateRowLevelDataPublished": false
+}

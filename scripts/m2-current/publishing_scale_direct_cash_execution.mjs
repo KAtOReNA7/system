@@ -1327,6 +1327,9 @@ async function freezeResult({
     experimentId: M2_PSC03_EXPERIMENT_ID,
     preregistrationId: M2_PSC03_PREREGISTRATION_ID,
     evidenceClass: "DEVELOPMENT_REPLAY",
+    modelPerformanceEvidenceStatus:
+      "DEVELOPMENT_REPLAY_MODEL_PERFORMANCE_EVIDENCE",
+    predictionGenerated: true,
     preExecution: Object.freeze({
       exactHead: context.gitPreflight.head,
       branch: context.gitPreflight.branch,
@@ -1388,7 +1391,10 @@ async function freezeResult({
       bootstrap: bootstraps.public
     }),
     populations: metrics.public.populations,
-    scaleHypothesis: gates.scaleHypothesis,
+    scaleHypothesis: Object.freeze({
+      ...gates.scaleHypothesis,
+      diagnostics: metrics.public.scaleRecovery
+    }),
     candidateCompetitiveness: gates.candidateCompetitiveness,
     boundaries: Object.freeze({
       activeCandidate: null,

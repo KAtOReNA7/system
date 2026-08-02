@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.59.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.60.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -34,6 +34,7 @@
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-pre-execution-ci-receipt-v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md`
@@ -323,6 +324,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   `PSC02_DEVELOPMENT_NOT_SUPPORTED` 原样保留；不得伪造 adapter、重放 PSC02 或将
   public primitive 写成真实端到端实现。后续新金额模型只能在独立预注册与授权下使用
   已冻结且已证明 origin-visible 的 PSC01 人口与训练信息。
+- 出版行业渠道直接现金尺度条件金额模型 v0.1（`M2-CHAN-PSC03`；原始候选
+  `M2-CHAN-PSC03-RAW`）的唯一开发重放已完成：3,318,819 行原始预测首次且仅一次
+  形成并在比较器读取前封存；occurrence 逐位一致且只应用一次，PSC02 四字段、
+  `extra=3`、taxonomy 和 LG01 prediction 均未进入模型。primary WAPE 为 54.2647%，
+  strict WAPE 为 297.0822%；尺度假设与候选优越性门禁均未通过，最终为
+  `PSC03_DEVELOPMENT_NOT_SUPPORTED`。D0/D1 仍只是诊断，不能替代 P 原始候选；不得
+  重跑 PSC03、打开独立评价或 later-origin，也不得据此创建后继模型、修改 production、
+  automation、final holdout 或财务使用。`activeCandidate` 与自动化批准继续为空。
 - `config/m2-business-acceptance-contract.v1.json` 是 M2 开发业务验收门限的数值
   唯一权威：Core80 是硬门禁，Core90 是完整披露的敏感性人口；业务可用性与候选
   优越性分开，候选优越性使用合同中的 `AND` 规则。H36 只能作为带永久历史非前瞻

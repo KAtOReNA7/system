@@ -87,6 +87,14 @@ test("PSC03 registry identity, lineage and diagnostic arm roles remain explicit"
   assert.equal(model.rawCandidateVariantId, "M2-CHAN-PSC03-RAW");
   assert.deepEqual(model.predecessorIds, ["M2-CHAN-PSC01"]);
   assert.deepEqual(model.relatedBlockedDesignIds, ["M2-CHAN-PSC02"]);
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 1);
+  assert.equal(model.evaluations[0].evidenceClass, "DEVELOPMENT_REPLAY");
+  assert.equal(model.evaluations[0].independentEvidence, false);
+  assert.equal(
+    model.evaluations[0].resultStatus,
+    "PSC03_DEVELOPMENT_NOT_SUPPORTED"
+  );
   assert.deepEqual(
     experiment.arms.map((arm) => `${experiment.experimentId}/${arm.armId}`),
     [
@@ -97,23 +105,77 @@ test("PSC03 registry identity, lineage and diagnostic arm roles remain explicit"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
+  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(experiment.resultStatus, "PSC03_DEVELOPMENT_NOT_SUPPORTED");
+  assert.equal(experiment.realPredictionGenerated, true);
+  assert.equal(experiment.rawCandidateRepeated, false);
 });
 
-test("PSC03 public synthetic evidence is not promoted to model performance", () => {
+test("PSC03 public synthetic evidence stays separate from frozen replay performance", () => {
   assert.equal(publicDiagnostic.status, "PSC03_PUBLIC_SYNTHETIC_FULL_PATH_PASSED");
   assert.equal(publicDiagnostic.boundaries.publicSyntheticOnly, true);
   assert.equal(publicDiagnostic.boundaries.privateArtifactRead, false);
   assert.equal(publicDiagnostic.boundaries.comparatorLoadedAfterPrimarySeal, true);
   assert.equal(publicDiagnostic.boundaries.taxonomyUsed, false);
   assert.equal(publicDiagnostic.boundaries.lg01PredictionDependency, false);
-  assert.ok([
-    "NO_MODEL_PERFORMANCE_EVIDENCE",
+  assert.equal(
+    publicEvaluation.modelPerformanceEvidenceStatus,
     "DEVELOPMENT_REPLAY_MODEL_PERFORMANCE_EVIDENCE"
-  ].includes(publicEvaluation.modelPerformanceEvidenceStatus));
-  if (publicEvaluation.modelPerformanceEvidenceStatus === "NO_MODEL_PERFORMANCE_EVIDENCE") {
-    assert.equal(publicEvaluation.metrics, null);
-    assert.equal(publicEvaluation.predictionGenerated, false);
+  );
+  assert.equal(publicEvaluation.status, "PSC03_DEVELOPMENT_NOT_SUPPORTED");
+  assert.equal(publicEvaluation.predictionGenerated, true);
+  assert.equal(publicEvaluation.evidenceClass, "DEVELOPMENT_REPLAY");
+  assert.equal(publicEvaluation.execution.firstCompletePrimaryRawResultFormed, true);
+  assert.equal(publicEvaluation.execution.primaryRawRepeated, false);
+  assert.equal(publicEvaluation.execution.primaryRawRowCount, 3318819);
+  assert.equal(publicEvaluation.execution.occurrenceBitForBitParity, true);
+  assert.equal(publicEvaluation.execution.exactPsc01PopulationCoverage, true);
+  assert.equal(publicEvaluation.execution.comparatorLoadedAfterPrimarySeal, true);
+  assert.equal(publicEvaluation.boundaries.independentEvaluationOpened, false);
+  assert.equal(publicEvaluation.boundaries.laterOriginOpened, false);
+  assert.equal(publicEvaluation.boundaries.finalHoldoutOpened, false);
+  assert.equal(publicEvaluation.boundaries.productionReady, false);
+  assert.equal(publicEvaluation.scaleHypothesis.diagnostics.allPassed, false);
+  assert.equal(
+    publicEvaluation.scaleHypothesis.diagnostics.gates.strictRelativeFva,
+    false
+  );
+  assert.equal(publicEvaluation.arms.P.primary.workTotal.wape, 0.5426465402440889);
+  assert.equal(publicEvaluation.arms.P.strict.workTotal.wape, 2.9708217440793465);
+  assert.equal(publicEvaluation.comparisons.integrity.sameTarget, true);
+  assert.equal(publicEvaluation.comparisons.integrity.sameActualDefinition, true);
+  for (const comparator of ["psc01Primary", "psc01Strict", "lg01Primary", "lg01Strict"]) {
+    const integrity = publicEvaluation.comparisons.integrity[comparator];
+    assert.equal(integrity.sameCase, true);
+    assert.equal(integrity.sameOrigin, true);
+    assert.equal(integrity.sameHorizon, true);
+    assert.equal(integrity.sameActualValues, true);
   }
+});
+
+test("PSC03 public replay aggregates enforce the preregistered privacy threshold", () => {
+  let published = 0;
+  let suppressed = 0;
+  const visit = (value) => {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    if (value.status === "PUBLISHED_AGGREGATE") {
+      published += 1;
+      assert.ok(value.metrics.caseCount >= 30);
+      assert.ok(value.metrics.workCount >= 20);
+    }
+    if (value.status === "SUPPRESSED_PRIVACY_THRESHOLD") {
+      suppressed += 1;
+      assert.equal(value.metrics, null);
+    }
+    Object.values(value).forEach(visit);
+  };
+  visit(publicEvaluation);
+  assert.equal(published, 215);
+  assert.equal(suppressed, 9);
 });
 
 test("PSC03 current public entrypoints retain Chinese-first identity and current-state mapping", () => {

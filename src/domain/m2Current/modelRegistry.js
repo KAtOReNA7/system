@@ -854,6 +854,9 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (value === "PSC03_DEVELOPMENT_NOT_SUPPORTED") {
+    return "唯一开发重放不支持继续开发";
+  }
   if (value === "FROZEN_SAME_CASE_BASELINE_FIRST_INDEPENDENT") {
     return "首个独立起点冻结同案例基线";
   }

@@ -525,7 +525,7 @@ test("missing publishing-scale execution inputs block only that private capabili
   );
 });
 
-test("missing PSC03 frozen inputs block only its one-time development replay", () => {
+test("consumed PSC03 capability preserves gaps without authorizing a rerun", () => {
   const result = evaluateCapability(
     catalog,
     "m2-current-publishing-scale-direct-cash-development",
@@ -544,8 +544,14 @@ test("missing PSC03 frozen inputs block only its one-time development replay", (
   ]);
   assert.match(
     result.recovery,
-    /PSC03_EXECUTION_INPUT_UNAVAILABLE_NO_MODEL_EVIDENCE/u,
+    /sole PSC03 development replay is consumed and frozen/u,
   );
+  assert.match(
+    result.authorization,
+    /CONSUMED_SINGLE_PSC03_DEVELOPMENT_REPLAY_NOT_SUPPORTED_NO_RERUN/u,
+  );
+  assert.equal(result.executionAuthorized, false);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
 });
 
 test("publishing-scale derived cache misses are rebuildable when source authority exists", () => {
