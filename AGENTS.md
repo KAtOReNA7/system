@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.59.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -28,6 +28,15 @@
   - `docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-psc02-pr40-pre-result-status-correction-v0.1.md`
+  - `config/m2-current-publishing-scale-channel-direct-cash-preregistration.v0.1.json`
+  - `config/m2-current-publishing-scale-channel-direct-cash-schema.v0.1.json`
+  - `config/m2-current-publishing-scale-channel-direct-cash-development.v0.1.json`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.json`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-quasi-poisson-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md`
 - M2 分层收入组合模型开发结论：
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json`
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md`

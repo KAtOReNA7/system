@@ -101,6 +101,40 @@ This directory is the only implementation home for current M2 model logic.
   diagnostic arm, or treat the blocker as model performance. Any future amount
   model requires a new preregistration and authorization and may use only frozen,
   proven origin-visible PSC01 population and training information.
+- The direct-cash conditional amount model v0.1 (`M2-CHAN-PSC03`) is the
+  separately preregistered successor that uses only frozen, proven
+  origin-visible PSC01 population, training rows, 18-feature order, basis,
+  occurrence, actual definition, origins, horizons, channel structure, and
+  evaluation population. Its sole raw candidate is `M2-CHAN-PSC03-RAW` under
+  experiment `M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03` and
+  preregistration `M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01`.
+- For `M2-CHAN-PSC03`, the arithmetic hierarchy arm
+  (`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D0`) and direct quasi-Gamma
+  arm (`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D1`) are diagnostics
+  only. The direct quasi-Poisson arm
+  (`M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/P`) is the sole candidate.
+  A diagnostic arm, PSC01, LG01, or a selected pipeline must never replace or
+  conceal its raw result.
+- PSC03 occurrence is joined on the complete frozen monthly case key with
+  two-sided duplicate rejection and exact IEEE-754 binary64 parity, and is
+  applied exactly once. Its positive-amount fits use equal positive monthly
+  case weights normalized within each node; they never use work-balanced
+  total weights. The fixed hierarchy is global pooled parent to mechanism to
+  the five named platforms, with coefficient-one parent log-mean offsets and
+  same-estimator parent fallback only. Taxonomy remains `REPORT_ONLY`, and
+  LG01 predictions are excluded from features, fitting, offsets, multipliers,
+  priors, calibration, and fallback.
+- PSC03 must never require or reconstruct PSC02 `componentId`, `revisionId`,
+  `effectiveAt`, or `availableAt`, and the historical PSC02 three-row ledger
+  difference is not a PSC03 population, input, or gate. Preserve the complete
+  frozen PSC01 3,318,819-row monthly population; missing or extra rows fail
+  closed, and available-only intersection scoring is forbidden.
+- PSC03 is authorized only for one historical `DEVELOPMENT_REPLAY` after a
+  clean pre-execution exact-head Linux/Windows CI. It remains inactive and
+  does not authorize independent evaluation, a later origin, a second replay,
+  final holdout, taxonomy modeling, production, automation, release, or
+  financial use. Once the first complete interpretable raw prediction is
+  formed, freeze it and do not refit or repredict it.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

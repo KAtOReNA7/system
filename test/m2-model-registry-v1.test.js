@@ -34,8 +34,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 36);
-  assert.equal(validation.counts.experimentCount, 23);
+  assert.equal(validation.counts.modelCount, 37);
+  assert.equal(validation.counts.experimentCount, 24);
   assert.equal(validation.counts.nonModelIdentifierCount, 138);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
@@ -95,7 +95,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     registry.currentRoles.coreLegacyHorizonAmountResearchComparator,
     "M2-WORK-LG01"
   );
-  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"
+  );
   assert.equal(
     registry.currentRoles.blockedExperiment,
     "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02"
@@ -231,7 +234,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.58.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.59.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -302,7 +305,10 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
     true
   );
   assert.equal(experiment.secondResultExecuted, false);
-  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"
+  );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -453,7 +459,10 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(experiment.outerOutcomeRead, false);
   assert.equal(experiment.eligibleLaterOriginCount, 0);
   assert.equal(experiment.newFinalHoldoutOpened, false);
-  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"
+  );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -589,7 +598,10 @@ test("HPSR02 first independent result freezes inconclusive without promotion", (
   assert.equal(experiment.resultFrozen, true);
   assert.equal(experiment.cashOnlyResearchEnded, true);
   assert.equal(experiment.independentOutcomeRead, true);
-  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"
+  );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -897,8 +909,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：36 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：37 个/u);
   assert.match(list.stdout, /M2-CHAN-PSC02/u);
+  assert.match(list.stdout, /M2-CHAN-PSC03/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
   assert.match(list.stdout, /M2-WORK-HPSR01/u);
@@ -907,7 +920,10 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /当前实验：无（null）/u);
+  assert.match(
+    status.stdout,
+    /当前实验：出版行业渠道直接现金尺度条件金额开发 v0\.1.*M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/u
+  );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /已完成唯一一次 2026-03 起点独立评价/u);
   assert.match(status.stdout, /结束现金-only 相邻研究/u);

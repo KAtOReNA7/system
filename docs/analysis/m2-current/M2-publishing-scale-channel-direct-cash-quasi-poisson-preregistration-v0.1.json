@@ -1,0 +1,86 @@
+{
+  "schema": "m2.current.psc03.public_preregistration.v0.1",
+  "asOf": "2026-08-02",
+  "status": "PREREGISTERED_BEFORE_ANY_PSC03_PRIVATE_OUTCOME",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "preregistrationId": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+  "displayNameZh": "出版行业渠道直接现金尺度条件金额模型 v0.1",
+  "displayNameEn": "Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1",
+  "contractRef": "config/m2-current-publishing-scale-channel-direct-cash-preregistration.v0.1.json",
+  "schemaRef": "config/m2-current-publishing-scale-channel-direct-cash-schema.v0.1.json",
+  "semanticValidatorRef": "src/domain/m2Current/publishingScaleDirectCashPreregistration.js",
+  "implementationRefs": [
+    "src/domain/m2Current/publishingScaleDirectCashDevelopment.js",
+    "src/domain/m2Current/publishingScaleDirectCashEvaluation.js",
+    "scripts/m2-current/publishing_scale_direct_cash_execution.mjs"
+  ],
+  "frozenPsc01Authority": {
+    "modelId": "M2-CHAN-PSC01",
+    "rawCandidateId": "M2-CHAN-PSC01-RAW",
+    "monthlyPredictionRowCount": 3318819,
+    "primaryWorkCaseCount": 12039,
+    "primaryWorkCount": 1125,
+    "strictWorkCaseCount": 74320,
+    "strictWorkCount": 2650,
+    "occurrenceBinary64Tolerance": 0,
+    "target": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+  },
+  "arms": [
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D0",
+      "stableArmCode": "ARITHMETIC_HIERARCHY_ONLY",
+      "role": "DIAGNOSTIC_NOT_CANDIDATE"
+    },
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/D1",
+      "stableArmCode": "DIRECT_QUASI_GAMMA_HIERARCHY",
+      "role": "VARIANCE_FAMILY_DIAGNOSTIC_NOT_CANDIDATE"
+    },
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/P",
+      "stableArmCode": "DIRECT_QUASI_POISSON_HIERARCHY",
+      "role": "SOLE_RAW_CANDIDATE"
+    }
+  ],
+  "frozenSelection": {
+    "lambdaGrid": [1, 3],
+    "tieTolerance": 1e-12,
+    "tieBreak": "LARGER_LAMBDA",
+    "primaryOuterWorkFolds": 5,
+    "primaryInnerWorkFolds": 3,
+    "primaryInnerRepeats": 3,
+    "strictInnerOrigins": "LATEST_THREE_LEGAL_BEFORE_OUTER_MINIMUM_TWO",
+    "outerOutcomeUsedForSelection": false
+  },
+  "evaluation": {
+    "bootstrapSeed": 20260728,
+    "bootstrapIterations": 2000,
+    "bootstrapCluster": "standardWorkId",
+    "privacyMinimumCases": 30,
+    "privacyMinimumWorks": 20,
+    "independentEvidence": false,
+    "postHocActualScalarStatus": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE_NOT_CANDIDATE_SCORE"
+  },
+  "psc02Dependencies": {
+    "componentId": false,
+    "revisionId": false,
+    "effectiveAt": false,
+    "availableAt": false,
+    "extraThreeLedgerRowsAsGate": false,
+    "psc02Replay": false
+  },
+  "closedBoundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false,
+    "taxonomyModel": false,
+    "productionModified": false
+  }
+}

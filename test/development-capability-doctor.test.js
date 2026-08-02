@@ -50,8 +50,9 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-lifecycle-aware",
     "m2-current-channel-experts",
     "m2-current-publishing-scale-channel",
-    "m2-current-publishing-scale-channel-controlled-retry-v2",
+      "m2-current-publishing-scale-channel-controlled-retry-v2",
       "m2-current-publishing-scale-cash-anchor-development",
+      "m2-current-publishing-scale-direct-cash-development",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
@@ -521,6 +522,29 @@ test("missing publishing-scale execution inputs block only that private capabili
   assert.match(
     result.authorization,
     /CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY/u,
+  );
+});
+
+test("missing PSC03 frozen inputs block only its one-time development replay", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-direct-cash-development",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "frozen-psc01-evaluation-population-occurrence-and-receipt",
+    "frozen-lg01-comparator-read-only-source",
+    "frozen-lg01-comparator-manifest-read-only-source",
+  ]);
+  assert.match(
+    result.recovery,
+    /PSC03_EXECUTION_INPUT_UNAVAILABLE_NO_MODEL_EVIDENCE/u,
   );
 });
 

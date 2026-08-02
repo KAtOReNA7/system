@@ -1,0 +1,25 @@
+{
+  "schema": "m2.current.psc03.public_development_evaluation.v0.1",
+  "asOf": "2026-08-02",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "preregistrationId": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+  "executionStatus": "NOT_EXECUTED_PRE_EXECUTION_EXACT_HEAD_CI_REQUIRED",
+  "modelPerformanceEvidenceStatus": "NO_MODEL_PERFORMANCE_EVIDENCE",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "attemptCount": 0,
+  "predictionGenerated": false,
+  "evaluationExecuted": false,
+  "bootstrapExecuted": false,
+  "metrics": null,
+  "scientificStatus": null,
+  "closedBoundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "m2.current.psc03.public_synthetic_diagnostic.v0.1",
+  "status": "PSC03_PUBLIC_SYNTHETIC_FULL_PATH_PASSED",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "preregistrationId": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01",
+  "occurrenceParity": {
+    "rowCount": 900,
+    "exactCoverage": true,
+    "binary64Tolerance": 0
+  },
+  "armPredictionCounts": {
+    "D0": {
+      "primary": 720,
+      "strict": 180
+    },
+    "D1": {
+      "primary": 720,
+      "strict": 180
+    },
+    "P": {
+      "primary": 720,
+      "strict": 180
+    }
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "comparatorLoadedAfterPrimarySeal": true,
+    "taxonomyUsed": false,
+    "lg01PredictionDependency": false,
+    "productionModified": false
+  }
+}
