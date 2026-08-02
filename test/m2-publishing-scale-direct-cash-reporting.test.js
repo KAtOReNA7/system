@@ -90,13 +90,21 @@ test("PSC03 registry identity, lineage and diagnostic arm roles remain explicit"
   assert.equal(model.rawCandidateVariantId, "M2-CHAN-PSC03-RAW");
   assert.deepEqual(model.predecessorIds, ["M2-CHAN-PSC01"]);
   assert.deepEqual(model.relatedBlockedDesignIds, ["M2-CHAN-PSC02"]);
-  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(
+    model.currentRole,
+    "invalid_frozen_candidate_evidence_contract_mismatch"
+  );
   assert.equal(model.evaluations.length, 1);
   assert.equal(model.evaluations[0].evidenceClass, "DEVELOPMENT_REPLAY");
   assert.equal(model.evaluations[0].independentEvidence, false);
   assert.equal(
     model.evaluations[0].resultStatus,
     "PSC03_DEVELOPMENT_NOT_SUPPORTED"
+  );
+  assert.equal(model.evaluations[0].validForCandidateDecision, false);
+  assert.equal(
+    model.evaluations[0].currentAuthorityStatus,
+    "PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED"
   );
   assert.deepEqual(
     experiment.arms.map((arm) => `${experiment.experimentId}/${arm.armId}`),
@@ -110,6 +118,11 @@ test("PSC03 registry identity, lineage and diagnostic arm roles remain explicit"
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(experiment.resultStatus, "PSC03_DEVELOPMENT_NOT_SUPPORTED");
+  assert.equal(experiment.validForCandidateDecision, false);
+  assert.equal(
+    experiment.currentAuthorityStatus,
+    "PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED"
+  );
   assert.equal(experiment.realPredictionGenerated, true);
   assert.equal(experiment.rawCandidateRepeated, false);
 });

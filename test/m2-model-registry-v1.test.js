@@ -231,7 +231,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.60.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -913,6 +913,10 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
     /当前实验：无（null）/u
   );
   assert.match(status.stdout, /PSC03_DEVELOPMENT_NOT_SUPPORTED/u);
+  assert.match(
+    status.stdout,
+    /PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED/u
+  );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /已完成唯一一次 2026-03 起点独立评价/u);
   assert.match(status.stdout, /结束现金-only 相邻研究/u);

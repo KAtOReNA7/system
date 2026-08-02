@@ -713,6 +713,13 @@ function renderScoreLedger(registry) {
           + ` | ${resultStatusZh(evaluation.resultStatus)}（`
           + `${code(evaluation.resultStatus)}）`
           + (
+            evaluation.validForCandidateDecision === false
+              ? `；当前不是有效候选性能证据（${code(
+                evaluation.currentAuthorityStatus
+              )}；${code("validForCandidateDecision=false")}）`
+              : ""
+          )
+          + (
             evaluation.selectedPipelineStatus
               ? `；回退后管线状态（${code(
                 evaluation.selectedPipelineStatus
@@ -789,6 +796,8 @@ function roleZh(role) {
     comparator_only: "仅作比较",
     rejected_development_candidate: "已拒绝开发候选",
     failed_development_candidate: "已执行失败候选",
+    invalid_frozen_candidate_evidence_contract_mismatch:
+      "冻结 raw 真实但实现合同不一致、不是有效候选证据",
     failed_research_candidate: "已执行失败研究候选",
     blocked_not_executed: "阻断且未执行",
     archive_only: "仅历史审计",

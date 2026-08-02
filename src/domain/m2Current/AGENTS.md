@@ -132,12 +132,23 @@ This directory is the only implementation home for current M2 model logic.
 - PSC03 consumed its sole historical `DEVELOPMENT_REPLAY` after a clean
   pre-execution exact-head Linux/Windows CI. The first complete 3,318,819-row
   raw candidate was sealed before comparator loading and was not repeated.
-  Primary WAPE was 54.2647%, strict WAPE was 297.0822%, both the scale and
-  candidate-superiority gates failed, and the frozen status is
-  `PSC03_DEVELOPMENT_NOT_SUPPORTED`. Keep it inactive: do not refit, repredict,
-  rerun, open independent evaluation or a later origin, create an outcome-led
-  successor, or authorize final holdout, taxonomy modeling, production,
-  automation, release, or financial use.
+  Preserve the historical `PSC03_DEVELOPMENT_NOT_SUPPORTED` result, metrics,
+  raw, bootstrap, digests, and receipts unchanged. Current authority is
+  `PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`: the authentic frozen raw
+  is not valid candidate performance evidence because prediction-changing
+  support gates, parent shrinkage, and continuous conditional-amount shrinkage
+  were omitted. The direct-cash scale hypothesis was not adjudicated by a
+  conforming implementation. Keep it inactive: do not refit, repredict, rerun,
+  reconstruct unsealed fold state, create a corrected or successor model, open
+  independent evaluation or a later origin, or authorize final holdout,
+  taxonomy modeling, production, automation, release, or financial use.
+- A frozen PSC03 audit must remain physically isolated from fit, cross-fit,
+  lambda selection, prediction, and counterfactual scoring entrypoints. It may
+  stream the sealed raw exactly once read-only, publish only aggregates meeting
+  30-case and 20-work privacy thresholds, and write detailed locators or run
+  provenance only to Git-ignored private output. Never publish private cash
+  amounts, work names, row keys, absolute private paths, coefficients, or
+  standardizers.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

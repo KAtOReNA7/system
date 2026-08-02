@@ -548,7 +548,7 @@ test("consumed PSC03 capability preserves gaps without authorizing a rerun", () 
   );
   assert.match(
     result.authorization,
-    /CONSUMED_SINGLE_PSC03_DEVELOPMENT_REPLAY_NOT_SUPPORTED_NO_RERUN/u,
+    /PSC03_FROZEN_AUDIT_ONLY_CONTRACT_MISMATCH_CONFIRMED_NO_SUCCESSOR_OR_REPLAY_AUTHORIZED/u,
   );
   assert.equal(result.executionAuthorized, false);
   assert.equal(result.safeToStartModelAfterRebuild, false);

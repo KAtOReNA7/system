@@ -1207,7 +1207,7 @@
     },
     {
       "id": "m2-current-publishing-scale-direct-cash-development",
-      "description": "Audit the consumed PSC03 development replay and its frozen raw seal using the public result plus local private evidence when present. The sole replay has completed with PSC03_DEVELOPMENT_NOT_SUPPORTED; this capability no longer authorizes model execution, independent evaluation, later-origin, final holdout, production or automation.",
+      "description": "Audit the consumed PSC03 development replay and its frozen raw seal using the public result plus local private evidence when present. The read-only audit confirmed PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED: preserve the authentic raw and historical PSC03_DEVELOPMENT_NOT_SUPPORTED result, but do not treat it as valid candidate performance evidence. This capability authorizes no model execution, successor, independent evaluation, later-origin, final holdout, production or automation.",
       "executionAuthorized": false,
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [
@@ -1244,10 +1244,11 @@
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-publishing-scale-direct-cash-development",
-        "npm run diagnose:m2:publishing-scale-direct-cash"
+        "npm run diagnose:m2:publishing-scale-direct-cash",
+        "node --test test/m2-publishing-scale-direct-cash-frozen-audit.test.js"
       ],
-      "recovery": "The sole PSC03 development replay is consumed and frozen as PSC03_DEVELOPMENT_NOT_SUPPORTED. Preserve the private raw, manifest, atomic seal, receipts and event logs. If local private evidence is absent, keep the tracked public result and report the evidence gap; do not recreate PSC01 or PSC03 predictions, infer private rows from public aggregates, reuse PSC02 ledger fields, rerun PSC03 or manufacture a replacement result.",
-      "authorization": "CONSUMED_SINGLE_PSC03_DEVELOPMENT_REPLAY_NOT_SUPPORTED_NO_RERUN_OR_INDEPENDENT_EVALUATION_AUTHORIZED_2026_08_02"
+      "recovery": "The sole PSC03 development replay is consumed and frozen. Preserve the private raw, manifest, atomic seal, receipts and event logs plus the tracked historical PSC03_DEVELOPMENT_NOT_SUPPORTED result. Current authority is PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED and PSC03_FROZEN_RAW_PRESERVED_BUT_NOT_VALID_CANDIDATE_PERFORMANCE_EVIDENCE. If local private evidence is absent, keep the tracked public result and report the evidence gap; never recreate predictions, infer private rows, rerun PSC03 or manufacture a conforming replacement.",
+      "authorization": "PSC03_FROZEN_AUDIT_ONLY_CONTRACT_MISMATCH_CONFIRMED_NO_SUCCESSOR_OR_REPLAY_AUTHORIZED_2026_08_02"
     },
     {
       "id": "m2-current-channel-generative",
