@@ -437,6 +437,15 @@ test("full no-private synthetic campaign executes D0, D1 and P", () => {
   assert.equal(result.boundaries.privateArtifactRead, false);
 });
 
+test("outer prediction collection never expands a large validation set as arguments", () => {
+  const source = readFileSync(
+    "src/domain/m2Current/publishingScaleDirectCashDevelopment.js",
+    "utf8"
+  );
+  assert.doesNotMatch(source, /evaluatedRows\.push\(\.\.\.validation\)/u);
+  assert.match(source, /for \(const row of validation\) evaluatedRows\.push\(row\)/u);
+});
+
 function finiteDifferenceGradient(family) {
   const args = objectiveArgs(family);
   const analytic = evaluateM2Psc03QuasiObjective(args);

@@ -680,7 +680,7 @@ export function crossFitM2Psc03Arm({
         config,
         psc01Config
       });
-      evaluatedRows.push(...validation);
+      for (const row of validation) evaluatedRows.push(row);
       receipts.push(outerReceipt(fold, training, validation, fitted));
     }
   } else if (evaluationFamily === "strict") {
@@ -712,7 +712,7 @@ export function crossFitM2Psc03Arm({
         config,
         psc01Config
       });
-      evaluatedRows.push(...validation);
+      for (const row of validation) evaluatedRows.push(row);
       receipts.push(outerReceipt(outerOrigin, training, validation, fitted));
     }
   } else {
