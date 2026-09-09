@@ -98,7 +98,7 @@ Core80 横评公共数学核心在评分与配对前排除弃权和无效现金�
 
 ## 冻结证据与停止边界
 
-- 出版行业渠道起点可见现金锚金额模型（`M2-CHAN-PSC02`）继续是历史源权威不可
+- 出版行业渠道起点可见现金锚金额模型 v0.1（`M2-CHAN-PSC02`）继续是历史源权威不可
   恢复、真实候选成功路径未实现、没有模型性能结果或证据；不补造历史四字段或重放。
   当前状态分别为
   `PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY`、
@@ -106,7 +106,7 @@ Core80 横评公共数学核心在评分与配对前排除弃权和无效现金�
   `NO_MODEL_PERFORMANCE_EVIDENCE`。历史 `PSC02_DEVELOPMENT_NOT_SUPPORTED` 与
   `PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE` 保持冻结；预注册
   `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01` 不变。
-- 出版行业渠道直接现金尺度条件金额模型（`M2-CHAN-PSC03`）的冻结 raw 真实，
+- 出版行业渠道直接现金尺度条件金额模型 v0.1（`M2-CHAN-PSC03`）的冻结 raw 真实，
   但实现合同不一致（`PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED`），
   `validForCandidateDecision=false`；原始结果与历史停止状态保持冻结。不得重跑、
   补造折内状态或创建后继模型（`NO_SUCCESSOR_OR_REPLAY_AUTHORIZED`）。

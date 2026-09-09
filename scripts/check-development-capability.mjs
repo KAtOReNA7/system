@@ -436,7 +436,7 @@ export function formatCapabilityResult(result) {
   lines.push(
     `Safe to start model after rebuild: ${result.safeToStartModelAfterRebuild}`,
   );
-  lines.push(`Execution authorized: ${result.executionAuthorized}`);
+  lines.push(`Model execution authorized: ${result.executionAuthorized}`);
   if (result.status === "BLOCKED_MISSING_PRIVATE_ARTIFACT") {
     lines.push("Core development remains available; only this capability is blocked.");
   }
