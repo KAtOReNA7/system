@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.current.publishing_scale_channel_direct_cash_schema.v0.1",
+  "title": "M2 PSC03 direct cash-scale development contract",
+  "type": "object",
+  "required": [
+    "schema", "modelId", "rawCandidateId", "experimentId",
+    "preregistrationId", "preregistration", "frozenPsc01",
+    "arms", "selection", "numerical", "privateOutputs", "publicOutputs"
+  ],
+  "properties": {
+    "schema": {"const": "m2.current.publishing_scale_channel_direct_cash_development.v0.1"},
+    "modelId": {"const": "M2-CHAN-PSC03"},
+    "rawCandidateId": {"const": "M2-CHAN-PSC03-RAW"},
+    "experimentId": {"const": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03"},
+    "preregistrationId": {"const": "M2-PREREG-PSC03-DIRECT-CASH-QUASI-POISSON-01"},
+    "arms": {
+      "type": "object",
+      "required": ["D0", "D1", "P"],
+      "additionalProperties": false
+    },
+    "closedBoundaries": {
+      "type": "object",
+      "properties": {
+        "activeCandidate": {"type": "null"},
+        "approvedForAutomation": {"type": "null"},
+        "productionReady": {"const": false},
+        "finalHoldoutOpened": {"const": false},
+        "independentEvaluationOpened": {"const": false},
+        "laterOriginOpened": {"const": false}
+      },
+      "required": [
+        "activeCandidate", "approvedForAutomation", "productionReady",
+        "finalHoldoutOpened", "independentEvaluationOpened", "laterOriginOpened"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

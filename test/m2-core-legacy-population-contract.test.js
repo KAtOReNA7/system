@@ -175,6 +175,44 @@ test("coverage rows preserve immature future actual outside candidate error", ()
   );
 });
 
+test("restated labels retain later reversal availability at work and channel grain", () => {
+  const history = ["2024-01", "2024-02", "2024-03"].map(
+    (month) => ({
+      standardWorkId: "W-LATE",
+      channelUid: "C-MATURE",
+      month,
+      cash: 10,
+      settlementMechanism: "membership_subscription"
+    })
+  );
+  const result = buildCoreLegacyWorkCases({
+    origins: ["2024-03"],
+    horizons: [3],
+    finalMonthlyRows: [
+      ...history,
+      {
+        standardWorkId: "W-LATE",
+        channelUid: "C-MATURE",
+        month: "2024-04",
+        cash: 7,
+        labelAvailableAsOf: "2024-07",
+        settlementMechanism: "membership_subscription"
+      }
+    ],
+    featureMonthlyRowsForOrigin: () => history,
+    config
+  });
+  assert.equal(result.workCases[0].targetEnd, "2024-06");
+  assert.equal(result.workCases[0].labelAvailableAsOf, "2024-07");
+  assert.equal(result.channelCases[0].labelAvailableAsOf, "2024-07");
+  assert.deepEqual(selectCoreLegacyTrainingRows({
+    workCases: result.workCases,
+    outerOrigin: "2024-06",
+    armId: `${config.experiment.stableExperimentId}/T0_FULL`,
+    primaryHorizonMonths: 3
+  }), []);
+});
+
 test("point metrics keep false positives and misses explicit", () => {
   const result = scoreCoreLegacyPointRows([
     {standardWorkId: "W1", actual: 0, pointEstimate: 5},

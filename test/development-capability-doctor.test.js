@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   evaluateCapability,
+  formatCapabilityResult,
   loadCapabilityCatalog,
   resolveRepoPath,
 } from "../scripts/check-development-capability.mjs";
@@ -50,12 +51,14 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-lifecycle-aware",
     "m2-current-channel-experts",
     "m2-current-publishing-scale-channel",
-    "m2-current-publishing-scale-channel-controlled-retry-v2",
+      "m2-current-publishing-scale-channel-controlled-retry-v2",
       "m2-current-publishing-scale-cash-anchor-development",
+      "m2-current-publishing-scale-direct-cash-development",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
       "m2-head-protected-segmented-router",
+      "m2-core80-cross-model-real-business-evaluation",
       "m3-private-materials",
     ],
   );
@@ -72,6 +75,80 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+});
+
+test("capability inventory fails closed without explicit unconsumed execution authorization", () => {
+  for (const executionAuthorized of [undefined, null, false, "true", 1]) {
+    const syntheticCatalog = { capabilities: [{
+      id: "synthetic-inventory",
+      requiredTools: [],
+      requiredPrivateArtifacts: [],
+      executionAuthorized,
+    }] };
+    const result = evaluateCapability(syntheticCatalog, "synthetic-inventory");
+    assert.equal(result.executionAuthorized, false);
+    assert.equal(result.safeToStartModelAfterRebuild, false);
+    assert.equal(result.safeToRebuildDerivedCache, true);
+  }
+  const consumed = evaluateCapability({ capabilities: [{
+    id: "synthetic-consumed",
+    requiredTools: [],
+    requiredPrivateArtifacts: [],
+    executionAuthorized: true,
+    authorizationConsumed: true,
+  }] }, "synthetic-consumed");
+  assert.equal(consumed.executionAuthorized, false);
+  assert.equal(consumed.safeToStartModelAfterRebuild, false);
+});
+
+test("even explicit authorization cannot turn file presence into private source verification", () => {
+  const result = evaluateCapability({ capabilities: [{
+    id: "synthetic-unverified-source",
+    requiredTools: [],
+    requiredPrivateArtifacts: [{
+      role: "synthetic-authority",
+      path: "data/private-input/synthetic-authority.json",
+      kind: "file",
+      artifactClass: "PRIVATE_SOURCE_AUTHORITY",
+    }],
+    executionAuthorized: true,
+  }] }, "synthetic-unverified-source", { artifactExists: () => true });
+  assert.equal(result.executionAuthorized, true);
+  assert.equal(result.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(result.sourceAuthorityVerificationStatus, "NOT_VERIFIED_INVENTORY_ONLY");
+  assert.equal(result.safeToRebuildDerivedCache, true);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
+  assert.match(formatCapabilityResult(result), /Source authority file inventory/u);
+  assert.match(formatCapabilityResult(result), /do not verify source authenticity/u);
+});
+
+test("PSC02 stays blocked with all source files present and missing rebuildable caches", () => {
+  for (const cachePresent of [false, true]) {
+    const result = evaluateCapability(
+      catalog,
+      "m2-current-publishing-scale-cash-anchor-development",
+      {
+        artifactExists: (_absolutePath, artifact) => (
+          artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY" || cachePresent
+        ),
+        toolProbe: availableToolProbe,
+      },
+    );
+    assert.equal(result.status, "BLOCKED_HISTORICAL_ORIGIN_AUTHORITY_UNRECOVERABLE");
+    assert.equal(result.coreDevelopmentUnaffected, true);
+    assert.equal(result.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+    assert.equal(result.sourceAuthorityVerificationStatus, "NOT_VERIFIED_INVENTORY_ONLY");
+    assert.equal(result.historicalOriginAuthorityStatus,
+      "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY");
+    assert.equal(result.derivedCacheStatus, cachePresent ? "CACHE_READY" : "CACHE_MISS_REBUILDABLE");
+    assert.equal(result.executionAuthorized, false);
+    assert.equal(result.safeToStartModelAfterRebuild, false);
+    assert.equal(result.safeToRebuildDerivedCache, false);
+    assert.equal(result.rebuildPlan.every((entry) => (
+      entry.action === "STOP_HISTORICAL_ORIGIN_AUTHORITY_UNRECOVERABLE"
+    )), true);
+    assert.match(formatCapabilityResult(result), /cannot recover the required historical origin authority/u);
+  }
 });
 
 test("core legacy capability rebuilds cache but blocks only missing authority", () => {
@@ -96,7 +173,7 @@ test("core legacy capability rebuilds cache but blocks only missing authority", 
     cacheMiss.historicalReceiptStatus,
     "OPTIONAL_PROVENANCE_MISSING"
   );
-  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, false);
 
   const authorityMissing = evaluateCapability(
     catalog,
@@ -155,7 +232,7 @@ test("OA03 current-scope cache misses rebuild and optional provenance does not b
     2,
   );
   assert.equal(cacheMiss.safeToRebuildDerivedCache, true);
-  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, false);
 
   const provenanceMissing = evaluateCapability(
     catalog,
@@ -177,7 +254,7 @@ test("OA03 current-scope cache misses rebuild and optional provenance does not b
     provenanceMissing.historicalReceiptStatus,
     "OPTIONAL_PROVENANCE_MISSING",
   );
-  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, true);
+  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, false);
 });
 
 test("core horizon amount cache misses rebuild and provenance remains optional", () => {
@@ -218,7 +295,7 @@ test("core horizon amount cache misses rebuild and provenance remains optional",
     1,
   );
   assert.equal(cacheMiss.safeToRebuildDerivedCache, true);
-  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, false);
 
   const provenanceMissing = evaluateCapability(
     catalog,
@@ -239,7 +316,7 @@ test("core horizon amount cache misses rebuild and provenance remains optional",
     provenanceMissing.historicalReceiptStatus,
     "OPTIONAL_PROVENANCE_MISSING",
   );
-  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, true);
+  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, false);
 });
 
 test("missing publishing-scale inputs block only that audit capability", () => {
@@ -524,6 +601,35 @@ test("missing publishing-scale execution inputs block only that private capabili
   );
 });
 
+test("consumed PSC03 capability preserves gaps without authorizing a rerun", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-direct-cash-development",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "frozen-psc01-evaluation-population-occurrence-and-receipt",
+    "frozen-lg01-comparator-read-only-source",
+    "frozen-lg01-comparator-manifest-read-only-source",
+  ]);
+  assert.match(
+    result.recovery,
+    /sole PSC03 development replay is consumed and frozen/u,
+  );
+  assert.match(
+    result.authorization,
+    /PSC03_FROZEN_AUDIT_ONLY_CONTRACT_MISMATCH_CONFIRMED_NO_SUCCESSOR_OR_REPLAY_AUTHORIZED/u,
+  );
+  assert.equal(result.executionAuthorized, false);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
+});
+
 test("publishing-scale derived cache misses are rebuildable when source authority exists", () => {
   const result = evaluateCapability(
     catalog,
@@ -541,7 +647,7 @@ test("publishing-scale derived cache misses are rebuildable when source authorit
   assert.equal(result.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
   assert.equal(result.historicalReceiptStatus, "OPTIONAL_PROVENANCE_MISSING");
   assert.equal(result.safeToRebuildDerivedCache, true);
-  assert.equal(result.safeToStartModelAfterRebuild, true);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
   assert.deepEqual(
     result.rebuildPlan
       .filter((entry) => entry.role.startsWith("v2.2-"))
@@ -569,7 +675,7 @@ test("publishing-scale historical receipt absence warns without blocking", () =>
   assert.equal(result.status, "AVAILABLE_FOR_CANONICAL_VALIDATION");
   assert.equal(result.derivedCacheStatus, "CACHE_READY");
   assert.equal(result.historicalReceiptStatus, "OPTIONAL_PROVENANCE_MISSING");
-  assert.equal(result.safeToStartModelAfterRebuild, true);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
 });
 
 test("publishing-scale source authority absence blocks accurately", () => {

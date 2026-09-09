@@ -148,7 +148,7 @@ test("real-data guard applies forbidden path rules case-insensitively", () => {
 
 test("real-data guard fails closed for oversized, binary, invalid UTF-8, and raw response artifacts", () => {
   withSyntheticRepo((root) => {
-    writeBytes(root, "oversized.txt", Buffer.alloc((2 * 1024 * 1024) + 1, 0x41));
+    writeBytes(root, "oversized.txt", Buffer.alloc((8 * 1024 * 1024) + 1, 0x41));
     writeBytes(root, "binary.bin", Buffer.from([0x50, 0x4b, 0x00, 0x01]));
     writeBytes(root, "invalid.txt", Buffer.from([0xc3, 0x28]));
     write(root, "cache/Response.JSON", "{}\n");

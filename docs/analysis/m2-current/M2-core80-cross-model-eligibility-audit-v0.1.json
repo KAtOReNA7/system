@@ -1,0 +1,1829 @@
+{
+  "schema": "m2.cmx01.eligibility_audit.v0.1",
+  "asOf": "2026-08-02",
+  "campaignId": "M2-CMX01",
+  "status": "M2_CMX01_ELIGIBILITY_FROZEN_BEFORE_NEW_OUTCOME_READ",
+  "publicArtifactType": "PRE_OUTCOME_ELIGIBILITY_AUDIT",
+  "outcomeReadAtGeneration": false,
+  "registrySha256": "c3be0ae2745b25495f4a4700e76b2886c82ab812a20c2ee15c30633e010a4048",
+  "registryModelCount": 37,
+  "registryEntryParity": true,
+  "summary": {
+    "formalEligibleModelCount": 14,
+    "retrospectiveDiagnosticModelCount": 3,
+    "noReplayModelCount": 20,
+    "countsByStatus": {
+      "ALIAS_OR_DUPLICATE_NOT_INDEPENDENT_MODEL": 1,
+      "ELIGIBLE_NATIVE_WORK_CHANNEL": 3,
+      "ELIGIBLE_NATIVE_WORK_TOTAL": 9,
+      "ELIGIBLE_REGISTERED_COMPOSITE": 2,
+      "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE": 4,
+      "EXCLUDED_NO_CANDIDATE_OUTPUT": 2,
+      "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION": 15,
+      "FORENSIC_ONLY_INVALID_CONTRACT": 1
+    }
+  },
+  "models": [
+    {
+      "modelId": "M2-WORK-B4",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "旧现金生命周期公式",
+      "displayNameEn": "Legacy Cash Lifecycle Formula",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "28683feb6eb3c0d3518c5c30f5d083b1f4234315"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/comparator.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "32fac8990b1b058f9856829d6e782ec63f7086e105b011f626ea5ca96e1cfbe4",
+          "firstAdditionCommit": "28683feb6eb3c0d3518c5c30f5d083b1f4234315"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "dc7ac7683650c5673434c8beec51d2b2638ff02bab361f24c91c36a6bc0da218",
+          "firstAdditionCommit": "28683feb6eb3c0d3518c5c30f5d083b1f4234315"
+        }
+      ],
+      "artifactSetSha256": "6827e9d1ba6ea284de3b288c534535ec8a13251e6dc1c2003cab84f93877c2a9",
+      "originalHorizonContract": "3/6/12/18/24-month sparse frozen cases; historical variants also used 36 months",
+      "originalCurrentRole": "comparator_only",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "fallback_comparator_not_release_approved",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ALIGNMENT_ONLY_ENTRYPOINT_NO_STANDALONE_PREDICTION_GENERATOR"
+    },
+    {
+      "modelId": "M2-WORK-SEG01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "作品分群向下校准模型 v0.1",
+      "displayNameEn": "Segmented Downward Calibration v0.1",
+      "objectType": "model",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/candidate.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c2eb2e8fd757965acad5910590e1ba7f7aeb7d2ca022ea94178187cf022cd4d5",
+          "firstAdditionCommit": "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "dc7ac7683650c5673434c8beec51d2b2638ff02bab361f24c91c36a6bc0da218",
+          "firstAdditionCommit": "28683feb6eb3c0d3518c5c30f5d083b1f4234315"
+        }
+      ],
+      "artifactSetSha256": "b102cfdd324c69c5b95bb1a211f1e67240936260dbc83ed5bd0704c575846ab9",
+      "originalHorizonContract": "legacy frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "rejected_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "not_for_formal_decision",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION"
+    },
+    {
+      "modelId": "M2-WORK-HRC02",
+      "modelVersion": "v0.2",
+      "displayNameZh": "作品层级稳健校准模型 v0.2",
+      "displayNameEn": "Hierarchical Robust Calibration v0.2",
+      "objectType": "model",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/candidate.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c2eb2e8fd757965acad5910590e1ba7f7aeb7d2ca022ea94178187cf022cd4d5",
+          "firstAdditionCommit": "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.2.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e136d8551f9dd733eedf417076240b3be64d035d772fed10dd1de965f44b0d6e",
+          "firstAdditionCommit": "1baddef619810b5a395d43eb67247205974a9e6b"
+        }
+      ],
+      "artifactSetSha256": "e5ea6cbb76e1c73f0cced0a7a036d681cb7ec3037450bb25fee571086a471c3b",
+      "originalHorizonContract": "legacy frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "rejected_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "not_for_formal_decision",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION"
+    },
+    {
+      "modelId": "M2-WORK-OA03",
+      "modelVersion": "v0.3",
+      "displayNameZh": "作品发生-金额校准模型 v0.3",
+      "displayNameEn": "Occurrence-Amount Calibration v0.3",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "66dc6de35d00be99dc6840e70f7d1e8fd19b001d",
+        "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/candidate.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c2eb2e8fd757965acad5910590e1ba7f7aeb7d2ca022ea94178187cf022cd4d5",
+          "firstAdditionCommit": "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+        },
+        {
+          "path": "scripts/m2-current/run_m2_current_candidate.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "8fc058e2fdd7ffb6d4645732da2d3f96aa422c624986bc25f54fcc8120fa00c1",
+          "firstAdditionCommit": "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.3.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "9ed495f7e5b98fbb4850976e059f0795e6f91411aa73ee1a30ee9c95e07084f3",
+          "firstAdditionCommit": "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+        },
+        {
+          "path": "config/m2-current.v0.6.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "06b6f758a428df7053675b62f1d96126ca979888d110837ace877bccf2a3c5ff",
+          "firstAdditionCommit": "f6a9a3f62e54bfd25b626ca8a8a641a2cafc830d"
+        }
+      ],
+      "artifactSetSha256": "810b2fcaad624e1d0eec8ea1057d9f809fd1ebbe1d4ce5e9f7eba6894b357133",
+      "originalHorizonContract": "3/6/12/18/24-month sparse frozen cases",
+      "originalCurrentRole": "operational_work_fallback",
+      "originalEvidenceStatus": "current_scope_formula_reexecution_complete_no_new_performance_support",
+      "originalOperationalStatus": "compatibility_operational_fallback_not_current_scope_champion",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "DEPENDS_ON_NONREPLAYABLE_B4_BASE_PREDICTIONS_OUTSIDE_FROZEN_SPARSE_CASES"
+    },
+    {
+      "modelId": "M2-WORK-GHG01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "全局门槛广义线性模型",
+      "displayNameEn": "Global Regularized Hurdle GLM",
+      "objectType": "model",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/models.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "a77cbabfd361851a96be725f155b1e970fe27110b94c2de4f22904c8bedc1a17",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.4.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f25a7c9c347045d247cc22545fa24bd1b14c3d16e97da9b6a63b54da9d8ec2b3",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "artifactSetSha256": "988df8287da02c2968779f0b6cc8d6adaa7089c95396171a87b0c9759c1ae3f6",
+      "originalHorizonContract": "R0-R5 frozen outer origins",
+      "originalCurrentRole": "failed_research_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_by_nested_gate",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-TWD01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "全局 Tweedie 提升树桩模型",
+      "displayNameEn": "Tweedie Boosted Stumps",
+      "objectType": "model",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/models.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "a77cbabfd361851a96be725f155b1e970fe27110b94c2de4f22904c8bedc1a17",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.4.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f25a7c9c347045d247cc22545fa24bd1b14c3d16e97da9b6a63b54da9d8ec2b3",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "artifactSetSha256": "988df8287da02c2968779f0b6cc8d6adaa7089c95396171a87b0c9759c1ae3f6",
+      "originalHorizonContract": "R0-R5 frozen outer origins",
+      "originalCurrentRole": "failed_research_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_by_nested_gate",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-HGB01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "门槛梯度提升树桩模型",
+      "displayNameEn": "Hurdle Gradient-Boosted Stumps",
+      "objectType": "model",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/models.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "a77cbabfd361851a96be725f155b1e970fe27110b94c2de4f22904c8bedc1a17",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.4.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f25a7c9c347045d247cc22545fa24bd1b14c3d16e97da9b6a63b54da9d8ec2b3",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "artifactSetSha256": "988df8287da02c2968779f0b6cc8d6adaa7089c95396171a87b0c9759c1ae3f6",
+      "originalHorizonContract": "R0-R5 frozen outer origins",
+      "originalCurrentRole": "failed_research_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_by_nested_gate",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-GDE04",
+      "modelVersion": "v0.4",
+      "displayNameZh": "全局分布组合安全回退管线 v0.4",
+      "displayNameEn": "Global Distributional Ensemble Safe-Fallback Pipeline v0.4",
+      "objectType": "model_pipeline",
+      "target": "future_bill_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "66dc6de35d00be99dc6840e70f7d1e8fd19b001d",
+        "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/candidate.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c2eb2e8fd757965acad5910590e1ba7f7aeb7d2ca022ea94178187cf022cd4d5",
+          "firstAdditionCommit": "66dc6de35d00be99dc6840e70f7d1e8fd19b001d"
+        },
+        {
+          "path": "src/domain/m2Current/models.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "a77cbabfd361851a96be725f155b1e970fe27110b94c2de4f22904c8bedc1a17",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.4.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f25a7c9c347045d247cc22545fa24bd1b14c3d16e97da9b6a63b54da9d8ec2b3",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        }
+      ],
+      "artifactSetSha256": "fc10a868ea2acd7e983d69ac08b50c98fef2d04af4dc5518960c6c11ac814cf2",
+      "originalHorizonContract": "legacy frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "rejected_pipeline_safe_fallback",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "development_fail_returns_v0_3",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ALIAS_OR_DUPLICATE_NOT_INDEPENDENT_MODEL",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "SELECTED_PIPELINE_RETURNS_EXISTING_FALLBACK_AND_CANNOT_COUNT_AS_INDEPENDENT_RAW_MODEL"
+    },
+    {
+      "modelId": "M2-PORT-ETS01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "组合现金 ETS/Holt-Winters 模型",
+      "displayNameEn": "Portfolio ETS/Holt-Winters",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "portfolio_origin_horizon",
+      "originalGitCommits": [
+        "512fee08379b42dcbfb101536de3aef2d3a9b16a"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/portfolio.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "4d032a82c78fed8ec549978fc4999373668ef13e1feb52f2e2b8a9528cb3a829",
+          "firstAdditionCommit": "512fee08379b42dcbfb101536de3aef2d3a9b16a"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.5.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e2dfed8154a557d8d488ca98623a762a97e29d11e4b1dfb7dbece9cf322ea715",
+          "firstAdditionCommit": "512fee08379b42dcbfb101536de3aef2d3a9b16a"
+        },
+        {
+          "path": "config/m2-current.v0.6.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "06b6f758a428df7053675b62f1d96126ca979888d110837ace877bccf2a3c5ff",
+          "firstAdditionCommit": "f6a9a3f62e54bfd25b626ca8a8a641a2cafc830d"
+        }
+      ],
+      "artifactSetSha256": "09942661a9a9288ea664757317bf6bf71a581ea911d91789aed0030f2c0b7e40",
+      "originalHorizonContract": "3/6/12-month portfolio origin-horizon cells",
+      "originalCurrentRole": "portfolio_reference",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "portfolio_development_gate_fail",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "PORTFOLIO_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS"
+    },
+    {
+      "modelId": "M2-BASE-CLASSIC01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "经典时间序列比较基线族",
+      "displayNameEn": "Classic Time-Series Baseline Family",
+      "objectType": "model_family",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon_or_portfolio_origin_horizon",
+      "originalGitCommits": [
+        "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/baselines.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c05e68d00e5456249d8df427c0a4f090f08361a569ca41087bee1e7ac11ccce1",
+          "firstAdditionCommit": "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.4.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f25a7c9c347045d247cc22545fa24bd1b14c3d16e97da9b6a63b54da9d8ec2b3",
+          "firstAdditionCommit": "bdffe4536618fbd5437a671228aaa7d60a6ba29d"
+        },
+        {
+          "path": "config/m2-current.v0.6.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "06b6f758a428df7053675b62f1d96126ca979888d110837ace877bccf2a3c5ff",
+          "firstAdditionCommit": "f6a9a3f62e54bfd25b626ca8a8a641a2cafc830d"
+        }
+      ],
+      "artifactSetSha256": "698a01e5c0df409cef0515c977705917b8eeb424349266c23c0f22ae8b8c9ad1",
+      "originalHorizonContract": "varies by registered evaluation",
+      "originalCurrentRole": "regression_baseline_family",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "comparison_only",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGIN_VISIBLE_CASH_ONLY_REGISTERED_BASELINE_FAMILY",
+      "variantPolicy": "REPORT_EACH_FAMILY_MEMBER_WITH_PARENT_MODEL_ID"
+    },
+    {
+      "modelId": "M2-WORK-HSC01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "历史状态校准模型",
+      "displayNameEn": "Historical-State Calibration",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/baselines.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c05e68d00e5456249d8df427c0a4f090f08361a569ca41087bee1e7ac11ccce1",
+          "firstAdditionCommit": "65498d1c388bd4ae6452559cc79c0a97ffadf9d2"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current.v0.6.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "06b6f758a428df7053675b62f1d96126ca979888d110837ace877bccf2a3c5ff",
+          "firstAdditionCommit": "f6a9a3f62e54bfd25b626ca8a8a641a2cafc830d"
+        }
+      ],
+      "artifactSetSha256": "a32d471862afaa3948900093b285159d58aa990ac96f0ab1e3cbd4db732398b6",
+      "originalHorizonContract": "25 monthly origins, 3/6/12-month mature labels",
+      "originalCurrentRole": "rejected_posthoc_diagnostic",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_and_frozen",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "UNPROVEN_OR_POST_HOC_NOT_FORMAL_ORIGIN_SAFE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "POST_HOC_HISTORICAL_STATUS_CALIBRATION_WITH_UNPROVEN_AS_OF_STATE"
+    },
+    {
+      "modelId": "M2-WORK-MCR01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "人工渠道规则模型",
+      "displayNameEn": "Manual Channel Rule",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "46da2fd6492c27112270c587c2bd8bca42fab05e"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/manualChannel.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "f1431f9900fa2efecd64f181c03a8e414468ac3d22abee5428ec23874c609231",
+          "firstAdditionCommit": "46da2fd6492c27112270c587c2bd8bca42fab05e"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-manual-channel.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "ffc992e62099d4984e91debf6e86b51a6cb6246ed8b37f2143838aa10c540f12",
+          "firstAdditionCommit": "46da2fd6492c27112270c587c2bd8bca42fab05e"
+        }
+      ],
+      "artifactSetSha256": "4c99082559eb7c5db4e3891e9c54598d0eff47e1d0c050ec7668225ecfa9bfd1",
+      "originalHorizonContract": "36-month safe-window comparator",
+      "originalCurrentRole": "rejected_comparator",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_and_frozen",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "DETERMINISTIC_ORIGIN_HISTORY_MANUAL_CHANNEL_RULE_H36_ONLY"
+    },
+    {
+      "modelId": "M2-WORK-CCR01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "统一渠道曲线模型",
+      "displayNameEn": "Canonical Channel Curve",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "71074ba000e2c3d82b02d43d4c661cd7ccbc7561"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/canonicalChannelModel.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "8f4d987c2fcd107bba8d46ad17c8678092d162380ca0f9f071a7d61921a15bca",
+          "firstAdditionCommit": "71074ba000e2c3d82b02d43d4c661cd7ccbc7561"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-canonical-channel.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "dd5bf508ae887347c93660a1a534739da3a570c6339a7cafb0bdcea868baed96",
+          "firstAdditionCommit": "71074ba000e2c3d82b02d43d4c661cd7ccbc7561"
+        }
+      ],
+      "artifactSetSha256": "f57770c77adf9986ab5e5a3e3189e935de79fb6bbad17ed8a31f8ad99b731828",
+      "originalHorizonContract": "3/6/12 dense diagnostic and 3/6/12/18/24 current served cases",
+      "originalCurrentRole": "rejected_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_keep_v0_3",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "NESTED_ORIGIN_BOUNDED_CANONICAL_CHANNEL_CHALLENGER"
+    },
+    {
+      "modelId": "M2-WORK-MAN01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "人工锚定忠实公式",
+      "displayNameEn": "Human-Anchored Manual-Faithful Formula",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchored.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c7c886bbdc04d44c4c16b66859dbc27fedaf70106eabea402ffa7a5169101116",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "artifactSetSha256": "8df4913919e586be6d9e9f39e13af501de0a2f72f2baaa495e8d5486200b97b6",
+      "originalHorizonContract": "36-month primary human-anchored cases",
+      "originalCurrentRole": "human_formula_comparator",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "comparison_only",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FAITHFUL_FIXED_FORMULA_WITH_ORIGIN_VISIBLE_CASH_HISTORY"
+    },
+    {
+      "modelId": "M2-WORK-CRMR01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "核心收入人工规则基线 v0.1",
+      "displayNameEn": "Core-Revenue Manual Rule Baseline v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon_channel",
+      "originalGitCommits": [
+        "9d7e764689538dce6ecdb09a168d29939dc2286a",
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/coreRevenueManual.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "a313d4a8b2986931f5fe24b82e9411d0ad8aa2504e3c5f14df43e540060b43b0",
+          "firstAdditionCommit": "9d7e764689538dce6ecdb09a168d29939dc2286a"
+        },
+        {
+          "path": "scripts/m2-current/core_revenue_manual_mode.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "8cb85074b9446bc6c9f5debf16259b4495127f216fe491a1c31454f56f4b3420",
+          "firstAdditionCommit": "9d7e764689538dce6ecdb09a168d29939dc2286a"
+        },
+        {
+          "path": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "bad525ea9cbf994ce4b96429981bae976290a12ecc73e60bc2740d8635381f51",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-core-revenue-manual.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "29a2ba7036aaccb7c3850600afa53d0fa6845d69bf26f9312fcc007fb280c3a0",
+          "firstAdditionCommit": "2665f2309c1b5c7f32cb657017794a0b0ceca513"
+        }
+      ],
+      "artifactSetSha256": "86a73d59ff4a8e17787adf1bc8779bb5fd542db32c45414665359fe5499d5c1f",
+      "originalHorizonContract": "monthly rolling 3/6/12/36 months with Y1/Y2/Y3 components",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "first_valid_development_evaluation_failed_long_term_compounding",
+      "originalOperationalStatus": "development_failed_not_selected_not_production",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "PREREGISTERED_DETERMINISTIC_WORK_CHANNEL_FORMULA_WITH_ORIGIN_BOUNDED_FALLBACK"
+    },
+    {
+      "modelId": "M2-PORT-LRC01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "分层收入组合模型 v0.1",
+      "displayNameEn": "Layered Revenue Composition Model v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "portfolio_origin_horizon_component",
+      "originalGitCommits": [
+        "0253531deddf0baade719e75f257671ce5dd3a68",
+        "02fd0b4295b2c9e0534301d92e9deba125cde90b",
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/layeredRevenueComposition.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "43255a2f9f4d8a0b50e9500ca4657461a4b1ba6cf16532dd547f726726701087",
+          "firstAdditionCommit": "0253531deddf0baade719e75f257671ce5dd3a68"
+        },
+        {
+          "path": "scripts/m2-current/layered_revenue_composition_mode.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "209d833229f0ad2758f08c45f318f71d35b9cfd8b70c2f7dbe834fa042135a6d",
+          "firstAdditionCommit": "0253531deddf0baade719e75f257671ce5dd3a68"
+        },
+        {
+          "path": "scripts/m2-current/layered_revenue_composition_private.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "9c55af3e45b20b4bd26fa8d1c4e49f79e20fe61d853bb135b0e47f9f074e3aac",
+          "firstAdditionCommit": "02fd0b4295b2c9e0534301d92e9deba125cde90b"
+        },
+        {
+          "path": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "bad525ea9cbf994ce4b96429981bae976290a12ecc73e60bc2740d8635381f51",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-layered-revenue-composition.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "fb20c9114ab74a61d1180db616f2c39958aa1f4aba06b18f7fb17be867c8d5b9",
+          "firstAdditionCommit": "0253531deddf0baade719e75f257671ce5dd3a68"
+        }
+      ],
+      "artifactSetSha256": "da71160df20fad38c8ae64f23e47448a69aae10b7d124395d0e7ca4a5fd6d170",
+      "originalHorizonContract": "monthly rolling 3/6/12/36 months with preregistered Y1/Y2/Y3 annual components",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "first_valid_development_evaluation_failed_with_protocol_gaps",
+      "originalOperationalStatus": "development_failed_not_selected_not_production",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "PORTFOLIO_COMPONENT_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS"
+    },
+    {
+      "modelId": "M2-WORK-LG01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "人工锚定可学习全局模型",
+      "displayNameEn": "Human-Anchored Learned Global",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchored.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c7c886bbdc04d44c4c16b66859dbc27fedaf70106eabea402ffa7a5169101116",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "artifactSetSha256": "8df4913919e586be6d9e9f39e13af501de0a2f72f2baaa495e8d5486200b97b6",
+      "originalHorizonContract": "36-month primary plus strict rolling 3/6/12/18/24-month cases",
+      "originalCurrentRole": "research_work_baseline",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "frozen_research_baseline_not_production",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_ALGORITHM_SUPPORTS_STRICT_ORIGIN_BOUNDED_FITTING"
+    },
+    {
+      "modelId": "M2-WORK-HP01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "人工锚定层级正金额专家模型",
+      "displayNameEn": "Human-Anchored Hierarchical Positive-Amount Experts",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchored.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c7c886bbdc04d44c4c16b66859dbc27fedaf70106eabea402ffa7a5169101116",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "artifactSetSha256": "8df4913919e586be6d9e9f39e13af501de0a2f72f2baaa495e8d5486200b97b6",
+      "originalHorizonContract": "36-month primary human-anchored cases",
+      "originalCurrentRole": "rejected_nested_layer",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "raw_candidate_rejected",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "RAW_HIERARCHICAL_LAYER_MUST_REMAIN_VISIBLE_SEPARATE_FROM_SELECTED_FALLBACK"
+    },
+    {
+      "modelId": "M2-WORK-OR01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "人工锚定发生与冲销模型",
+      "displayNameEn": "Human-Anchored Occurrence and Reversal",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchored.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c7c886bbdc04d44c4c16b66859dbc27fedaf70106eabea402ffa7a5169101116",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "artifactSetSha256": "8df4913919e586be6d9e9f39e13af501de0a2f72f2baaa495e8d5486200b97b6",
+      "originalHorizonContract": "36-month primary human-anchored cases",
+      "originalCurrentRole": "rejected_nested_layer",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "raw_candidate_rejected",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "RAW_OCCURRENCE_REVERSAL_LAYER_MUST_REMAIN_VISIBLE_SEPARATE_FROM_SELECTED_FALLBACK"
+    },
+    {
+      "modelId": "M2-WORK-TSB01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "TSB 间歇发生模型",
+      "displayNameEn": "TSB Occurrence Model",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "203265aefdce2e46744b11371b1fb2bc9515be8c"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchoredTsb.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "87ab0f54e4c9cd2762ed6c4979b67a68fdd9a945fc89faad5efa1edd6b7c0db7",
+          "firstAdditionCommit": "203265aefdce2e46744b11371b1fb2bc9515be8c"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored-tsb-occurrence.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "33032c416f11f874afb26ca9cccdf1cb82dd4ab077f7e65302fbe46af5965b7e",
+          "firstAdditionCommit": "203265aefdce2e46744b11371b1fb2bc9515be8c"
+        }
+      ],
+      "artifactSetSha256": "7154bcac4b58ac994c6e852f19d0f77a98d649743e0830817dbea908b0d9d282",
+      "originalHorizonContract": "36-month primary plus strict rolling 3/6/12/18/24 months",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_and_frozen",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_STRICT_ROLLING_ORIGIN_BOUNDED_IMPLEMENTATION_AVAILABLE"
+    },
+    {
+      "modelId": "M2-WORK-TSBB01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "TSB 与全局模型混合候选",
+      "displayNameEn": "TSB and Learned-Global Blend",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "203265aefdce2e46744b11371b1fb2bc9515be8c"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/humanAnchoredTsb.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "87ab0f54e4c9cd2762ed6c4979b67a68fdd9a945fc89faad5efa1edd6b7c0db7",
+          "firstAdditionCommit": "203265aefdce2e46744b11371b1fb2bc9515be8c"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-human-anchored-tsb-occurrence.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "33032c416f11f874afb26ca9cccdf1cb82dd4ab077f7e65302fbe46af5965b7e",
+          "firstAdditionCommit": "203265aefdce2e46744b11371b1fb2bc9515be8c"
+        }
+      ],
+      "artifactSetSha256": "7154bcac4b58ac994c6e852f19d0f77a98d649743e0830817dbea908b0d9d282",
+      "originalHorizonContract": "36-month primary plus strict rolling 3/6/12/18/24 months",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "rejected_lambda_zero_fallback",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_REGISTERED_COMPOSITE",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REGISTERED_TSB_LG01_BLEND_WITH_RAW_RESULT_PRESERVED"
+    },
+    {
+      "modelId": "M2-WORK-LC01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "生命周期五状态模型",
+      "displayNameEn": "Lifecycle-Aware Five-State Model",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "fe97abad0653ad86ebebb59157c4cedf54caf64a"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/lifecycleAware.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "aeef89cd9fa749e3b84dacc82171efa612c05ab1bfcbeb350618b1e4744f8b28",
+          "firstAdditionCommit": "fe97abad0653ad86ebebb59157c4cedf54caf64a"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-lifecycle-aware.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "cc14018dedeb454fa2552d784909614c81531031e1d0a0c0575c1e1780e8355e",
+          "firstAdditionCommit": "fe97abad0653ad86ebebb59157c4cedf54caf64a"
+        }
+      ],
+      "artifactSetSha256": "fe3a1a3b0400be3fbb57eb2f20ef2c8b26ef25e589141a486f27a76532e2b71a",
+      "originalHorizonContract": "36-month primary plus strict rolling 3/6/12/18/24 months",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "failed_trivial_posthoc_gain",
+      "trainingOrFittingBoundary": "RETROSPECTIVE_DIAGNOSTIC_ONLY_NO_FORMAL_RANKING",
+      "postOriginDataStatus": "UNPROVEN_OR_POST_HOC_NOT_FORMAL_ORIGIN_SAFE",
+      "deterministicReplayStatus": "DIAGNOSTIC_REPLAY_CONDITIONAL_ON_COMPLETE_INPUT_CONTRACT",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REVIVAL_STATE_ROUTING_IS_POST_HOC_FROM_COMPLETED_PRIOR_EXPERIMENT"
+    },
+    {
+      "modelId": "M2-CHAN-SCL01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "渠道倍率专家模型",
+      "displayNameEn": "Channel Scalar Experts v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_cash",
+      "predictionGrain": "work_origin_horizon_with_channel_decomposition",
+      "originalGitCommits": [
+        "aab7bb14c0641afef7bda6bd2d5049a38c8640b8"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/channelExperts.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "5ee4a5b0a331f421f27726742ece6e7d9cfb95d758b97830f5308db36fd228c9",
+          "firstAdditionCommit": "aab7bb14c0641afef7bda6bd2d5049a38c8640b8"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-channel-experts.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "ec8777a649b1b9faa7b43e6d5e6a6d006913ce9cadef43b7fc14b88642ed3a9b",
+          "firstAdditionCommit": "aab7bb14c0641afef7bda6bd2d5049a38c8640b8"
+        }
+      ],
+      "artifactSetSha256": "a4aa99ba61858f453ab399adf5c80bd3fa232ffe7fccafb5296a77e5f5e3ab81",
+      "originalHorizonContract": "36-month primary plus strict rolling 3/6/12/18/24 months",
+      "originalCurrentRole": "failed_channel_development_model",
+      "originalEvidenceStatus": "development_evidence",
+      "originalOperationalStatus": "failed_and_architecture_retired",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "NATIVE_ORIGIN_OBSERVED_CHANNEL_OUTPUT_WITH_PREREGISTERED_STATIC_MECHANISM_AUTHORITY"
+    },
+    {
+      "modelId": "M2-CHAN-GEN02",
+      "modelVersion": "v0.2",
+      "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+      "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+      "objectType": "model_family",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "originalGitCommits": [
+        "b55431c6c5ed7ce2af0701cfb14136297c0b69bf"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/channelGenerative.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "fcf76574d01ca87e21d464e04473dadc9f5ef7f63d238eb406d466931095a1da",
+          "firstAdditionCommit": "b55431c6c5ed7ce2af0701cfb14136297c0b69bf"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-channel-generative.v0.2.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "ae874ade0b1959942cbecaa0cdaba5386316ef41b240dadc34cd60c7eadee039",
+          "firstAdditionCommit": "b55431c6c5ed7ce2af0701cfb14136297c0b69bf"
+        }
+      ],
+      "artifactSetSha256": "e19fa5162c93c06cee6e30abb2c2b5f91991a06c1e770104b5fe3087ef77bb0d",
+      "originalHorizonContract": "G1 independent core started; blocked at primary outer fold 0 inner eligibility before candidate prediction; G2–G6 not executed",
+      "originalCurrentRole": "blocked_model_family_no_candidate_outcome",
+      "originalEvidenceStatus": "G1_preregistered_mechanism_parent_eligibility_block",
+      "originalOperationalStatus": "blocked_not_failed",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_CANDIDATE_OUTPUT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "BLOCKED_BEFORE_FIRST_CANDIDATE_PREDICTION"
+    },
+    {
+      "modelId": "M2-CHAN-PSC01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+      "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+      "objectType": "model_revision",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "originalGitCommits": [
+        "106c96df2831ed0605d0de2f9a94cd5392ea37e0"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/publishingScaleChannelCore.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "2f7aeed175284f57df9f0dff127391a3a2e9aca13aba81b0019dc416aa381d59",
+          "firstAdditionCommit": "106c96df2831ed0605d0de2f9a94cd5392ea37e0"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-publishing-scale-channel.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "0a6892419defca06eabbc9ce945acf88aacabc42b3f8f303ab9d95ef1778b6ab",
+          "firstAdditionCommit": "106c96df2831ed0605d0de2f9a94cd5392ea37e0"
+        },
+        {
+          "path": "config/m2-publishing-scale-statistical-support.v1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "47b520c5e1a671d6488284e45a00870a3a8c60c2dce8e499e6bf7c26ee0d0ea8",
+          "firstAdditionCommit": "0d4f95236af78baa627388913bfc6bd2e2b5177b"
+        }
+      ],
+      "artifactSetSha256": "acd1d0abb367759317b0296a6f9e7642ee3582e6345cca9bec17338c2add23c6",
+      "originalHorizonContract": "3/6/12/18/24/36 month development horizons; parameters frozen before private outer outcome",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "first_valid_raw_candidate_evaluation_complete_gate_fail",
+      "originalOperationalStatus": "development_failed_frozen_no_further_run_authorized",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FROZEN_ORIGINAL_ALGORITHM_REPLAYABLE_WITH_TAXONOMY_REPORT_ONLY_AND_RAW_RESULT_REQUIRED"
+    },
+    {
+      "modelId": "M2-CHAN-PSC02",
+      "modelVersion": "v0.1",
+      "displayNameZh": "出版行业渠道起点可见现金锚金额模型 v0.1",
+      "displayNameEn": "Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Model v0.1",
+      "objectType": "model_revision",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "originalGitCommits": [
+        "21218d7b2132d2ca755b33511c308b4b3066b781",
+        "83f98e72b0fd7c5a30dbf206006b8724741b8579"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/publishingScaleCashAnchorDevelopment.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e1678a7cafb563e0274f167a4cb5e7f2a600611a2131f069c5abf5295c829ddc",
+          "firstAdditionCommit": "21218d7b2132d2ca755b33511c308b4b3066b781"
+        },
+        {
+          "path": "src/domain/m2Current/publishingScaleCashAnchorPreregistration.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "b07a0177a5c58a26508f4afb14bce7fbc7abf95d8e97835d5161e34dfdf11da4",
+          "firstAdditionCommit": "83f98e72b0fd7c5a30dbf206006b8724741b8579"
+        },
+        {
+          "path": "scripts/m2-current/publishing_scale_cash_anchor_execution.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "54aad267b590d4d223b11d997676d9ab9cedb387d10531815697e7b736f6ab4b",
+          "firstAdditionCommit": "21218d7b2132d2ca755b33511c308b4b3066b781"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-development.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "4417774b21dca9387b26c5a139e3b4f3a9e8a2bf48a7a12f8df033658882cf0d",
+          "firstAdditionCommit": "21218d7b2132d2ca755b33511c308b4b3066b781"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-preregistration.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "6eb69a7d7f3125b993b8defc2e89186caf04f20a7de9ecc20e7fb12e057f3108",
+          "firstAdditionCommit": "83f98e72b0fd7c5a30dbf206006b8724741b8579"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "350211e3775edc8d37adcbbbaa3378f758cecca213dbf046e1c883ee7b3f98bd",
+          "firstAdditionCommit": "83f98e72b0fd7c5a30dbf206006b8724741b8579"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "0a6892419defca06eabbc9ce945acf88aacabc42b3f8f303ab9d95ef1778b6ab",
+          "firstAdditionCommit": "106c96df2831ed0605d0de2f9a94cd5392ea37e0"
+        },
+        {
+          "path": "config/m2-publishing-scale-statistical-support.v1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "47b520c5e1a671d6488284e45a00870a3a8c60c2dce8e499e6bf7c26ee0d0ea8",
+          "firstAdditionCommit": "0d4f95236af78baa627388913bfc6bd2e2b5177b"
+        }
+      ],
+      "artifactSetSha256": "edc411acdbe85db405bcda0e70e718a96c8ef31f02aba8482cc4e7afb635f455",
+      "originalHorizonContract": "primary 36-month and strict 3/6/12/18/24-month DEVELOPMENT_REPLAY; no independent, later-origin or final-holdout execution",
+      "originalCurrentRole": "blocked_execution_incomplete_no_candidate_outcome",
+      "originalEvidenceStatus": "public_math_core_only_real_runner_incomplete_historical_source_authority_not_recoverable_no_model_performance_evidence",
+      "originalOperationalStatus": "inactive_historical_replay_blocked_no_recoverable_authority_no_retry_authorized",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_CANDIDATE_OUTPUT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "REAL_RUNNER_INCOMPLETE_AND_NO_CANDIDATE_RESULT"
+    },
+    {
+      "modelId": "M2-CHAN-PSC03",
+      "modelVersion": "v0.1",
+      "displayNameZh": "出版行业渠道直接现金尺度条件金额模型 v0.1",
+      "displayNameEn": "Publishing-Scale Channel Direct-Cash Conditional Amount Model v0.1",
+      "objectType": "model_revision",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "originalGitCommits": [
+        "8b2587038c06c505dc0466dba78fbcf3feb00997",
+        "59cb74dcc0599f63fe500c41d4d23f269c76661e"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/publishingScaleDirectCashPreregistration.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "42df3f469b9875d2e6b10c83f066eafaccf74f955bf95a271e1029f87f6b9fb6",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "src/domain/m2Current/publishingScaleDirectCashDevelopment.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "4f0bd18be771778bee55cccc53878499427f063452298e8ed33ed3bbd39e5bd0",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "src/domain/m2Current/publishingScaleDirectCashEvaluation.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "9b26b7e13cfb9c33283efda97798906097b2c7f5757bb6fa1afe112dd906e22e",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "scripts/m2-current/publishing_scale_direct_cash_execution.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c5ea1944a90d278686fdb4aa218d29237aa8dc5e81fbe5566b558b3152270033",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "src/domain/m2Current/publishingScaleDirectCashFrozenAudit.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "66316346469424e2c44b9fe1493bcbf43f46fb826762ef0ea338918a5821b51f",
+          "firstAdditionCommit": "59cb74dcc0599f63fe500c41d4d23f269c76661e"
+        },
+        {
+          "path": "scripts/m2-current/audit_publishing_scale_direct_cash_frozen.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "8a64f632b3b9a0e42e33bf9440bd10af17244104b94e3f9c103750a3518b4dca",
+          "firstAdditionCommit": "59cb74dcc0599f63fe500c41d4d23f269c76661e"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-publishing-scale-channel-direct-cash-preregistration.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "423e623b33bee724ceb2190e606e8afa0c92df923c0996a654eadc929ff5ddd8",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel-direct-cash-schema.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "2f7a0da65bdb84a581d9b0a07e99b582df912731a77b736df6970baeba9f0812",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel-direct-cash-development.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "0d3b8de9237d1fd6f747a70b9cc03144d152027be3a67ef530a6262108ce51e4",
+          "firstAdditionCommit": "8b2587038c06c505dc0466dba78fbcf3feb00997"
+        },
+        {
+          "path": "config/m2-current-publishing-scale-channel.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "0a6892419defca06eabbc9ce945acf88aacabc42b3f8f303ab9d95ef1778b6ab",
+          "firstAdditionCommit": "106c96df2831ed0605d0de2f9a94cd5392ea37e0"
+        },
+        {
+          "path": "config/m2-publishing-scale-statistical-support.v1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "47b520c5e1a671d6488284e45a00870a3a8c60c2dce8e499e6bf7c26ee0d0ea8",
+          "firstAdditionCommit": "0d4f95236af78baa627388913bfc6bd2e2b5177b"
+        },
+        {
+          "path": "config/m2-business-acceptance-contract.v1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "65fc6a7fee1e42b4a000eaa73e03d142735defbf6ba812bd5ee2e4f80865b75b",
+          "firstAdditionCommit": "79bd3b06761851589bb7fecdfe09bc32dad68df1"
+        }
+      ],
+      "artifactSetSha256": "76b9d90c071c29aede0190af79ec465e43b84a7ec8ed114f3f0923aee42fc994",
+      "originalHorizonContract": "primary 36-month and strict 3/6/12/18/24-month DEVELOPMENT_REPLAY; no independent, later-origin or final-holdout execution",
+      "originalCurrentRole": "invalid_frozen_candidate_evidence_contract_mismatch",
+      "originalEvidenceStatus": "frozen_raw_authentic_contract_mismatch_not_valid_candidate_performance_evidence",
+      "originalOperationalStatus": "inactive_contract_mismatch_no_replay_or_successor_authorized",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "FORENSIC_ONLY_INVALID_CONTRACT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "FROZEN_RAW_AUTHENTIC_BUT_IMPLEMENTATION_CONTRACT_MISMATCH_NO_RERUN"
+    },
+    {
+      "modelId": "M2-WORK-C1TE01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "C1 透明组合模型",
+      "displayNameEn": "C1 Transparent Ensemble",
+      "objectType": "model",
+      "target": "historical_target",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "scripts/m2-real-data",
+          "kind": "directory",
+          "trackedFileCount": 68,
+          "sha256": "e68e4f8fa66717b856e5f9049516df6b538e6f2e535173f0caa47d8cee5e5d90",
+          "firstAdditionCommit": "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+        }
+      ],
+      "configArtifacts": [],
+      "artifactSetSha256": "592b3fb063fe083292881285bd4e097e0c654c368dc6f2b093f0ab9b72a974c7",
+      "originalHorizonContract": "historical frozen development",
+      "originalCurrentRole": "archive_only_failed_model",
+      "originalEvidenceStatus": "immutable_archive_evidence",
+      "originalOperationalStatus": "archive_only",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_HISTORICAL_TARGET_NOT_CURRENT_CASH_TARGET"
+    },
+    {
+      "modelId": "M2-WORK-C2R01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "旧买断收入路由模型",
+      "displayNameEn": "Legacy C2-R Revenue Route",
+      "objectType": "model",
+      "target": "legacy_buyout_target",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "scripts/m2-real-data",
+          "kind": "directory",
+          "trackedFileCount": 68,
+          "sha256": "e68e4f8fa66717b856e5f9049516df6b538e6f2e535173f0caa47d8cee5e5d90",
+          "firstAdditionCommit": "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+        }
+      ],
+      "configArtifacts": [],
+      "artifactSetSha256": "592b3fb063fe083292881285bd4e097e0c654c368dc6f2b093f0ab9b72a974c7",
+      "originalHorizonContract": "historical frozen development",
+      "originalCurrentRole": "archive_only_failed_model",
+      "originalEvidenceStatus": "immutable_archive_evidence",
+      "originalOperationalStatus": "archive_only",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_BUYOUT_TARGET_OUTSIDE_M2_SCOPE"
+    },
+    {
+      "modelId": "M2-WORK-C2R101",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "正式现金路由分治模型",
+      "displayNameEn": "Formal-Cash Route-Specific Model C2-R.1",
+      "objectType": "model",
+      "target": "formal_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "scripts/m2-real-data",
+          "kind": "directory",
+          "trackedFileCount": 68,
+          "sha256": "e68e4f8fa66717b856e5f9049516df6b538e6f2e535173f0caa47d8cee5e5d90",
+          "firstAdditionCommit": "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+        }
+      ],
+      "configArtifacts": [],
+      "artifactSetSha256": "592b3fb063fe083292881285bd4e097e0c654c368dc6f2b093f0ab9b72a974c7",
+      "originalHorizonContract": "historical frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "archive_only_failed_model",
+      "originalEvidenceStatus": "immutable_archive_evidence",
+      "originalOperationalStatus": "archive_only",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-C2IM01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "C2 活跃度与间歇模型组合",
+      "displayNameEn": "C2 Activity and Intermittent Model Mix",
+      "objectType": "model",
+      "target": "formal_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "scripts/m2-real-data",
+          "kind": "directory",
+          "trackedFileCount": 68,
+          "sha256": "e68e4f8fa66717b856e5f9049516df6b538e6f2e535173f0caa47d8cee5e5d90",
+          "firstAdditionCommit": "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+        }
+      ],
+      "configArtifacts": [],
+      "artifactSetSha256": "592b3fb063fe083292881285bd4e097e0c654c368dc6f2b093f0ab9b72a974c7",
+      "originalHorizonContract": "historical frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "archive_only_failed_model",
+      "originalEvidenceStatus": "immutable_archive_evidence",
+      "originalOperationalStatus": "archive_only",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-C3IR01",
+      "modelVersion": "REGISTRY_ENTRY_VERSION_UNSPECIFIED",
+      "displayNameZh": "C3 内部特征残差校正模型",
+      "displayNameEn": "C3 Internal-Feature Residual Correction",
+      "objectType": "model",
+      "target": "formal_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "scripts/m2-real-data",
+          "kind": "directory",
+          "trackedFileCount": 68,
+          "sha256": "e68e4f8fa66717b856e5f9049516df6b538e6f2e535173f0caa47d8cee5e5d90",
+          "firstAdditionCommit": "c78ec1523d7783e9ef4b420b428bf566d685ecf4"
+        }
+      ],
+      "configArtifacts": [],
+      "artifactSetSha256": "592b3fb063fe083292881285bd4e097e0c654c368dc6f2b093f0ab9b72a974c7",
+      "originalHorizonContract": "historical frozen 3/6/12/18/24-month cases",
+      "originalCurrentRole": "archive_only_failed_model",
+      "originalEvidenceStatus": "immutable_archive_evidence",
+      "originalOperationalStatus": "archive_only",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-HR01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "按预测周期滚动模型路由器 v0.1",
+      "displayNameEn": "Rolling Horizon Model Router v0.1",
+      "objectType": "model_pipeline",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "3773b77eddbf57c96e3c7e2c15a8c1852cdc3144",
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/coreLegacyHorizonRouter.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "e44f5801e541612138828900b6c8d679d3e92766f0b63ef48a306ead5cfd7986",
+          "firstAdditionCommit": "3773b77eddbf57c96e3c7e2c15a8c1852cdc3144"
+        },
+        {
+          "path": "scripts/m2-current/core_legacy_horizon_router_mode.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "42c7ac73b4c6be420041b0d794bdeef979ca43bb715bd79469bfe455fd9098d7",
+          "firstAdditionCommit": "3773b77eddbf57c96e3c7e2c15a8c1852cdc3144"
+        },
+        {
+          "path": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "bad525ea9cbf994ce4b96429981bae976290a12ecc73e60bc2740d8635381f51",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-core-legacy-horizon-router.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "1654bdf3fe4d4043b6a78453b7f9bf43636b5b0ee3f330467e972b406c5eb96a",
+          "firstAdditionCommit": "3773b77eddbf57c96e3c7e2c15a8c1852cdc3144"
+        }
+      ],
+      "artifactSetSha256": "7423977111e0614d100147cdd764a6fbf8ba9e88f5a1f3e46ac4a24bdbc03c12",
+      "originalHorizonContract": "origin-safe rolling selection at 3/6/12/36 months over legally available frozen model intersections",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "rolling_horizon_router_not_confirmed",
+      "originalOperationalStatus": "development_failed_not_selected_not_production",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_REGISTERED_COMPOSITE",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REGISTERED_ORIGIN_SAFE_ROLLING_HORIZON_ROUTER_WITH_RAW_INPUT_MODELS_RETAINED"
+    },
+    {
+      "modelId": "M2-WORK-CHAM01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "核心老品分周期金额模型 v0.1",
+      "displayNameEn": "Core Legacy Horizon-Specific Amount Model v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "ac011ba27311ded402893e770c19d7f7e2af328e",
+        "4aa1d0261d157ad4d028eb82439d37f8426848af"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/coreLegacyHorizonAmount.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "d5d0066e0c143e976a13db114ba92c17f94fd4ab02ec8748f2b5226664acceed",
+          "firstAdditionCommit": "ac011ba27311ded402893e770c19d7f7e2af328e"
+        },
+        {
+          "path": "scripts/m2-current/core_legacy_horizon_amount_mode.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "6ccfcaee8dab0004ef05fbb0158bab515b5c597191f2e1321b42991168fab971",
+          "firstAdditionCommit": "ac011ba27311ded402893e770c19d7f7e2af328e"
+        },
+        {
+          "path": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "bad525ea9cbf994ce4b96429981bae976290a12ecc73e60bc2740d8635381f51",
+          "firstAdditionCommit": "4aa1d0261d157ad4d028eb82439d37f8426848af"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-core-legacy-horizon-amount.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "6835d04a82b2457ba685d803b024efa1042b9af4e6c776f48dbcbc88bbc634fc",
+          "firstAdditionCommit": "ac011ba27311ded402893e770c19d7f7e2af328e"
+        },
+        {
+          "path": "config/m2-current-core-legacy-horizon-amount-recovery.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "c4c24790b86566a8d255bb737b6a193d3f952bd7bd0dca5cfe9a4e85a36eb462",
+          "firstAdditionCommit": "4215c423959f432414c52f1eb4ca88b4b489fb29"
+        }
+      ],
+      "artifactSetSha256": "0d80a2786efe7ef2d5577ad506cdba781dc7cc95ee0c98504f34d9bbfee0f5d7",
+      "originalHorizonContract": "independently fitted 3/6/12-month cumulative amounts for origin-mature Core80 legacy works; Core90 sensitivity only",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "first_valid_complete_B0_B3_evaluation_failed_all_3_6_12_month_gates",
+      "originalOperationalStatus": "development_failed_frozen_no_further_run_authorized",
+      "trainingOrFittingBoundary": "ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING_ONLY_NO_TUNING",
+      "postOriginDataStatus": "REQUIRED_ORIGIN_VISIBLE_ONLY",
+      "deterministicReplayStatus": "DETERMINISTIC_REPLAY_REQUIRED_AND_SYNTHETICALLY_TESTED",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_HORIZON_SPECIFIC_ORIGIN_BOUNDED_FIT_REAUTHORIZED_FOR_HISTORICAL_CROSS_EVALUATION",
+      "variantPolicy": "B1_AND_B2_FORMAL_RAW_VARIANTS_B3_REQUIRES_SAME_CASE_LG01_INPUT"
+    },
+    {
+      "modelId": "M2-WORK-HCRC01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "LG01 头部现金残差校准模型 v0.1",
+      "displayNameEn": "LG01 Head-Cash Residual Calibration Model v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "42c36f6a3f34d8ca06f5826448031fc3d3e697e0"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/lg01HeadCashResidual.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "9243f55fb6375fd4c018c703b5aa4e8538cffc6f11e5b64355f2880cbf86ee77",
+          "firstAdditionCommit": "42c36f6a3f34d8ca06f5826448031fc3d3e697e0"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-lg01-head-cash-residual.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "69113e6e17e2de8ab84b6b8552b2e36d0fbef56640efb1b96d2b6f4f060dda47",
+          "firstAdditionCommit": "42c36f6a3f34d8ca06f5826448031fc3d3e697e0"
+        }
+      ],
+      "artifactSetSha256": "e9ef2f500a522120303afc63528b2c2f1272bf24285d15b20487472fe062ee7f",
+      "originalHorizonContract": "three-month Strict rolling Core80 work total only; Strict Core90 sensitivity and Primary/Core90 numeric diagnostic",
+      "originalCurrentRole": "failed_development_candidate",
+      "originalEvidenceStatus": "first_complete_development_evaluation_frozen_raw_candidates_absent_universal_fallback_fail",
+      "originalOperationalStatus": "development_failed_frozen_no_second_evaluation_not_selected_not_production",
+      "trainingOrFittingBoundary": "RETROSPECTIVE_DIAGNOSTIC_ONLY_NO_FORMAL_RANKING",
+      "postOriginDataStatus": "UNPROVEN_OR_POST_HOC_NOT_FORMAL_ORIGIN_SAFE",
+      "deterministicReplayStatus": "DIAGNOSTIC_REPLAY_CONDITIONAL_ON_COMPLETE_INPUT_CONTRACT",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "POST_HOC_HEAD_RESIDUAL_DESIGN_AND_FROZEN_DEVELOPMENT_SELECTION"
+    },
+    {
+      "modelId": "M2-WORK-HPSR01",
+      "modelVersion": "v0.1",
+      "displayNameZh": "LG01 头部保护分段路由模型 v0.1",
+      "displayNameEn": "LG01 Head-Protected Segmented Router Model v0.1",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "5d7a40d38c23d706a476cbec21eaaff9bf12f05a"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/headProtectedSegmentedRouter.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "b8915aad6ae791e799328556026a61952228217602dcf213b72c7f401a5267b4",
+          "firstAdditionCommit": "5d7a40d38c23d706a476cbec21eaaff9bf12f05a"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-head-protected-segmented-router.v0.1.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "2ba44595470248e5011dc759c808d1354a5281195ef45e08b78066a838be738a",
+          "firstAdditionCommit": "5d7a40d38c23d706a476cbec21eaaff9bf12f05a"
+        }
+      ],
+      "artifactSetSha256": "3caa188ca60b59a97f124261d697aaef924b26c359896eba23dc729333becf13",
+      "originalHorizonContract": "independent later-origin Strict rolling Core80 three-month work total only; Strict Core90 sensitivity and Primary numeric diagnostics",
+      "originalCurrentRole": "contract_unsupported_scientifically_inconclusive_interpretation_amended",
+      "originalEvidenceStatus": "original_contract_unsupported_preserved_scientific_interpretation_inconclusive",
+      "originalOperationalStatus": "original_contract_unsupported_not_selected_not_production_hpsr02_preregistered",
+      "trainingOrFittingBoundary": "RETROSPECTIVE_DIAGNOSTIC_ONLY_NO_FORMAL_RANKING",
+      "postOriginDataStatus": "UNPROVEN_OR_POST_HOC_NOT_FORMAL_ORIGIN_SAFE",
+      "deterministicReplayStatus": "DIAGNOSTIC_REPLAY_CONDITIONAL_ON_COMPLETE_INPUT_CONTRACT",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FROZEN_BOUNDS_DERIVED_FROM_LATER_OPENED_DEVELOPMENT_ROWS_RETROSPECTIVE_ONLY"
+    },
+    {
+      "modelId": "M2-WORK-HPSR02",
+      "modelVersion": "v0.2",
+      "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
+      "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
+      "objectType": "model",
+      "target": "future_sales_share_development_modelable_cash",
+      "predictionGrain": "work_origin_horizon",
+      "originalGitCommits": [
+        "51f62a1f295bcf108f72b5699901bb3f2c4f56e2"
+      ],
+      "codeArtifacts": [
+        {
+          "path": "src/domain/m2Current/headProtectedTailBandCorrection.js",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "698a72c6bec183f6e9bcf49b7eaa7b7fb10c8410e355bccddedede2d3e76ee05",
+          "firstAdditionCommit": "51f62a1f295bcf108f72b5699901bb3f2c4f56e2"
+        }
+      ],
+      "configArtifacts": [
+        {
+          "path": "config/m2-current-head-protected-tail-band-correction.v0.2.json",
+          "kind": "file",
+          "trackedFileCount": 1,
+          "sha256": "14557dba29b68e8f1baf22f168ec5229e40119840707b28a7e3d550119d1be22",
+          "firstAdditionCommit": "51f62a1f295bcf108f72b5699901bb3f2c4f56e2"
+        }
+      ],
+      "artifactSetSha256": "b8fa84da4e3b2efe47d8374aa6a3f5118c706a09fca007fc05c700b4261f88d5",
+      "originalHorizonContract": "first independent later-origin dynamic Strict rolling Core80 three-month work total only",
+      "originalCurrentRole": "first_independent_inconclusive_cash_only_research_ended_not_active",
+      "originalEvidenceStatus": "first_independent_complete_result_frozen_inconclusive",
+      "originalOperationalStatus": "cash_only_adjacent_research_ended_not_active_not_production",
+      "trainingOrFittingBoundary": "NOT_EXECUTED",
+      "postOriginDataStatus": "NOT_APPLICABLE",
+      "deterministicReplayStatus": "NO_LEGAL_REPLAY_IN_THIS_CAMPAIGN",
+      "frozenPredictionReproductionDifference": "NOT_MEASURED_PRE_OUTCOME;_MUST_BE_REPORTED_IF_OVERLAP_EXISTS",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "UNIQUE_2026_03_INDEPENDENT_EVALUATION_FROZEN_CASH_ONLY_RESEARCH_ENDED_NO_RERUN",
+      "frozenRecentWindowAppendixRequired": true
+    }
+  ],
+  "boundaries": {
+    "excludedModelDoesNotBlockOthers": true,
+    "portfolioModelsNeverAllocatedBackToWorks": true,
+    "missingPredictionNeverBecomesZero": true,
+    "rawCandidateNeverMaskedByFallback": true,
+    "psc02CandidateOutputExists": false,
+    "psc03ForensicOnlyNoRerun": true,
+    "hpsr02UniqueEvaluationPreservedNoRerun": true,
+    "finalHoldoutOpened": false,
+    "productionAuthorized": false,
+    "automationAuthorized": false,
+    "m3FormalAuthorized": false
+  },
+  "canonicalPayloadSha256": "fdfa8a3235d19e5e20e78029e664e9b92ce159c5d712bc6a9e503752c1d3e83f"
+}

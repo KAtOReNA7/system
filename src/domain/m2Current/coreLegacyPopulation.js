@@ -371,7 +371,7 @@ export function buildCoreLegacyWorkCases({
       const dominantRevenueMode = dominantMechanism(canonicalChannels);
       for (const horizonMonths of horizons) {
         const pairRows = pairs.map((pair) => {
-          const actual = futureCashForPair(
+          const target = futureCashForPair(
             actualIndex,
             pair,
             originSerial,
@@ -383,7 +383,8 @@ export function buildCoreLegacyWorkCases({
             channelUid: pair.channelUid,
             origin,
             horizonMonths,
-            actual,
+            actual: target.actual,
+            labelAvailableAsOf: target.labelAvailableAsOf,
             core80: pair.core80,
             core90: pair.core90,
             top20: pair.top20,
@@ -400,6 +401,12 @@ export function buildCoreLegacyWorkCases({
           (sum, row) => sum + row.actual,
           0
         );
+        const labelAvailableAsOf = pairRows.reduce(
+          (latest, row) => row.labelAvailableAsOf > latest
+            ? row.labelAvailableAsOf
+            : latest,
+          addMonths(origin, horizonMonths)
+        );
         const representative = pairs[0];
         workCases.push({
           experimentId: M2_CORE_LEGACY_EXPERIMENT_ID,
@@ -407,7 +414,7 @@ export function buildCoreLegacyWorkCases({
           origin,
           horizonMonths,
           targetEnd: addMonths(origin, horizonMonths),
-          labelAvailableAsOf: addMonths(origin, horizonMonths),
+          labelAvailableAsOf,
           actual,
           actualPositive: Math.max(0, actual),
           actualReversal: Math.max(0, -actual),
@@ -433,18 +440,20 @@ export function buildCoreLegacyWorkCases({
     }
     for (const pair of population.immatureObservedPairs) {
       for (const horizonMonths of horizons) {
+        const target = futureCashForPair(
+          actualIndex,
+          pair,
+          monthToSerial(origin),
+          horizonMonths
+        );
         immatureChannelCases.push({
           experimentId: M2_CORE_LEGACY_EXPERIMENT_ID,
           standardWorkId: pair.standardWorkId,
           channelUid: pair.channelUid,
           origin,
           horizonMonths,
-          actual: futureCashForPair(
-            actualIndex,
-            pair,
-            monthToSerial(origin),
-            horizonMonths
-          ),
+          actual: target.actual,
+          labelAvailableAsOf: target.labelAvailableAsOf,
           completeMonthCount: pair.completeMonthCount,
           workCompleteMonthCount: pair.workCompleteMonthCount,
           level2Category: pair.level2Category,
@@ -876,7 +885,15 @@ function buildActualIndex(rows) {
     const key = `${row.standardWorkId}\u0000${row.channelUid}`;
     const months = byPair.get(key) ?? new Map();
     const serial = monthToSerial(row.month);
-    months.set(serial, (months.get(serial) ?? 0) + row.cash);
+    const current = months.get(serial) ?? {
+      cash: 0,
+      labelAvailableAsOf: serialToMonth(serial)
+    };
+    current.cash += row.cash;
+    if (row.labelAvailableAsOf > current.labelAvailableAsOf) {
+      current.labelAvailableAsOf = row.labelAvailableAsOf;
+    }
+    months.set(serial, current);
     byPair.set(key, months);
   }
   return byPair;
@@ -886,11 +903,21 @@ function futureCashForPair(index, pair, originSerial, horizon) {
   const months = index.get(
     `${pair.standardWorkId}\u0000${pair.channelUid}`
   ) ?? new Map();
-  return sumSerialRange(
-    months,
-    originSerial + 1,
-    originSerial + horizon
-  );
+  let actual = 0;
+  let labelAvailableAsOf = serialToMonth(originSerial + horizon);
+  for (
+    let serial = originSerial + 1;
+    serial <= originSerial + horizon;
+    serial += 1
+  ) {
+    const value = months.get(serial);
+    if (value === undefined) continue;
+    actual += value.cash;
+    if (value.labelAvailableAsOf > labelAvailableAsOf) {
+      labelAvailableAsOf = value.labelAvailableAsOf;
+    }
+  }
+  return Object.freeze({ actual, labelAvailableAsOf });
 }
 
 function sumMonthRange(months, start, end) {
@@ -925,12 +952,16 @@ function normalizeMonthlyRows(rows) {
     const channelUid = nonempty(row?.channelUid, "channel_uid");
     const month = serialToMonth(monthToSerial(row?.month));
     const cash = finite(row?.cash, "cash");
+    const labelAvailableAsOf = serialToMonth(monthToSerial(
+      row?.labelAvailableAsOf ?? month
+    ));
     const key = `${standardWorkId}\u0000${channelUid}\u0000${month}`;
     const value = aggregated.get(key) ?? {
       standardWorkId,
       channelUid,
       month,
       cash: 0,
+      labelAvailableAsOf: month,
       level2Category: String(row?.level2Category ?? "UNKNOWN"),
       level3Category: String(row?.level3Category ?? "UNKNOWN"),
       settlementMechanism: String(
@@ -938,6 +969,9 @@ function normalizeMonthlyRows(rows) {
       )
     };
     value.cash += cash;
+    if (labelAvailableAsOf > value.labelAvailableAsOf) {
+      value.labelAvailableAsOf = labelAvailableAsOf;
+    }
     aggregated.set(key, value);
   }
   return [...aggregated.values()].sort(compareMonthlyRows);

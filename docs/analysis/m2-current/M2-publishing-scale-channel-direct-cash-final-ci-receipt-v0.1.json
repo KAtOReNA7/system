@@ -1,0 +1,44 @@
+{
+  "schema": "m2.current.psc03.final_result_ci_receipt.v0.1",
+  "status": "PSC03_FINAL_RESULT_EXACT_HEAD_CI_PASSED",
+  "descriptionZh": "出版行业渠道直接现金尺度条件金额模型 v0.1 的唯一开发重放冻结结果已在结果内容精确 HEAD 上通过首次 Linux/Windows CI；本收据提交后仍须验证最终 PR 精确 HEAD。",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "resultStatus": "PSC03_DEVELOPMENT_NOT_SUPPORTED",
+  "validatedResultHead": "c209b6605e469e49825f18a5eafb401ae79017e1",
+  "validatedResultTree": "5ea03ceb88bed2b0a3865981ab99ae59ec93ed8b",
+  "branch": "codex/m2-psc03-direct-cash-quasi-poisson-development-v0-1",
+  "pullRequestNumber": 41,
+  "ci": {
+    "runId": 30743206638,
+    "attempt": 1,
+    "event": "pull_request",
+    "headSha": "c209b6605e469e49825f18a5eafb401ae79017e1",
+    "linux": "SUCCESS",
+    "windows": "SUCCESS",
+    "sameShaRerunUsed": false
+  },
+  "integrity": {
+    "firstCompletePrimaryRawResultFormed": true,
+    "primaryRawRepeated": false,
+    "primaryRawRowCount": 3318819,
+    "primaryRawSha256": "2c04ac66b47613fd70e4630582c79ea4de718800f0da267d7c431ca85f89c05b",
+    "occurrenceAuthoritySha256": "e1e06d5a00d46689aff54d32ec55925e5f6dee02e28f7dd233fe1b3aea4ea5ba",
+    "occurrenceBitForBitParity": true,
+    "exactPsc01PopulationCoverage": true,
+    "privateRowLevelDataPublished": false
+  },
+  "receiptBoundary": {
+    "receiptCommitIsReportingMetadataOnly": true,
+    "finalPrHeadCiRequiredAfterReceiptCommit": true,
+    "modelReplayAuthorized": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "productionReady": false,
+    "approvedForAutomation": null,
+    "activeCandidate": null
+  }
+}

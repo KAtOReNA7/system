@@ -195,12 +195,12 @@ export async function prepareM2PublishingScaleDerivedCaches({
   if (
     inventoryAfter.sourceAuthorityStatus !== "SOURCE_AUTHORITY_AVAILABLE"
     || inventoryAfter.derivedCacheStatus !== "CACHE_READY"
-    || inventoryAfter.safeToStartModelAfterRebuild !== true
+    || inventoryAfter.safeToRebuildDerivedCache !== true
   ) {
     throw new Error("m2_publishing_scale_rebuilt_capability_not_ready");
   }
   const result = {
-    status: "DERIVED_CACHE_REBUILT_READY_FOR_MODEL",
+    status: "DERIVED_CACHE_REBUILT_PENDING_CANONICAL_EXECUTION_GATE",
     modelId: config.modelId,
     experimentArmId: config.experimentArmId,
     runId,

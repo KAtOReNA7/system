@@ -1,0 +1,456 @@
+{
+  "schema": "m2.cmx01.preregistration.v0.1",
+  "version": "0.1",
+  "asOf": "2026-08-02",
+  "campaignId": "M2-CMX01",
+  "displayNameZh": "2020–2025 Core80 全模型真实业务横评 v0.1",
+  "displayNameEn": "M2 Core80 Cross-Model Real-Business Evaluation v0.1",
+  "activityType": "HISTORICAL_CROSS_MODEL_EVALUATION_NOT_MODEL_DEVELOPMENT",
+  "authority": {
+    "modelRegistry": "config/m2-model-registry.v1.json",
+    "currentStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md",
+    "businessAcceptanceContract": "config/m2-business-acceptance-contract.v1.json",
+    "corePopulationContract": "config/m2-current-core-legacy-population.v0.1.json",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "modelRegistryEntryCount": 37
+  },
+  "sourceSnapshot": {
+    "snapshotId": "M2-CMX01-SOURCE-SNAPSHOT-2026-08-02",
+    "totalLedgerSha256": "e3ca64406ece12490c91623a3083f940fd396d7eb3ac8b417c4131b2380ce728",
+    "salesShareLedgerSha256": "06bd3303844ff7f78a1c85e7422c7b61bba03ae47f543a0caaeccb028d444104",
+    "buyoutLedgerSha256": "c3df1bd52181b7c19b5c4cea5f9515ab3e84264c1fe841167885e2ec3051b9eb",
+    "workMappingSetSha256": "1a9326edb24e5a76736318c215e648bde6b3948efa1c4cf41616020490cd4891",
+    "channelMasterSha256": "bf648092cd1cd4d7fcae4182e3b36f9b36843cb3a06f3197cb2b6d16153c9d1e",
+    "partitionReconciliation": {
+      "missingFromSplitRowCount": 0,
+      "additionalSalesShareRowCount": 3,
+      "additionalRowPostingMonth": "2026-05",
+      "additionalRowsInsideEvaluationActualWindow": false,
+      "policy": "PRESERVE_SOURCE_ROWS_AND_FAIL_IF_TARGET_END_EXCEEDS_2025_12",
+      "status": "SCOPE_ISOLATED_AUTHORITY_WARNING_NOT_SILENTLY_DELETED"
+    },
+    "privatePathsPublished": false,
+    "absoluteCashPublished": false
+  },
+  "evaluationWindow": {
+    "firstTargetMonth": "2020-01",
+    "lastTargetMonth": "2025-12",
+    "horizons": [3, 6, 12, 36],
+    "monthlyOriginsRequired": true,
+    "quarterlySubsamplingAllowed": false,
+    "annualH12Origins": [
+      "2019-12",
+      "2020-12",
+      "2021-12",
+      "2022-12",
+      "2023-12",
+      "2024-12"
+    ],
+    "maturityRule": "TARGET_END_NO_LATER_THAN_2025_12",
+    "expectedOriginHorizonCellCount": 235,
+    "expectedCountsByHorizon": {
+      "3": 70,
+      "6": 67,
+      "12": 61,
+      "36": 37
+    }
+  },
+  "populations": [
+    "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+    "ANNUAL_ACTUAL_CORE80_HINDSIGHT_DIAGNOSTIC",
+    "ALL_ELIGIBLE_WORKS_DIAGNOSTIC"
+  ],
+  "populationContract": {
+    "minimumCompleteBillMonthsAtOrigin": 3,
+    "dynamicCore80Selection": "ORIGIN_VISIBLE_CUMULATIVE_SALES_SHARE_CASH_WITH_ALL_CUTOFF_TIES",
+    "annualActualCore80Selection": "TARGET_CALENDAR_YEAR_FINAL_ACTUAL_HINDSIGHT_ONLY",
+    "allEligibleWorks": "ALL_ORIGIN_MATURE_LEGACY_WORKS_WITHOUT_TOP_N_TRUNCATION",
+    "futureActualUsedForFormalCore80": false,
+    "futureNewWork": "ABSTAIN_NOT_ZERO",
+    "futureFirstObservedChannel": "ABSTAIN_NOT_ZERO",
+    "outsideCoreTail": "EXCLUDED_FROM_FORMAL_CORE80_NOT_ADDED_BACK"
+  },
+  "channelIdentity": {
+    "canonicalAuthority": "user_reviewed_channel_master",
+    "fuzzyChineseNameMatchingAllowed": false,
+    "observedMatureRelationMinimumCompleteMonths": 3,
+    "workChannelUniverse": "ORIGIN_OBSERVED_MATURE_RELATIONS_UNION_TARGET_ACTUAL_OR_PREDICTED_NONZERO_RELATIONS",
+    "fullCartesianZeroExpansionAllowed": false,
+    "futureFirstSeenIdentityUsedAsFeature": false,
+    "commonAllocator": {
+      "available": true,
+      "allocatorId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1",
+      "displayNameZh": "当前范围复现实验的固定最近 12 月已有成熟渠道份额分配臂",
+      "objectType": "experiment_arm_allocation_capability",
+      "windowMonths": 12,
+      "zeroDenominatorFallback": "LAST_NONZERO_MONTH_WITHIN_TRAILING_12",
+      "fallbackFailure": "ABSTAIN_CHANNEL_ALLOCATION",
+      "sameAllocatorForEveryWorkModel": true,
+      "resultStatus": "COMPOSITE_DIAGNOSTIC",
+      "exactWorkTotalConservationRequired": true
+    }
+  },
+  "comparisonContract": {
+    "exactIdentity": [
+      "forecast_origin",
+      "target_start",
+      "target_end",
+      "horizon",
+      "work_id",
+      "population",
+      "actual_cash",
+      "actual_definition",
+      "channel_identity",
+      "feature_cutoff"
+    ],
+    "commonMatchedLeaderboard": true,
+    "modelAvailableCoverage": true,
+    "pairwiseMatchedComparison": true,
+    "missingPredictionPolicy": "MISSING_NOT_ZERO_EXCLUDE_FROM_THAT_MODEL_AVAILABLE_AND_MATCHED_SET",
+    "differentCoverageWapeMayNameWinner": false,
+    "rawCandidateMustNotBeMaskedByFallback": true
+  },
+  "metrics": {
+    "formulas": {
+      "WAPE": "sum(abs(predicted-actual))/sum(abs(actual))",
+      "signedBias": "sum(predicted-actual)/sum(abs(actual))",
+      "predictedActualRatio": "sum(predicted)/sum(actual)",
+      "MAE": "mean(abs(predicted-actual))",
+      "RMSE": "sqrt(mean((predicted-actual)^2))",
+      "sMAPE": "mean(2*abs(predicted-actual)/(abs(predicted)+abs(actual)))",
+      "medianApeNonzeroActual": "median(abs(predicted-actual)/abs(actual)) where actual != 0"
+    },
+    "failureDefinition": "APE_AT_LEAST_100_PERCENT_ON_NONZERO_ACTUAL",
+    "catastropheDefinition": "APE_AT_LEAST_300_PERCENT_ON_NONZERO_ACTUAL",
+    "failureAndCatastropheAreDiagnosticOnly": true,
+    "formalBusinessGateAuthority": "config/m2-business-acceptance-contract.v1.json",
+    "postOutcomeThresholdCreationAllowed": false
+  },
+  "bootstrap": {
+    "method": "PAIRED_WORK_AND_FORECAST_ORIGIN_BLOCK_BOOTSTRAP",
+    "blockUnit": "WORK_AND_FORECAST_ORIGIN",
+    "iterations": 5000,
+    "seed": 20260802,
+    "interval": 0.95,
+    "sameResampleAcrossComparedModels": true,
+    "holmCorrectionWhenApplicable": true
+  },
+  "ranking": {
+    "primaryMetric": "WAPE",
+    "tieBreakers": [
+      "ABSOLUTE_SIGNED_BIAS",
+      "CATASTROPHE_COUNT",
+      "STABLE_VARIANT_ID"
+    ],
+    "unqualifiedWeightedCompositeScoreAllowed": false,
+    "formalPopulation": "ORIGIN_VISIBLE_DYNAMIC_CORE80",
+    "annualActualCore80CanChooseChampion": false,
+    "allEligibleWorksCanChooseChampion": false,
+    "retrospectiveOnlyDiagnosticCanChooseChampion": false,
+    "historicalChampionStatus": "HISTORICAL_ONLY_NOT_ACTIVATED"
+  },
+  "privacy": {
+    "publicMinimumCaseCount": 30,
+    "publicMinimumWorkCount": 20,
+    "publicAllowed": [
+      "model_id",
+      "aggregate_metrics",
+      "sample_counts",
+      "anonymous_bands",
+      "coverage",
+      "statistical_conclusions",
+      "eligibility_reason_codes"
+    ],
+    "publicForbidden": [
+      "work_title",
+      "private_work_id",
+      "sensitive_channel_mapping",
+      "absolute_cash_amount",
+      "local_absolute_path",
+      "row_level_actual",
+      "row_level_prediction"
+    ],
+    "privateOutputClass": "PRIVATE_DERIVED_CACHE",
+    "privateOutputMustBeGitIgnored": true
+  },
+  "execution": {
+    "preregistrationMustBeCommittedBeforeOutcomeRead": true,
+    "eligibilityAuditMustBeCommittedBeforeOutcomeRead": true,
+    "exactHeadLinuxAndWindowsCiMustPassBeforePrivateRun": true,
+    "checkpointResumeRequired": true,
+    "modelFitting": "ONLY_ORIGINAL_ALGORITHM_INHERENT_ORIGIN_BOUNDED_FITTING",
+    "tuning": false,
+    "newModel": false,
+    "finalHoldout": false,
+    "production": false,
+    "automation": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "eligibilityDecisions": [
+    {
+      "modelId": "M2-WORK-B4",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ALIGNMENT_ONLY_ENTRYPOINT_NO_STANDALONE_PREDICTION_GENERATOR"
+    },
+    {
+      "modelId": "M2-WORK-SEG01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION"
+    },
+    {
+      "modelId": "M2-WORK-HRC02",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_NOT_CURRENT_ACTUAL_DEFINITION"
+    },
+    {
+      "modelId": "M2-WORK-OA03",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "DEPENDS_ON_NONREPLAYABLE_B4_BASE_PREDICTIONS_OUTSIDE_FROZEN_SPARSE_CASES"
+    },
+    {
+      "modelId": "M2-WORK-GHG01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-TWD01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-HGB01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "LEGACY_FUTURE_BILL_CASH_TARGET_AND_FROZEN_OUTER_ORIGINS"
+    },
+    {
+      "modelId": "M2-WORK-GDE04",
+      "status": "ALIAS_OR_DUPLICATE_NOT_INDEPENDENT_MODEL",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "SELECTED_PIPELINE_RETURNS_EXISTING_FALLBACK_AND_CANNOT_COUNT_AS_INDEPENDENT_RAW_MODEL"
+    },
+    {
+      "modelId": "M2-PORT-ETS01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "PORTFOLIO_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS"
+    },
+    {
+      "modelId": "M2-BASE-CLASSIC01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGIN_VISIBLE_CASH_ONLY_REGISTERED_BASELINE_FAMILY",
+      "variantPolicy": "REPORT_EACH_FAMILY_MEMBER_WITH_PARENT_MODEL_ID"
+    },
+    {
+      "modelId": "M2-WORK-HSC01",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "POST_HOC_HISTORICAL_STATUS_CALIBRATION_WITH_UNPROVEN_AS_OF_STATE"
+    },
+    {
+      "modelId": "M2-WORK-MCR01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "DETERMINISTIC_ORIGIN_HISTORY_MANUAL_CHANNEL_RULE_H36_ONLY"
+    },
+    {
+      "modelId": "M2-WORK-CCR01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "NESTED_ORIGIN_BOUNDED_CANONICAL_CHANNEL_CHALLENGER"
+    },
+    {
+      "modelId": "M2-WORK-MAN01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FAITHFUL_FIXED_FORMULA_WITH_ORIGIN_VISIBLE_CASH_HISTORY"
+    },
+    {
+      "modelId": "M2-WORK-CRMR01",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "PREREGISTERED_DETERMINISTIC_WORK_CHANNEL_FORMULA_WITH_ORIGIN_BOUNDED_FALLBACK"
+    },
+    {
+      "modelId": "M2-PORT-LRC01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "PORTFOLIO_COMPONENT_GRAIN_CANNOT_BE_ALLOCATED_BACK_TO_WORKS"
+    },
+    {
+      "modelId": "M2-WORK-LG01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_ALGORITHM_SUPPORTS_STRICT_ORIGIN_BOUNDED_FITTING"
+    },
+    {
+      "modelId": "M2-WORK-HP01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "RAW_HIERARCHICAL_LAYER_MUST_REMAIN_VISIBLE_SEPARATE_FROM_SELECTED_FALLBACK"
+    },
+    {
+      "modelId": "M2-WORK-OR01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "RAW_OCCURRENCE_REVERSAL_LAYER_MUST_REMAIN_VISIBLE_SEPARATE_FROM_SELECTED_FALLBACK"
+    },
+    {
+      "modelId": "M2-WORK-TSB01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_STRICT_ROLLING_ORIGIN_BOUNDED_IMPLEMENTATION_AVAILABLE"
+    },
+    {
+      "modelId": "M2-WORK-TSBB01",
+      "status": "ELIGIBLE_REGISTERED_COMPOSITE",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REGISTERED_TSB_LG01_BLEND_WITH_RAW_RESULT_PRESERVED"
+    },
+    {
+      "modelId": "M2-WORK-LC01",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REVIVAL_STATE_ROUTING_IS_POST_HOC_FROM_COMPLETED_PRIOR_EXPERIMENT"
+    },
+    {
+      "modelId": "M2-CHAN-SCL01",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "NATIVE_ORIGIN_OBSERVED_CHANNEL_OUTPUT_WITH_PREREGISTERED_STATIC_MECHANISM_AUTHORITY"
+    },
+    {
+      "modelId": "M2-CHAN-GEN02",
+      "status": "EXCLUDED_NO_CANDIDATE_OUTPUT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "BLOCKED_BEFORE_FIRST_CANDIDATE_PREDICTION"
+    },
+    {
+      "modelId": "M2-CHAN-PSC01",
+      "status": "ELIGIBLE_NATIVE_WORK_CHANNEL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FROZEN_ORIGINAL_ALGORITHM_REPLAYABLE_WITH_TAXONOMY_REPORT_ONLY_AND_RAW_RESULT_REQUIRED"
+    },
+    {
+      "modelId": "M2-CHAN-PSC02",
+      "status": "EXCLUDED_NO_CANDIDATE_OUTPUT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "REAL_RUNNER_INCOMPLETE_AND_NO_CANDIDATE_RESULT"
+    },
+    {
+      "modelId": "M2-CHAN-PSC03",
+      "status": "FORENSIC_ONLY_INVALID_CONTRACT",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "FROZEN_RAW_AUTHENTIC_BUT_IMPLEMENTATION_CONTRACT_MISMATCH_NO_RERUN"
+    },
+    {
+      "modelId": "M2-WORK-C1TE01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_HISTORICAL_TARGET_NOT_CURRENT_CASH_TARGET"
+    },
+    {
+      "modelId": "M2-WORK-C2R01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_BUYOUT_TARGET_OUTSIDE_M2_SCOPE"
+    },
+    {
+      "modelId": "M2-WORK-C2R101",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-C2IM01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-C3IR01",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "ARCHIVE_FORMAL_CASH_TARGET_DIFFERS_FROM_CURRENT_SALES_SHARE_ACTUAL"
+    },
+    {
+      "modelId": "M2-WORK-HR01",
+      "status": "ELIGIBLE_REGISTERED_COMPOSITE",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "REGISTERED_ORIGIN_SAFE_ROLLING_HORIZON_ROUTER_WITH_RAW_INPUT_MODELS_RETAINED"
+    },
+    {
+      "modelId": "M2-WORK-CHAM01",
+      "status": "ELIGIBLE_NATIVE_WORK_TOTAL",
+      "formalRankingEligible": true,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "ORIGINAL_HORIZON_SPECIFIC_ORIGIN_BOUNDED_FIT_REAUTHORIZED_FOR_HISTORICAL_CROSS_EVALUATION",
+      "variantPolicy": "B1_AND_B2_FORMAL_RAW_VARIANTS_B3_REQUIRES_SAME_CASE_LG01_INPUT"
+    },
+    {
+      "modelId": "M2-WORK-HCRC01",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "POST_HOC_HEAD_RESIDUAL_DESIGN_AND_FROZEN_DEVELOPMENT_SELECTION"
+    },
+    {
+      "modelId": "M2-WORK-HPSR01",
+      "status": "EXCLUDED_DATA_LEAKAGE_OR_ORIGIN_UNSAFE",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": true,
+      "reasonCode": "FROZEN_BOUNDS_DERIVED_FROM_LATER_OPENED_DEVELOPMENT_ROWS_RETROSPECTIVE_ONLY"
+    },
+    {
+      "modelId": "M2-WORK-HPSR02",
+      "status": "EXCLUDED_NO_REPLAYABLE_IMPLEMENTATION",
+      "formalRankingEligible": false,
+      "diagnosticReplayPlanned": false,
+      "reasonCode": "UNIQUE_2026_03_INDEPENDENT_EVALUATION_FROZEN_CASH_ONLY_RESEARCH_ENDED_NO_RERUN",
+      "frozenRecentWindowAppendixRequired": true
+    }
+  ]
+}

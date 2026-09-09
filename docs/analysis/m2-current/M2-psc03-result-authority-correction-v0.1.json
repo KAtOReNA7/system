@@ -1,0 +1,53 @@
+{
+  "schema": "m2.current.psc03.result_authority_correction.public.v0.1",
+  "asOf": "2026-08-02",
+  "correctionId": "M2-CORRECTION-PSC03-RESULT-AUTHORITY-01",
+  "modelId": "M2-CHAN-PSC03",
+  "rawCandidateId": "M2-CHAN-PSC03-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03",
+  "auditedArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-DIRECT-CASH-03/P",
+  "currentStatus": "PSC03_IMPLEMENTATION_CONTRACT_MISMATCH_CONFIRMED",
+  "frozenRawStatus": "PSC03_FROZEN_RAW_PRESERVED_BUT_NOT_VALID_CANDIDATE_PERFORMANCE_EVIDENCE",
+  "scientificHypothesisStatus": "DIRECT_CASH_SCALE_HYPOTHESIS_NOT_ADJUDICATED_BY_CONFORMING_IMPLEMENTATION",
+  "successorStatus": "NO_SUCCESSOR_OR_REPLAY_AUTHORIZED",
+  "historicalResult": {
+    "status": "PSC03_DEVELOPMENT_NOT_SUPPORTED",
+    "preserved": true,
+    "metricsPreserved": true,
+    "rawPredictionPreserved": true,
+    "evaluationPreserved": true,
+    "bootstrapPreserved": true,
+    "digestsPreserved": true,
+    "receiptsPreserved": true,
+    "historicalInterpretationStillCurrent": false
+  },
+  "authorityEffect": {
+    "validForCandidateDecision": false,
+    "validAsFrozenNonconformingImplementationEvidence": true,
+    "modelPerformanceClaimAllowed": false,
+    "directCashScaleHypothesisAdjudicated": false,
+    "successorAuthorized": false,
+    "replayAuthorized": false
+  },
+  "modelActivation": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "independentEvaluationOpened": false,
+    "laterOriginOpened": false
+  },
+  "supersedesInterpretationOnly": [
+    "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.json",
+    "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-development-evaluation-v0.1.md",
+    "docs/analysis/m2-current/M2-publishing-scale-channel-direct-cash-implementation-and-result-decision-v0.1.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.60.md"
+  ],
+  "currentEvidenceRefs": [
+    "docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.json",
+    "docs/analysis/m2-current/M2-psc03-frozen-tail-and-contract-conformance-audit-v0.1.md",
+    "docs/analysis/m2-current/M2-psc03-result-authority-correction-v0.1.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.61.md",
+    "config/m2-model-registry.v1.json"
+  ]
+}
