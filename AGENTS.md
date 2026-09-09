@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.63.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 Core80 全模型历史横评：
@@ -292,6 +292,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   金额倍率。
 - 作品数量覆盖率不得替代收入金额覆盖率。核心人口必须只用预测起点可见收入选择，
   禁止使用未来实际 TopN 形成候选人口或正式成绩。
+- Core80 全模型历史横评（`M2-CMX01`）的冻结结论码与成绩保留；当前切片解释、
+  LG01 四周期摘要及渠道共同案例更正以状态索引 v0.63 为准。案例覆盖率不能替代
+  收入金额覆盖率；历史切片点估计排名不能证明稳定选模收益或新增业务验收。
 - 作品点预测、组合预测、排序/分配和风险区间属于不同能力，不得共享排行榜，也不得
   将 portfolio 结果分配回作品。
 - M2 业务验收必须分别标记作品总额（`WORK_TOTAL`）与作品×渠道

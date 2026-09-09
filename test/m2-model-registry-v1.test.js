@@ -116,6 +116,7 @@ test("current roles retain fallback, research baseline and no automation promoti
   const historicalChampionAssertions = registry.currentRoles.sourceAssertions
     .filter((item) => (
       item.historicalAssertion === true
+      && /exact_v0_3/u.test(item.assertion)
       && /champion/u.test(item.assertion)
     ));
   assert.equal(historicalChampionAssertions.length, 2);
@@ -234,7 +235,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.63.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);

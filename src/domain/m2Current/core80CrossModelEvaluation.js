@@ -236,8 +236,8 @@ export function scoreCmx01Rows(rows, {
     return emptyMetrics(expectedCaseCount);
   }
   const scored = rows.filter((row) => (
-    Number.isFinite(Number(row[actualField]))
-    && Number.isFinite(Number(row[predictionField]))
+    isFiniteNumberValue(row[actualField])
+    && isFiniteNumberValue(row[predictionField])
   )).map((row) => {
     const actual = Number(row[actualField]);
     const predicted = Number(row[predictionField]);
@@ -336,7 +336,7 @@ export function buildCmx01MatchedRows(rows, modelIds, {
   return Object.freeze([...byCase.entries()]
     .filter(([, values]) => (
       values.length === modelIds.length
-      && values.every((row) => Number.isFinite(Number(row.predictedCash)))
+      && values.every((row) => isFiniteNumberValue(row.predictedCash))
       && new Set(values.map((row) => row.modelId)).size === modelIds.length
     ))
     .sort(([left], [right]) => left.localeCompare(right))
@@ -644,11 +644,17 @@ function requireHorizon(value) {
 }
 
 function finite(value, field) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) {
+  if (!isFiniteNumberValue(value)) {
     throw new Error(`m2_cmx01_${field}_nonfinite`);
   }
-  return number;
+  return Number(value);
+}
+
+function isFiniteNumberValue(value) {
+  return (
+    typeof value === "number"
+    || (typeof value === "string" && value.trim() !== "")
+  ) && Number.isFinite(Number(value));
 }
 
 function nonempty(value, field) {

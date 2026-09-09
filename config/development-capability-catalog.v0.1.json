@@ -1139,6 +1139,13 @@
     },
     {
       "id": "m2-current-publishing-scale-cash-anchor-development",
+      "executionAuthorized": false,
+      "authorizationConsumed": true,
+      "historicalOriginAuthority": {
+        "recoverable": false,
+        "status": "PSC02_HISTORICAL_REPLAY_BLOCKED_NO_RECOVERABLE_ORIGIN_VISIBLE_CASH_AUTHORITY",
+        "evidence": "docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.json"
+      },
       "description": "Audit-only PSC02 capability. Public mathematical primitives exist, but the real runner success path is incomplete and the historical origin-visible component/revision/time authority is not recoverable; the single pre-prediction attempt is preserved and no retry is authorized.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [

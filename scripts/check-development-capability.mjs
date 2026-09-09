@@ -273,6 +273,14 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     && !artifact.present
   ));
   const unavailableTools = tools.filter((tool) => !tool.present || !tool.compatible);
+  const historicalOriginAuthority = capability.historicalOriginAuthority ?? null;
+  const historicalOriginAuthorityUnavailable = historicalOriginAuthority?.recoverable === false;
+  const sourceAuthorityRequired = artifacts.some(
+    (artifact) => artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY",
+  );
+  const sourceAuthorityVerificationStatus = sourceAuthorityRequired
+    ? "NOT_VERIFIED_INVENTORY_ONLY"
+    : "NOT_REQUIRED";
   let status = capabilityId === "core-dev"
     ? "READY"
     : "AVAILABLE_FOR_CANONICAL_VALIDATION";
@@ -282,6 +290,8 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     status = capability.privateArtifactClassificationVersion
       ? "MISSING_SOURCE_AUTHORITY"
       : "BLOCKED_MISSING_PRIVATE_ARTIFACT";
+  } else if (historicalOriginAuthorityUnavailable) {
+    status = "BLOCKED_HISTORICAL_ORIGIN_AUTHORITY_UNRECOVERABLE";
   } else if (
     missingImmutableFrozenParameters.length > 0
     && !parameterRecoverySourceAvailable
@@ -295,13 +305,16 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     status = "PARAMETER_LINEAGE_INVENTORY_WARNING";
   }
   const safeToRebuildDerivedCache =
-    unavailableTools.length === 0 && missingSourceAuthority.length === 0;
+    unavailableTools.length === 0
+    && missingSourceAuthority.length === 0
+    && !historicalOriginAuthorityUnavailable;
   const safeToRecoverImmutableFrozenParameter = (
     unavailableTools.length === 0
     && missingSourceAuthority.length === 0
     && parameterRecoverySourceAvailable
   );
-  const executionAuthorized = capability.executionAuthorized !== false;
+  const executionAuthorized = capability.executionAuthorized === true
+    && capability.authorizationConsumed !== true;
   return {
     schemaVersion: "development-capability-doctor-result.v0.1",
     capabilityId,
@@ -318,6 +331,9 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     sourceAuthorityStatus: missingSourceAuthority.length > 0
       ? "MISSING_SOURCE_AUTHORITY"
       : "SOURCE_AUTHORITY_AVAILABLE",
+    sourceAuthorityVerificationStatus,
+    historicalOriginAuthorityStatus: historicalOriginAuthority?.status
+      ?? "NOT_ASSESSED_BY_INVENTORY",
     derivedCacheStatus: missingDerivedCache.length > 0
       ? "CACHE_MISS_REBUILDABLE"
       : "CACHE_READY",
@@ -336,7 +352,11 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     rebuildPlan: missingDerivedCache.map((artifact) => ({
       role: artifact.role,
       path: artifact.path,
-      action: "REBUILD_FROM_PRIVATE_SOURCE_AUTHORITY",
+      action: historicalOriginAuthorityUnavailable
+        ? "STOP_HISTORICAL_ORIGIN_AUTHORITY_UNRECOVERABLE"
+        : safeToRebuildDerivedCache
+          ? "REBUILD_FROM_PRIVATE_SOURCE_AUTHORITY"
+          : "WAIT_FOR_SOURCE_AUTHORITY_AND_TOOL_PREREQUISITES",
     })),
     parameterRecoveryPlan: missingImmutableFrozenParameters.map(
       (artifact) => ({
@@ -350,6 +370,9 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     safeToRebuildDerivedCache,
     safeToStartModelAfterRebuild:
       executionAuthorized
+      // An inventory never establishes the authenticity of private source inputs.
+      // Private runners must perform canonical verification and their own task gate.
+      && sourceAuthorityVerificationStatus === "NOT_REQUIRED"
       && safeToRebuildDerivedCache
       && (
         missingImmutableFrozenParameters.length === 0
@@ -396,7 +419,9 @@ export function formatCapabilityResult(result) {
       );
     }
   }
-  lines.push(`Source authority: ${result.sourceAuthorityStatus}`);
+  lines.push(`Source authority file inventory: ${result.sourceAuthorityStatus}`);
+  lines.push(`Source authority verification: ${result.sourceAuthorityVerificationStatus}`);
+  lines.push(`Historical origin authority: ${result.historicalOriginAuthorityStatus}`);
   lines.push(`Derived cache: ${result.derivedCacheStatus}`);
   lines.push(`Historical receipt: ${result.historicalReceiptStatus}`);
   lines.push(
@@ -417,6 +442,12 @@ export function formatCapabilityResult(result) {
   }
   if (result.status === "MISSING_SOURCE_AUTHORITY") {
     lines.push("The owning private capability is blocked by missing source authority.");
+  }
+  if (result.status === "BLOCKED_HISTORICAL_ORIGIN_AUTHORITY_UNRECOVERABLE") {
+    lines.push("Existing source files cannot recover the required historical origin authority.");
+  }
+  if (result.sourceAuthorityVerificationStatus === "NOT_VERIFIED_INVENTORY_ONLY") {
+    lines.push("File presence and cache rebuild readiness do not verify source authenticity or authorize a model run.");
   }
   if (result.status === "DERIVED_CACHE_MISS_REBUILD_REQUIRED") {
     lines.push("Derived cache is rebuildable and does not block after preparation.");

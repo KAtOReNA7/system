@@ -13,6 +13,7 @@ import {
   buildCmx01CaseId,
   buildCmx01Checkpoint,
   buildCmx01OriginGrid,
+  buildCmx01MatchedRows,
   pairedCmx01Bootstrap,
   scoreCmx01Rows,
   sha256Canonical,
@@ -148,6 +149,79 @@ test("metric formulas reproduce the frozen synthetic values", () => {
   assert.equal(digest, fixture.frozenExpectedSha256);
 });
 
+test("missing and invalid cash values cannot become zero forecasts", () => {
+  const base = {
+    ...fixture.rows[0],
+    standardWorkId: "synthetic-missing-prediction",
+    actualCash: 100
+  };
+  const baseline = { ...base, modelId: "baseline", predictedCash: 100 };
+  const invalidValues = [
+    null, undefined, "", " ", false, true, [], [0], {},
+    NaN, Infinity, -Infinity, "NaN", "Infinity"
+  ];
+  for (const value of invalidValues) {
+    const candidate = { ...base, modelId: "candidate", predictedCash: value };
+    const metrics = scoreCmx01Rows([candidate], { expectedCaseCount: 1 });
+    assert.equal(metrics.status, "NOT_AVAILABLE");
+    assert.equal(metrics.caseCount, 0);
+    assert.equal(metrics.coverage, 0);
+    assert.equal(metrics.wape, null);
+    assert.deepEqual(
+      buildCmx01MatchedRows([candidate, baseline], ["candidate", "baseline"]),
+      []
+    );
+    assert.throws(() => pairedCmx01Bootstrap([candidate, baseline], {
+      candidateModelId: "candidate",
+      baselineModelId: "baseline"
+    }), /m2_cmx01_bootstrap_matched_rows_required/u);
+    assert.equal(scoreCmx01Rows([
+      { ...baseline, actualCash: value }
+    ]).status, "NOT_AVAILABLE");
+  }
+});
+
+test("numeric zero remains available while abstained cases stay unmatched", () => {
+  const base = {
+    ...fixture.rows[0],
+    standardWorkId: "synthetic-zero-prediction",
+    actualCash: 100
+  };
+  const options = {
+    candidateModelId: "candidate",
+    baselineModelId: "baseline"
+  };
+  for (const value of [0, "0"]) {
+    const candidate = { ...base, modelId: "candidate", predictedCash: value };
+    const baseline = { ...base, modelId: "baseline", predictedCash: 100 };
+    const abstained = {
+      ...candidate,
+      standardWorkId: "synthetic-abstained-prediction",
+      predictedCash: null
+    };
+    const metrics = scoreCmx01Rows([candidate, abstained], {
+      expectedCaseCount: 2
+    });
+    assert.equal(metrics.caseCount, 1);
+    assert.equal(metrics.coverage, 0.5);
+    assert.equal(metrics.predictionTotal, 0);
+    assert.equal(metrics.wape, 1);
+    const available = [candidate, baseline];
+    const mixed = [
+      ...available,
+      abstained,
+      { ...baseline, standardWorkId: abstained.standardWorkId }
+    ];
+    assert.equal(buildCmx01MatchedRows(
+      mixed, ["candidate", "baseline"]
+    ).length, 2);
+    assert.deepEqual(
+      pairedCmx01Bootstrap(mixed, options),
+      pairedCmx01Bootstrap(available, options)
+    );
+  }
+});
+
 test("paired work-origin bootstrap is reproducible", () => {
   const options = {
     candidateModelId: "SYNTHETIC_A",
@@ -245,7 +319,7 @@ test("completed CMX01 public result is frozen and mapped without role promotion"
     )
   );
   const stateIndex = readFileSync(
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.62.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.63.md",
     "utf8"
   );
 
