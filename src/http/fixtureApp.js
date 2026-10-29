@@ -1,5 +1,11 @@
 import { createApp } from "./app.js";
 import {
+  getWorkspaceContextFixture,
+  getWorkspaceOverviewFixture,
+  listWorkspaceWorksFixture,
+  getWorkspaceWorkByIdFixture
+} from "../repositories/workspaceFixtureRepository.js";
+import {
   getM2OldProductEvaluationById,
   getM2OldProductEvaluationOverview,
   getM2OldProductBacktestById,
@@ -41,6 +47,10 @@ import {
 } from "../repositories/newProductEvaluationFixtureRepository.js";
 
 const FIXTURE_REPOSITORIES = Object.freeze({
+  getWorkspaceContext: getWorkspaceContextFixture,
+  getWorkspaceOverview: getWorkspaceOverviewFixture,
+  listWorkspaceWorks: listWorkspaceWorksFixture,
+  getWorkspaceWorkById: getWorkspaceWorkByIdFixture,
   getM2OldProductEvaluationById,
   getM2OldProductEvaluationOverview,
   getM2OldProductBacktestById,

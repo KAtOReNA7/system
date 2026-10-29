@@ -30,6 +30,22 @@
 > `production`、final/later-origin holdout、Canary/full160、provider、共享数据库和
 > M3 formal 均保持关闭。
 
+## 打开 XG 版业务工作台
+
+```bash
+npm ci
+npm run build
+npm run start:fixture
+```
+
+在本机访问 [工作台](http://127.0.0.1:3000/workspace/)，可浏览作品、搜索、筛选、分页、查看详情及公开研究结果。
+作品与现金为显式合成演示；研究结果读取仓库公开权威文件。旧管理工具仍在 `/admin`。
+
+`npm start` 启动正式组合：同一工作台只读取现有正式接口，缺少数据库时明确提示，
+不会自动切到演示数据。公开研究页不依赖数据库。界面接入不授予模型执行、生产或财务使用权限。
+开发时可运行 `npm run dev:workspace`，由 Vite 将 API 转发至本机 3000 端口的现有 Node 服务。
+参见 [工作台实现与数据边界](docs/development/workspace-ui.md)。
+
 ## 30 秒了解项目
 
 | 你可能关心的问题 | 当前答案 |

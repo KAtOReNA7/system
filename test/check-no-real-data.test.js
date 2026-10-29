@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -158,5 +158,35 @@ test("real-data guard fails closed for oversized, binary, invalid UTF-8, and raw
     assert.match(result.stderr, /unreviewed_binary_content/u);
     assert.match(result.stderr, /invalid_utf8_content/u);
     assert.match(result.stderr, /provider_raw_response_file/u);
+  });
+});
+
+test("real-data guard accepts reviewed public font bytes only at their reviewed path and digest", () => {
+  const reviewedPath = "web/workspace/assets/fonts/noto/noto-sans-sc-97-wght-normal.woff2";
+  const reviewedBytes = readFileSync(join(projectRoot, reviewedPath));
+  withSyntheticRepo((root) => {
+    writeBytes(root, reviewedPath, reviewedBytes);
+    git(root, ["add", reviewedPath]);
+    let result = runGuard(root);
+    assert.equal(result.status, 0, result.stderr);
+
+    const changedBytes = Buffer.from(reviewedBytes);
+    changedBytes[changedBytes.length - 1] ^= 1;
+    writeBytes(root, reviewedPath, changedBytes);
+    result = runGuard(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /unreviewed_binary_content.*\[worktree\]/u);
+
+    git(root, ["add", reviewedPath]);
+    writeBytes(root, reviewedPath, reviewedBytes);
+    result = runGuard(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /unreviewed_binary_content.*\[index\]/u);
+
+    git(root, ["add", reviewedPath]);
+    writeBytes(root, "web/workspace/assets/fonts/unreviewed-copy.woff2", reviewedBytes);
+    result = runGuard(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /unreviewed_binary_content.*unreviewed-copy\.woff2.*\[untracked\]/u);
   });
 });

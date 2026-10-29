@@ -21,6 +21,9 @@ import {
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
+import { serveWorkspaceAsset } from "./staticWorkspace.js";
+import { createWorkspaceRepository } from "../repositories/workspaceRepository.js";
+import { getPublicResearchSummary, getPublicResearchSource } from "../repositories/publicResearchRepository.js";
 
 const M2_FIXTURE_TASKS_PATH = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 const M2_ADVISORY_SUMMARY_PATH = "/api/m2/fixture/advisory-reviews/summary";
@@ -46,7 +49,15 @@ function routeUrl(request) {
 
 export function createApp(config, options = {}) {
   const dbHealthChecker = options.dbHealthChecker ?? checkDatabaseHealth;
+  const workspace = createWorkspaceRepository({
+    listWorks: options.listWorks ?? listWorks,
+    getWorkById: options.getWorkById ?? getWorkById
+  });
   const repositories = {
+    getWorkspaceContext: options.getWorkspaceContext ?? workspace.getWorkspaceContext,
+    getWorkspaceOverview: options.getWorkspaceOverview ?? workspace.getWorkspaceOverview,
+    listWorkspaceWorks: options.listWorkspaceWorks ?? workspace.listWorkspaceWorks,
+    getWorkspaceWorkById: options.getWorkspaceWorkById ?? workspace.getWorkspaceWorkById,
     getSystemStatus: options.getSystemStatus ?? getSystemStatus,
     listWorks: options.listWorks ?? listWorks,
     getWorkById: options.getWorkById ?? getWorkById,
@@ -123,7 +134,44 @@ export function createApp(config, options = {}) {
     try {
       const url = routeUrl(request);
       const path = url.pathname;
+      if (await serveWorkspaceAsset(request, response, path)) {
+        return;
+      }
       if (await serveAdminAsset(request, response, path)) {
+        return;
+      }
+
+      if (request.method === "GET" && path === "/api/workspace/context") {
+        sendJson(response, 200, await repositories.getWorkspaceContext(config), requestId);
+        return;
+      }
+      if (request.method === "GET" && path === "/api/workspace/overview") {
+        sendJson(response, 200, await repositories.getWorkspaceOverview(config), requestId);
+        return;
+      }
+      if (request.method === "GET" && path === "/api/workspace/works") {
+        const pagination = parsePagination(url.searchParams);
+        const body = await repositories.listWorkspaceWorks(config, { pagination, searchParams: url.searchParams });
+        sendJson(response, 200, body, requestId);
+        return;
+      }
+      const workspaceWorkMatch = path.match(/^\/api\/workspace\/works\/([^/]+)$/);
+      if (request.method === "GET" && workspaceWorkMatch) {
+        const body = await repositories.getWorkspaceWorkById(config, decodeURIComponent(workspaceWorkMatch[1]));
+        if (!body) throw notFound("Workspace work");
+        sendJson(response, 200, body, requestId);
+        return;
+      }
+      if (request.method === "GET" && path === "/api/m2/public/research-summary") {
+        sendJson(response, 200, await getPublicResearchSummary(), requestId);
+        return;
+      }
+      const publicResearchSourceMatch = path.match(/^\/api\/m2\/public\/research-sources\/([^/]+)$/);
+      if (request.method === "GET" && publicResearchSourceMatch) {
+        const source = await getPublicResearchSource(decodeURIComponent(publicResearchSourceMatch[1]));
+        if (!source) throw notFound("Public research source");
+        response.writeHead(200, { "content-type": source.contentType, "cache-control": "no-store", "x-request-id": requestId });
+        response.end(source.body);
         return;
       }
 

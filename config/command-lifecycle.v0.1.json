@@ -14,6 +14,8 @@
     "doctor:dev",
     "lint",
     "build",
+    "dev:workspace",
+    "build:workspace",
     "test",
     "test:unit",
     "test:current-contract",

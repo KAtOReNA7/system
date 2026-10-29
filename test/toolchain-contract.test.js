@@ -210,7 +210,12 @@ test("build manifest imports public application composition without starting ser
 
   assert.equal(result.status, "PASS");
   assert.equal(result.requiredTrackedFileCount, 8);
-  assert.equal(result.importCheckCount, 3);
+  assert.equal(result.importCheckCount, 4);
+  const manifest = readJson("config/build-entrypoints.v0.1.json");
+  assert.deepEqual(
+    manifest.importChecks.find((entry) => entry.path === "src/http/staticWorkspace.js"),
+    { path: "src/http/staticWorkspace.js", requiredExports: ["serveWorkspaceAsset"] }
+  );
 });
 
 function successfulPythonProbe(executable, {
