@@ -182,7 +182,7 @@ function projectItem(item, dataset) {
   for (const key of ["classificationLevel1", "classificationLevel2", "classificationLevel3", "workSource", "rightsStartDate", "rightsEndDate", "firstSalesMonth", "productStatus"]) {
     if (Object.hasOwn(item, key)) result[key] = stringValue(item[key]);
   }
-  for (const key of ["rawWorkIds", "businessForms", "categoryPath"]) {
+  for (const key of ["rawWorkIds", "businessForms", "categoryPath", "billNames"]) {
     if (Object.hasOwn(item, key)) result[key] = stringList(item[key]);
   }
   if (item.fieldSources !== undefined) {

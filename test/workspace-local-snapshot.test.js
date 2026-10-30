@@ -112,6 +112,21 @@ function auditPayload(payload) {
   return value;
 }
 
+test("unconfirmed bill names remain searchable without inventing a standard name", async (t) => {
+  const fixture = await prepare(t);
+  fixture.payload.items[0].workName = null;
+  fixture.payload.items[0].billNames = ["合成账单甲名", "合成账单乙名"];
+  await fixture.save();
+  const repository = createWorkspaceRepository({ listWorks: () => { throw new Error("database fallback forbidden"); } });
+  const list = await repository.listWorkspaceWorks(fixture.config, { pagination: { page: 1, pageSize: 6 }, searchParams: new URLSearchParams({ search: "合成账单乙名" }) });
+  assert.equal(list.pagination.total, 1);
+  assert.equal(list.items[0].workName, null);
+  assert.deepEqual(list.items[0].billNames, ["合成账单甲名", "合成账单乙名"]);
+  const detail = await repository.getWorkspaceWorkById(fixture.config, list.items[0].id);
+  assert.equal(detail.item.workName, null);
+  assert.ok(detail.item.predictions.every((prediction) => prediction.pointEstimate === null));
+});
+
 async function saveAudit(root, payload, schema = "workspace.local-audit.v1") {
   const payloadJson = JSON.stringify(payload);
   await writeFile(join(root, "data/private-output/workspace/audit.json"), JSON.stringify({ schema, payloadJson, sha256: digest(payloadJson) }));

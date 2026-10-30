@@ -219,6 +219,7 @@ td { border-bottom:1px solid var(--line); padding:16px 12px 16px 0; height:75px;
 .audit-banner { background:#f3d4b9; color:var(--ink); padding-top:24px; padding-bottom:24px; }
 .audit-banner h2 { font-size:20px; margin-bottom:10px; }
 .audit-banner p { margin-bottom:8px; overflow-wrap:anywhere; }
+.bill-name-note { padding-top:20px; padding-bottom:20px; overflow-wrap:anywhere; background:var(--aluminium); }
 .metadata-grid dt { color:var(--muted); font-size:12px; }
 .metadata-grid dd { margin:8px 0 0; overflow-wrap:anywhere; }
 .cash-history-table { width:100%; margin-top:20px; }

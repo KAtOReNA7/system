@@ -34,13 +34,14 @@ export default function WorkDetail({ encodedId, back, dataset }) {
     <section className="hero section detail-hero"><a className="back-link" href={backHref}>← 返回作品库 / {work.syntheticOnly ? "合成作品档案" : "作品档案"}</a>
       <div className="detail-hero-grid"><figure className="detail-art"><Cover work={work} /><figcaption className="micro">{work.id} / {first ? "原创概念封面 · 非正式出版物" : work.syntheticOnly ? "合成演示作品" : "作品资料"}</figcaption></figure>
         <div className="detail-copy"><p className="micro">WORK {first ? "001 / FICTION" : "/ ARCHIVE"}</p><h1 className="display-title">{first ? <>SEA<br />LETTERS.</> : <>WORK<br />ARCHIVE.</>}</h1>
-          <h2 className="chinese-title">{work.workName ?? "作品名称未确认"}</h2><p className="hero-description">{work.authorName ?? "作者未确认"}{work.syntheticOnly ? " · 虚构作者" : ""} / {first ? "文学 · 中国文学 · 当代小说" : categories ?? "分类未确认"}</p>
+          <h2 className="chinese-title">{work.workName ?? work.billNames?.[0] ?? "作品名称未确认"}</h2><p className="hero-description">{work.authorName ?? "作者未确认"}{work.syntheticOnly ? " · 虚构作者" : ""} / {first ? "文学 · 中国文学 · 当代小说" : categories ?? "分类未确认"}</p>
           <div className="detail-facts"><div><strong>{formatNumber(work.completeBillMonths)}</strong><span>{local ? "已观察完整月" : "完整账单月"}</span></div><div><strong>{Number.isFinite(work.channelCount) ? String(work.channelCount).padStart(2,"0") : "—"}</strong><span>有记录渠道</span></div><div><strong>{work.cashType==="pure_buyout" ? "买断" : work.cashType==="mixed" ? "混合" : work.cashType==="sales_share" ? "分成" : "未接入"}</strong><span>现金类型</span></div></div>
           <p className="small fog">{work.dataStatus === "complete" ? "资料状态完整" : work.dataStatus === "unknown" ? "资料状态未接入" : "资料待核对"} · 服务范围仍需按预测起点判定。</p>
           <div className="actions"><Action href="#/research">查看研究口径 ↗</Action><Action href={backHref} variant="dark">返回作品库</Action></div>
         </div>
       </div>
     </section>
+    {!work.workName && work.billNames?.length > 0 && <p className="section bill-name-note">当前显示原账单识别名称，标准名称待确认。账单名称记录：{work.billNames.join("；")}</p>}
     <section className="section summary-band detail-summary"><SourceNote dataset={actualDataset}>{work.syntheticOnly ? "作品身份、历史现金与渠道均为合成样例；当前未生成任何正式预测。" : local ? actualDataset.cashDefinitionLabelZh : "正式只读资料；历史分成现金与渠道尚未接入，当前未生成正式预测。"}</SourceNote>
       <div className="detail-summary-grid"><div><p className="number">{displayCash(work.salesShareCash12Months)}</p><p className="small muted">{actualDataset.kind === "RAW_LEDGER_AUDIT" ? "近 12 月原始分成记录 · 待核对" : local ? "近 12 月已记录分成现金" : "近 12 个月分成现金"} / 买断不计入</p>{work.cashCoverage && <p className="small muted">已观察 {work.cashCoverage.observedMonths} / {work.cashCoverage.expectedMonths} 个月；缺月不补零。金额单位沿用原账单，币种未提供。</p>}</div><div><h3>账单来源 / {work.cashType === "pure_buyout" ? "买断审计资料" + (work.syntheticOnly ? "（合成示例）" : "") : work.syntheticOnly ? "人工拆分的分成账单（合成示例）" : local ? "人工拆分的分成账单" : "尚未接入现金类型权威"}</h3>
         <p className="small muted">{work.channels?.length ? work.channels.map(c=>c.name).join(" · ") : "渠道未提供"} / 截至 {formatMonth(actualDataset.cutoffMonth)}</p><p className="small muted">成熟作品与已有渠道的资格，需要在同一预测起点判断。</p></div></div>

@@ -20,8 +20,8 @@ export default function Home({ dataset, research }) {
       <SourceNote dataset={actualDataset} />
       {resource.loading || resource.error ? <StatePanel resource={resource} /> : <div className="stats-grid">
         {[
-          ["作品总数", formatNumber(summary.workCount), actualDataset.syntheticOnly ? "演示目录" : "正式只读目录"],
-          ["完整账单作品", formatNumber(summary.completeBillWorkCount), "至少 3 个完整月，不等于预测资格"],
+          ["作品总数", formatNumber(summary.workCount), actualDataset.syntheticOnly ? "演示目录" : actualDataset.kind === "RAW_LEDGER_AUDIT" ? "本地原始档案" : "本地只读目录"],
+          [actualDataset.syntheticOnly ? "完整账单作品" : "已观察满 3 月", formatNumber(summary.completeBillWorkCount), "截至完整月有账单记录，不等于预测资格"],
           ["待核对作品", Number.isFinite(summary.needsReviewCount) ? String(summary.needsReviewCount).padStart(2,"0") : "—", "按作品计数，详见各档案的问题清单"],
           ["最近完整月", formatMonth(actualDataset.cutoffMonth), actualDataset.syntheticOnly ? "示例账单范围" : actualDataset.cutoffMonth ? "账单最大月 " + formatMonth(actualDataset.billMaxMonth) : "待完整月权威接入"]
         ].map(([label,value,note]) => <div className="stat" key={label}><p>{label}</p><p className="number">{value}</p><p>{note}</p></div>)}

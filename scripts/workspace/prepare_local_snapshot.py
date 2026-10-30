@@ -21,7 +21,7 @@ sys.dont_write_bytecode = True
 for relative in ["tools/m2-calibration", "tools/m1-master-data-analysis", "scripts/m2-real-data", "scripts/m2-current"]:
     sys.path.insert(0, str(ROOT / relative))
 
-from human_ledger_partition import discover_partition_sources, validate_partition, _load_raw, _row_counter, _type_values, _monthly, _month_text, _amount_decimal, _clean_text  # noqa: E402
+from human_ledger_partition import discover_partition_sources, validate_partition, _load_raw, _row_counter, _type_values, _month_text, _amount_decimal, _clean_text  # noqa: E402
 from calibrate_cleaned_bills import REAL_BILL_COLUMNS, parse_month  # noqa: E402
 from work_id_rules import parse_raw_work_id  # noqa: E402
 from run_cleaned_ledger_minimal_backfill_v3 import read_shared_strings, read_sheet_rows, workbook_sheets, parse_date_value  # noqa: E402
@@ -250,8 +250,11 @@ def read_unreconciled_audit(sources):
         reconciliation[key] = dict(sorted(counts.items()))
     locations = defaultdict(list)
     seen = Counter()
+    extra_raw_ids = {row[4] for row in extra}
     for key, path in [("salesShare", sources.sales_share), ("buyout", sources.buyout)]:
         for position, values in enumerate(frames[key][REAL_BILL_COLUMNS].itertuples(index=False, name=None)):
+            if _clean_text(values[4]) not in extra_raw_ids:
+                continue
             row = tuple(_month_text(value) if column == "年月" else _amount_decimal(value) if column == "实销金额" else _clean_text(value) for column, value in zip(REAL_BILL_COLUMNS, values))
             if row not in extra:
                 continue
@@ -261,7 +264,15 @@ def read_unreconciled_audit(sources):
                 if identity.valid:
                     locations[identity.standard_id].append({"sourceLabel": f"{path.name} 第{position + 2}行", "month": row[0]})
     reconciliation["extraLocationsByWork"] = dict(locations)
-    monthly = {key: _monthly(frame) for key, frame in frames.items()}
+    # The canonical row multiset already contains normalized months and Decimal cash.
+    # Reuse it instead of repeatedly parsing hundreds of thousands of source dates.
+    monthly = {}
+    for key, counter in counters.items():
+        cells = defaultdict(lambda: {"rowCount": 0, "amount": Decimal(0)})
+        for row, multiplicity in counter.items():
+            cells[row[0]]["rowCount"] += multiplicity
+            cells[row[0]]["amount"] += row[6] * multiplicity
+        monthly[key] = dict(cells)
     months = set().union(*(set(values) for values in monthly.values()))
     def conserved(field, month):
         cells = {key: values.get(month, {"rowCount": 0, "amount": Decimal(0)}) for key, values in monthly.items()}
@@ -360,7 +371,7 @@ def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cu
         channels = [{**channel, "amount": float(channel["amount"]) if channel["amount"] is not None else None} for channel in work["channels"].values()]
         review_reason = "部分渠道映射待确认" if "CHANNEL_MAPPING_MISSING" in work["issues"] else None
         items.append({
-            "id": work_id, "standardWorkId": work_id, "workName": name, **fields,
+            "id": work_id, "standardWorkId": work_id, "workName": name, "billNames": sorted(work["names"]), **fields,
             "category": fields["classificationLevel1"], "categoryPath": [fields[f"classificationLevel{i}"] for i in [1, 2, 3] if fields[f"classificationLevel{i}"] is not None],
             "completeBillMonths": complete_months, "channelCount": len(channels), "salesShareCash12Months": float(total) if total is not None else None,
             "cashCoverage": {"observedMonths": len(observed), "expectedMonths": 12}, "cashType": cash_type,

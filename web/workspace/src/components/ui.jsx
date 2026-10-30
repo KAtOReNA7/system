@@ -37,15 +37,15 @@ export function Cover({ work, compact = false }) {
   const bright = work?.id === "DEMO-W003";
   return <div className={"type-cover" + (bright ? " type-cover--signal" : "") + (compact ? " type-cover--compact" : "")}>
     <span className="micro">{work?.syntheticOnly ? "DEMO / AUDIOBOOK" : "WORK / ARCHIVE"}</span>
-    <div><strong>{work?.workName ?? "作品资料未接入"}</strong><span className="eng-label">{englishTitles[work?.id] ?? "THE CATALOG."}</span></div>
-    {!compact && <span className="cover-number">{work?.id?.replace(/^DEMO-W/, "").replace(/^0/, "") || "—"}</span>}
+    <div><strong>{work?.workName ?? work?.billNames?.[0] ?? "名称待确认"}</strong><span className="eng-label">{englishTitles[work?.id] ?? "THE CATALOG."}</span></div>
+    {!compact && <span className="cover-number">{(work?.syntheticOnly ? work.id?.replace(/^DEMO-W/, "").replace(/^0/, "") : work?.id) || "—"}</span>}
   </div>;
 }
 export function WorkTile({ work }) {
   return <a className="work-tile" href={detailHref(work.id)}>
     <Cover work={work} compact />
     <div className="work-tile-body"><span className="micro muted">{work.syntheticOnly ? "SYNTHETIC / DEMO" : "WORK / ARCHIVE"}</span>
-      <h3>{work.workName ?? work.id}</h3><p className="small muted">近 12 月{work.syntheticOnly ? "" : "已记录"}分成现金</p><p className="number-small">{work.syntheticOnly ? formatCash(work.salesShareCash12Months) : formatNumber(work.salesShareCash12Months)}</p><span>查看详情 ↗</span></div>
+      <h3>{work.workName ?? work.billNames?.[0] ?? work.id}</h3>{!work.workName && work.billNames?.length > 0 && <p className="small muted">账单识别名 · 待确认</p>}<p className="small muted">近 12 月{work.syntheticOnly ? "" : "已记录"}分成现金</p><p className="number-small">{work.syntheticOnly ? formatCash(work.salesShareCash12Months) : formatNumber(work.salesShareCash12Months)}</p><span>查看详情 ↗</span></div>
   </a>;
 }
 export function Footer({ children, path = "/" }) {

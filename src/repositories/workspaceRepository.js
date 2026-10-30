@@ -47,7 +47,7 @@ export function workspaceList(items, dataset, { pagination, searchParams }) {
   const filters = parseWorkspaceFilters(searchParams);
   const needle = filters.search.toLocaleLowerCase("zh-CN");
   const filtered = items.filter((item) =>
-    (!needle || [item.id, item.workName, item.authorName].some((value) => String(value ?? "").toLocaleLowerCase("zh-CN").includes(needle))) &&
+    (!needle || [item.id, item.workName, item.authorName, ...(item.billNames ?? [])].some((value) => String(value ?? "").toLocaleLowerCase("zh-CN").includes(needle))) &&
     (!filters.category || (item.category ?? "unknown") === filters.category) &&
     (!filters.dataStatus || item.dataStatus === filters.dataStatus) &&
     (!filters.businessStatus || item.businessStatus === filters.businessStatus)

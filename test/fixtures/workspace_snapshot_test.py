@@ -114,6 +114,7 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         self.assertEqual(items["100"]["rawWorkIds"], ["100", "Y100"])
         self.assertEqual(set(items["100"]["businessForms"]), {"有声版权", "有声成品"})
         self.assertEqual(items["100"]["workName"], "测试甲")
+        self.assertEqual(items["100"]["billNames"], ["测试甲"])
         self.assertEqual(items["100"]["authorName"], "测试作者")
         self.assertEqual(items["100"]["categoryPath"], ["出版物", "小说", "外国小说"])
         self.assertEqual(items["100"]["rightsEndDate"], "2030-12-31")
