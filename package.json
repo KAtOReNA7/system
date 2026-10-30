@@ -332,6 +332,7 @@
     "m2:v2:pr7:b8:readonly-proof": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b8_readonly_proof.mjs",
     "build:workspace": "vite build --config vite.config.mjs",
     "dev:workspace": "vite --config vite.config.mjs",
+    "workspace:reconcile:local": "node scripts/run-codex-python.mjs scripts/workspace/reconcile_local_ledgers.py",
     "workspace:prepare:local": "node scripts/run-codex-python.mjs scripts/workspace/prepare_local_snapshot.py",
     "workspace:audit:local": "node scripts/run-codex-python.mjs scripts/workspace/prepare_local_snapshot.py --audit-unreconciled"
   },

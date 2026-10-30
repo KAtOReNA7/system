@@ -8,7 +8,7 @@ import test from "node:test";
 import { loadConfig } from "../src/config.js";
 import { createApp } from "../src/http/app.js";
 import { createFixtureApp } from "../src/http/fixtureApp.js";
-import { createWorkspaceLocalSnapshotLoader } from "../src/repositories/workspaceLocalSnapshot.js";
+import { createWorkspaceLocalSnapshotLoader, getWorkspaceImplementationIdentity } from "../src/repositories/workspaceLocalSnapshot.js";
 import { createWorkspaceRepository } from "../src/repositories/workspaceRepository.js";
 import { listenOnFetchSafePort } from "./helpers/listenOnFetchSafePort.js";
 
@@ -67,6 +67,7 @@ async function prepare(t) {
   const mappingDirectoryInfo = await stat(join(root, "data/mapping-candidates"), { bigint: true });
   const payload = {
     generatedAt: "2026-10-30T00:00:00Z",
+    implementation: await getWorkspaceImplementationIdentity(),
     dataset: {
       mode: "formal", source: "local-reviewed-ledger-snapshot", syntheticOnly: false,
       notForFormalDecision: true, cashAuthorityVerified: true,
@@ -103,6 +104,28 @@ async function withApp(app, callback) {
     await new Promise((resolvePromise) => server.close(resolvePromise));
   }
 }
+
+test("snapshots created by missing or changed validation implementations must be rebuilt", async (t) => {
+  const fixture = await prepare(t);
+  const load = createWorkspaceLocalSnapshotLoader();
+  for (const change of [
+    (payload) => { delete payload.implementation; },
+    (payload) => { payload.implementation.ledgerValidationVersion = "old-validation"; },
+    (payload) => { payload.implementation.files["tools/m2-calibration/human_ledger_partition.py"] = "0".repeat(64); }
+  ]) {
+    const value = structuredClone(fixture.payload);
+    change(value);
+    await fixture.save(value);
+    await assert.rejects(load(fixture.config), { code: "workspace_snapshot_stale" });
+  }
+  const badPath = structuredClone(fixture.payload);
+  delete badPath.implementation.files["tools/m2-calibration/human_ledger_partition.py"];
+  badPath.implementation.files["../../private.txt"] = "0".repeat(64);
+  await fixture.save(badPath);
+  await assert.rejects(load(fixture.config), { code: "workspace_snapshot_invalid" });
+  await fixture.save();
+  assert.equal((await load(fixture.config)).items.length, 3);
+});
 
 function auditPayload(payload) {
   const value = structuredClone(payload);

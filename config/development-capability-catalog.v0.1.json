@@ -9,6 +9,19 @@
   },
   "capabilities": [
     {
+      "id": "workspace-ledger-reconciliation",
+      "description": "Read-only reconciliation of the human-reviewed total, sales-share and buyout workbooks. Writes only private derived diagnostics, never imports, source edits, cash classification, models or database operations.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        { "role": "total-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -总.xlsx" },
+        { "role": "sales-share-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -分成.xlsx" },
+        { "role": "buyout-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -买断.xlsx" }
+      ],
+      "canonicalValidationCommands": ["npm run workspace:reconcile:local"],
+      "recovery": "Restore only missing authoritative ledgers from the user's private source root. Diagnostics are rebuildable private cache, not source authority or a prerequisite. A disagreement remains blocked until supported business decisions are applied to a new reviewed source version and all seven checks are rerun."
+    },
+    {
       "id": "workspace-local-readonly",
       "description": "Prepare and browse a user-authorized local read-only work and bill snapshot. Does not activate imports, candidate mappings, models, database connections or production.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",

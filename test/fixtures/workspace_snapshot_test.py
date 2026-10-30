@@ -3,6 +3,7 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -15,6 +16,7 @@ from openpyxl import Workbook, load_workbook
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/workspace"))
 import prepare_local_snapshot as snapshot  # noqa: E402
+import reconcile_local_ledgers as reconcile  # noqa: E402
 
 
 def workbook(path, headers, rows, sheet_name="Sheet1", header_row=1):
@@ -149,6 +151,7 @@ class WorkspaceSnapshotTests(unittest.TestCase):
 
     def test_authority_checks_and_every_read_source_are_bound(self):
         payload = self.prepare()
+        self.assertEqual(payload["implementation"], snapshot.implementation_metadata())
         self.assertEqual(len(payload["authorityChecks"]), 7)
         self.assertTrue(all(payload["authorityChecks"].values()))
         self.assertEqual(len(payload["sourceDirectories"]), 5)
@@ -215,7 +218,7 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         envelope = json.loads((self.root / snapshot.AUDIT_OUTPUT).read_text(encoding="utf-8"))
         self.assertEqual(envelope["schema"], "workspace.local-audit.v1")
         payload = json.loads(envelope["payloadJson"])
-        self.assertEqual(payload["reconciliation"], {"missingRowCount": 0, "extraRowCount": 1, "missingByMonth": {}, "extraByMonth": {"2026-05": 1}})
+        self.assertEqual(payload["reconciliation"], {"missingRowCount": 0, "extraRowCount": 1, "missingByMonth": {}, "extraByMonth": {"2026-05": 1}, "amountSplitMinusTotal": "17", "byMonth": {"2026-05": {"rowCountSplitMinusTotal": 1, "amountSplitMinusTotal": "17"}}})
         self.assertFalse(payload["dataset"]["cashAuthorityVerified"])
         self.assertEqual(payload["dataset"]["kind"], "RAW_LEDGER_AUDIT")
         self.assertFalse(payload["authorityChecks"]["amountConserved"])
@@ -235,6 +238,79 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         with self.assertRaisesRegex(snapshot.SnapshotError, "AUDIT_SPLIT_TYPE_NOT_PURE"):
             snapshot.prepare(self.root, audit_unreconciled=True)
         self.assertFalse((self.root / snapshot.AUDIT_OUTPUT).exists())
+
+    def test_config_is_fingerprinted_before_it_is_consumed(self):
+        self.prepare()
+        previous = (self.root / snapshot.OUTPUT).read_bytes()
+        original = snapshot.source_metadata
+        changed = False
+        def changing_metadata(root, relative):
+            nonlocal changed
+            if not changed:
+                changed = True
+                contract_path = root / snapshot.CHANNEL
+                contract = json.loads(contract_path.read_text(encoding="utf-8"))
+                contract["dataContract"]["latestCompleteMonth"] = "2026-03"
+                contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            return original(root, relative)
+        with patch.object(snapshot, "source_metadata", changing_metadata):
+            with self.assertRaisesRegex(snapshot.SnapshotError, "COMPLETE_MONTH_AUTHORITY_DIFFERS"):
+                snapshot.prepare(self.root)
+        self.assertEqual((self.root / snapshot.OUTPUT).read_bytes(), previous)
+
+    def test_reconciliation_retains_business_keys_amounts_sources_and_original_files(self):
+        source = self.root / "data/real-bills/渠道实销汇总 -分成.xlsx"
+        book = load_workbook(source)
+        book.active.append(["2026-04", "1", "示例甲渠道", "音频", "Y100", "测试甲", 17, "分成"])
+        extra_row = book.active.max_row
+        book.save(source)
+        book.close()
+        sources = snapshot.discover_partition_sources(self.root / "data")
+        before = {path: snapshot.digest(path) for path in sources.all()}
+        report = reconcile.reconcile(self.root)
+        self.assertEqual(report["status"], "RECONCILIATION_REQUIRED")
+        self.assertEqual(report["extraRowCount"], 1)
+        self.assertEqual(report["differenceRows"][0]["allMatchingSourceRows"], {"salesShare": [extra_row]})
+        self.assertIsNone(report["differenceRows"][0]["businessDecision"])
+        group = report["sameSixFieldGroups"][0]
+        self.assertEqual(len(group["sourceRows"]["totalLedger"]), 1)
+        self.assertEqual(len(group["sourceRows"]["salesShare"]), 2)
+        self.assertEqual({path: snapshot.digest(path) for path in sources.all()}, before)
+        target = self.root / reconcile.OUTPUT_DIRECTORY / "current.json"
+        old_report = target.read_bytes()
+        source.unlink()
+        with self.assertRaises(Exception):
+            reconcile.reconcile(self.root)
+        self.assertEqual(target.read_bytes(), old_report)
+
+    def test_missing_total_record_is_retained_as_an_unclassified_issue(self):
+        source = self.root / "data/real-bills/渠道实销汇总 -总.xlsx"
+        book = load_workbook(source)
+        book.active.append(["2026-04", "1", "示例甲渠道", "音频", "100", "测试甲", 19, ""])
+        missing_row = book.active.max_row
+        book.save(source)
+        book.close()
+        snapshot.prepare(self.root, audit_unreconciled=True)
+        envelope = json.loads((self.root / snapshot.AUDIT_OUTPUT).read_text(encoding="utf-8"))
+        payload = json.loads(envelope["payloadJson"])
+        item = next(row for row in payload["items"] if row["id"] == "100")
+        issue = next(row for row in item["qualityIssues"] if row["code"] == "TOTAL_RECORD_NOT_IN_SPLIT_LEDGER")
+        self.assertTrue(issue["sourceLabel"].endswith(f"第{missing_row}行"))
+        self.assertEqual(payload["reconciliation"]["missingRowCount"], 1)
+        self.assertEqual(payload["reconciliation"]["amountSplitMinusTotal"], "-19")
+
+    def test_private_reconciliation_output_cannot_be_redirected_into_public_directory(self):
+        public = self.root / "public"
+        public.mkdir()
+        output = self.root / reconcile.OUTPUT_DIRECTORY
+        output.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.symlink(public, output, target_is_directory=True)
+        except OSError as error:
+            self.skipTest(f"Directory symlink unavailable: {error.__class__.__name__}")
+        with self.assertRaisesRegex(ValueError, "OUTPUT_OUTSIDE_PRIVATE_DIRECTORY"):
+            reconcile.reconcile(self.root)
+        self.assertEqual(list(public.iterdir()), [])
 
     def test_uncontrolled_foundation_classification_cannot_fall_back_to_older_sources(self):
         book = load_workbook(self.root / snapshot.FOUNDATION)

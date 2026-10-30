@@ -21,7 +21,7 @@ sys.dont_write_bytecode = True
 for relative in ["tools/m2-calibration", "tools/m1-master-data-analysis", "scripts/m2-real-data", "scripts/m2-current"]:
     sys.path.insert(0, str(ROOT / relative))
 
-from human_ledger_partition import discover_partition_sources, validate_partition, _load_raw, _row_counter, _type_values, _month_text, _amount_decimal, _clean_text  # noqa: E402
+from human_ledger_partition import discover_partition_sources, validate_partition, analyze_partition, PARTITION_VALIDATION_VERSION  # noqa: E402
 from calibrate_cleaned_bills import REAL_BILL_COLUMNS, parse_month  # noqa: E402
 from work_id_rules import parse_raw_work_id  # noqa: E402
 from run_cleaned_ledger_minimal_backfill_v3 import read_shared_strings, read_sheet_rows, workbook_sheets, parse_date_value  # noqa: E402
@@ -40,6 +40,7 @@ CHANNEL_BOOK = "data/private-output/outputs/channel-governance-20260726/M2-渠�
 MASTER_BOOKS = ["数字版权台账.xlsx", "原创全库2.xlsx", "授权汇总台账.xlsx", "授权关系仪表板.xlsx"]
 OUTPUT = "data/private-output/workspace/current.json"
 AUDIT_OUTPUT = "data/private-output/workspace/audit.json"
+IMPLEMENTATION_FILES = ["scripts/workspace/prepare_local_snapshot.py", "tools/m2-calibration/human_ledger_partition.py"]
 
 
 class SnapshotError(RuntimeError):
@@ -56,6 +57,11 @@ def clean(value):
 def digest(path):
     with path.open("rb") as handle:
         return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+def implementation_metadata():
+    return {"ledgerValidationVersion": PARTITION_VALIDATION_VERSION,
+            "files": {relative: digest(ROOT / relative) for relative in IMPLEMENTATION_FILES}}
 
 
 def source_metadata(root, relative):
@@ -221,25 +227,16 @@ def read_channels(root, config):
 
 def read_unreconciled_audit(sources):
     """Explicit audit profile: inspect actual discrepancies without weakening strict validation."""
-    frames = {key: _load_raw(path, REAL_BILL_COLUMNS) for key, path in zip(["totalLedger", "salesShare", "buyout"], sources.all())}
-    if _type_values(frames["salesShare"]) != {"分成"} or _type_values(frames["buyout"]) != {"买断"} or not _type_values(frames["totalLedger"]).issubset({"", "买断"}):
+    frames, analysis = analyze_partition(sources, REAL_BILL_COLUMNS)
+    checks = analysis["checks"]
+    if not checks["schema_equal"]:
+        raise SnapshotError("AUDIT_SCHEMA_NOT_EQUAL")
+    if not checks["split_type_pure"]:
         raise SnapshotError("AUDIT_SPLIT_TYPE_NOT_PURE")
-    for frame in frames.values():
-        for month, value in zip(frame["年月"], frame["实销金额"]):
-            parsed_month = parse_month(month)
-            if not parsed_month or not re.fullmatch(r"\d{4}-(?:0[1-9]|1[0-2])", parsed_month):
-                raise SnapshotError("INVALID_BILL_MONTH")
-            try:
-                amount = Decimal(str(value))
-            except (InvalidOperation, ValueError):
-                raise SnapshotError("INVALID_BILL_AMOUNT") from None
-            if not amount.is_finite():
-                raise SnapshotError("INVALID_BILL_AMOUNT")
-    counters = {key: _row_counter(frame, REAL_BILL_COLUMNS) for key, frame in frames.items()}
-    if counters["salesShare"].keys() & counters["buyout"].keys():
+    if not checks["no_split_overlap"]:
         raise SnapshotError("AUDIT_SPLIT_OVERLAP")
-    combined = counters["salesShare"] + counters["buyout"]
-    missing, extra = counters["totalLedger"] - combined, combined - counters["totalLedger"]
+    counters = analysis["rowCounters"]
+    missing, extra = analysis["missingRows"], analysis["extraRows"]
     reconciliation = {"missingRowCount": sum(missing.values()), "extraRowCount": sum(extra.values())}
     if not any(reconciliation.values()):
         raise SnapshotError("AUDIT_REQUIRES_RECONCILIATION_DIFFERENCE")
@@ -248,41 +245,29 @@ def read_unreconciled_audit(sources):
         for row, count in counter.items():
             counts[row[0]] += count
         reconciliation[key] = dict(sorted(counts.items()))
-    locations = defaultdict(list)
-    seen = Counter()
-    extra_raw_ids = {row[4] for row in extra}
-    for key, path in [("salesShare", sources.sales_share), ("buyout", sources.buyout)]:
-        for position, values in enumerate(frames[key][REAL_BILL_COLUMNS].itertuples(index=False, name=None)):
-            if _clean_text(values[4]) not in extra_raw_ids:
-                continue
-            row = tuple(_month_text(value) if column == "年月" else _amount_decimal(value) if column == "实销金额" else _clean_text(value) for column, value in zip(REAL_BILL_COLUMNS, values))
-            if row not in extra:
-                continue
-            seen[row] += 1
-            if seen[row] > counters["totalLedger"][row]:
-                identity = parse_raw_work_id(clean(row[4]))
-                if identity.valid:
-                    locations[identity.standard_id].append({"sourceLabel": f"{path.name} 第{position + 2}行", "month": row[0]})
-    reconciliation["extraLocationsByWork"] = dict(locations)
-    # The canonical row multiset already contains normalized months and Decimal cash.
-    # Reuse it instead of repeatedly parsing hundreds of thousands of source dates.
-    monthly = {}
-    for key, counter in counters.items():
-        cells = defaultdict(lambda: {"rowCount": 0, "amount": Decimal(0)})
-        for row, multiplicity in counter.items():
-            cells[row[0]]["rowCount"] += multiplicity
-            cells[row[0]]["amount"] += row[6] * multiplicity
-        monthly[key] = dict(cells)
-    months = set().union(*(set(values) for values in monthly.values()))
-    def conserved(field, month):
-        cells = {key: values.get(month, {"rowCount": 0, "amount": Decimal(0)}) for key, values in monthly.items()}
-        return cells["totalLedger"][field] == cells["salesShare"][field] + cells["buyout"][field]
-    amounts = {key: sum((cell["amount"] for cell in values.values()), Decimal(0)) for key, values in monthly.items()}
-    checks = {"schemaEqual": True, "splitTypePure": True, "noSplitOverlap": True, "rowMultisetConserved": False,
-              "amountConserved": amounts["totalLedger"] == amounts["salesShare"] + amounts["buyout"],
-              "monthlyRowCountConserved": all(conserved("rowCount", month) for month in months),
-              "monthlyAmountConserved": all(conserved("amount", month) for month in months)}
-    return frames, checks, reconciliation
+    for label, roles, difference, reference in [
+        ("extra", [("salesShare", sources.sales_share), ("buyout", sources.buyout)], extra, counters["totalLedger"]),
+        ("missing", [("totalLedger", sources.total_ledger)], missing, counters["salesShare"] + counters["buyout"]),
+    ]:
+        locations = defaultdict(list)
+        seen = Counter()
+        for key, path in roles:
+            for source in analysis["sourceRows"][key]:
+                row = source["signature"]
+                if row not in difference:
+                    continue
+                seen[row] += 1
+                if seen[row] > reference[row]:
+                    identity = parse_raw_work_id(clean(row[4]))
+                    if identity.valid:
+                        locations[identity.standard_id].append({"sourceLabel": f"{path.name} 第{source['rowNumber']}行", "month": row[0]})
+        reconciliation[label + "LocationsByWork"] = dict(locations)
+    reconciliation["amountSplitMinusTotal"] = format(analysis["differences"]["amountSplitMinusTotal"], "f")
+    reconciliation["byMonth"] = {month: {key: format(value, "f") if isinstance(value, Decimal) else value for key, value in cell.items()}
+                                 for month, cell in analysis["differences"]["byMonth"].items() if any(cell.values())}
+    camel_names = ["schemaEqual", "splitTypePure", "noSplitOverlap", "rowMultisetConserved", "amountConserved", "monthlyRowCountConserved", "monthlyAmountConserved"]
+    snake_names = ["schema_equal", "split_type_pure", "no_split_overlap", "row_multiset_conserved", "amount_conserved", "monthly_row_count_conserved", "monthly_amount_conserved"]
+    return frames, {camel: checks[snake] for camel, snake in zip(camel_names, snake_names)}, reconciliation
 
 
 def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cutoff):
@@ -390,6 +375,8 @@ def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cu
 
 def prepare(source_root, audit_unreconciled=False):
     root = Path(source_root).resolve(strict=True)
+    implementation_before = implementation_metadata()
+    early_sources = {relative: source_metadata(root, relative) for relative in [PARTITION, CHANNEL, PRD]}
     partition = json.loads((root / PARTITION).read_text(encoding="utf-8"))
     contract = json.loads((root / CHANNEL).read_text(encoding="utf-8"))
     cutoff = contract["dataContract"]["latestCompleteMonth"]
@@ -398,7 +385,7 @@ def prepare(source_root, audit_unreconciled=False):
         raise SnapshotError("COMPLETE_MONTH_AUTHORITY_DIFFERS")
     ledger_sources = discover_partition_sources(root / "data", partition)
     relatives = [PARTITION, CHANNEL, PRD, WORK_PRD, CLASS_PRD, TAXONOMY, FOUNDATION_CONFIRMATION, FOUNDATION, MAPPING, CHANNEL_BOOK, *[p.relative_to(root).as_posix() for p in ledger_sources.all()], *["data/master-data/" + name for name in MASTER_BOOKS]]
-    before = [source_metadata(root, relative) for relative in relatives]
+    before = [early_sources[relative] if relative in early_sources else source_metadata(root, relative) for relative in relatives]
     directory_paths = ["data/master-data", "data/m1-master-data-private/mapping-candidate", "data/real-bills", "data/private-output/outputs/channel-governance-20260726", "data/private-output/m2-readiness"]
     directory_before = [directory_metadata(root, relative) for relative in directory_paths]
     reconciliation = None
@@ -416,15 +403,18 @@ def prepare(source_root, audit_unreconciled=False):
     items, bill_max = build_items(frames, masters, provenance, channels, pending, cutoff)
     if audit_unreconciled:
         extra_locations = reconciliation.pop("extraLocationsByWork")
+        missing_locations = reconciliation.pop("missingLocationsByWork")
         for item in items:
             item["qualityIssues"].insert(0, issue("LEDGER_RECONCILIATION_REQUIRED", "三账本记录尚未对齐，当前为原始账单核对档案，金额不用于正式财务或评估。", "cash", "原始账单核对"))
             item["dataStatus"] = "needs_review"
             item["notices"].insert(0, "原始账单核对模式：逐行或金额守恒未通过，不代表已验证现金权威。")
             for location in extra_locations.get(item["id"], []):
                 item["qualityIssues"].append(issue("SPLIT_RECORD_NOT_IN_TOTAL_LEDGER", f"{location['month']}的此条拆分账单记录未在总账中找到对应记录，请核对原文件。", "cash", location["sourceLabel"]))
+            for location in missing_locations.get(item["id"], []):
+                item["qualityIssues"].append(issue("TOTAL_RECORD_NOT_IN_SPLIT_LEDGER", f"{location['month']}的此条总账记录未在人工拆分账单中找到对应记录，现金类型未由程序推断。", "cash", location["sourceLabel"]))
     after = [source_metadata(root, relative) for relative in relatives]
     directory_after = [directory_metadata(root, relative) for relative in directory_paths]
-    if before != after or directory_before != directory_after:
+    if before != after or directory_before != directory_after or implementation_before != implementation_metadata():
         raise SnapshotError("SOURCE_CHANGED_DURING_READ")
     roles = {PARTITION: "ledger-partition-contract", CHANNEL: "canonical-channel-contract", PRD: "complete-month-authority", WORK_PRD: "work-master-contract", CLASS_PRD: "classification-contract", TAXONOMY: "controlled-classification-tree", FOUNDATION_CONFIRMATION: "classification-confirmation", FOUNDATION: "user-confirmed-classification-foundation", MAPPING: "pending-work-mapping", CHANNEL_BOOK: "user-reviewed-channel-master"}
     for path, role in zip(ledger_sources.all(), ["total-ledger-authority", "sales-share-ledger-authority", "buyout-ledger-authority"]):
@@ -440,7 +430,7 @@ def prepare(source_root, audit_unreconciled=False):
     if audit_unreconciled:
         dataset.update({"kind": "RAW_LEDGER_AUDIT", "sourceStatus": "RECONCILIATION_REQUIRED", "cashAuthorityVerified": False,
                         "sourceLabelZh": "原始账单核对·只读", "cashDefinitionLabelZh": "原始分成账单记录，三账本尚未对齐，金额待核对，不用于正式财务或评估。近12月仅累加已记录月份，缺月不补零；单位沿用原账单，币种未提供。"})
-    payload = {"generatedAt": datetime.now(timezone.utc).isoformat(), "dataset": dataset, "sources": after, "sourceDirectories": directory_after, "authorityChecks": authority_checks, "items": items}
+    payload = {"generatedAt": datetime.now(timezone.utc).isoformat(), "implementation": implementation_before, "dataset": dataset, "sources": after, "sourceDirectories": directory_after, "authorityChecks": authority_checks, "items": items}
     if reconciliation is not None:
         payload["reconciliation"] = reconciliation
     payload_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False)

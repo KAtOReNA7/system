@@ -8,6 +8,7 @@ import { after, before, test } from "node:test";
 import { chromium } from "playwright";
 import { loadConfig } from "../../src/config.js";
 import { createApp } from "../../src/http/app.js";
+import { getWorkspaceImplementationIdentity } from "../../src/repositories/workspaceLocalSnapshot.js";
 import { getPublicResearchSummary } from "../../src/repositories/publicResearchRepository.js";
 import { listenOnFetchSafePort } from "../helpers/listenOnFetchSafePort.js";
 
@@ -71,6 +72,7 @@ function syntheticWork(index) {
 }
 
 async function saveSnapshot(root, payload, { mode = "local_snapshot", schema } = {}) {
+  payload.implementation ??= await getWorkspaceImplementationIdentity();
   const payloadJson = JSON.stringify(payload);
   const filename = mode === "local_audit" ? "audit.json" : "current.json";
   await writeFile(join(root, "data/private-output/workspace", filename), JSON.stringify({

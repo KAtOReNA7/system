@@ -19,6 +19,25 @@ const CASH_TYPES = new Set(["pure_buyout", "sales_share", "mixed"]);
 const OBSERVATIONS = new Set(["OBSERVED_POSTING", "NOT_OBSERVED", "OUTSIDE_SCOPE"]);
 const AUTHORITY_CHECKS = ["schemaEqual", "splitTypePure", "noSplitOverlap", "rowMultisetConserved", "amountConserved", "monthlyRowCountConserved", "monthlyAmountConserved"];
 const SOURCE_ROLES = ["total-ledger-authority", "sales-share-ledger-authority", "buyout-ledger-authority", "user-reviewed-channel-master"];
+const IMPLEMENTATION_FILES = ["scripts/workspace/prepare_local_snapshot.py", "tools/m2-calibration/human_ledger_partition.py"];
+
+export async function getWorkspaceImplementationIdentity() {
+  return {
+    ledgerValidationVersion: "human-ledger-partition.v0.2",
+    files: Object.fromEntries(await Promise.all(IMPLEMENTATION_FILES.map(async (path) => [path, await hashFile(resolve(REPOSITORY_ROOT, path))])))
+  };
+}
+
+async function validateImplementation(implementation) {
+  if (implementation?.ledgerValidationVersion !== "human-ledger-partition.v0.2") throw unavailable("workspace_snapshot_stale");
+  requireValue(implementation.files && typeof implementation.files === "object" && !Array.isArray(implementation.files));
+  requireValue(Object.keys(implementation.files).length === IMPLEMENTATION_FILES.length);
+  const expected = await getWorkspaceImplementationIdentity();
+  for (const path of IMPLEMENTATION_FILES) {
+    requireValue(Object.hasOwn(implementation.files, path) && SHA256.test(implementation.files[path]));
+    if (implementation.files[path] !== expected.files[path]) throw unavailable("workspace_snapshot_stale");
+  }
+}
 
 function unavailable(code = "workspace_snapshot_invalid") {
   const messages = {
@@ -270,6 +289,7 @@ export function createWorkspaceLocalSnapshotLoader() {
       requireValue(snapshot.info.size <= BigInt(MAX_SNAPSHOT_BYTES));
       const snapshotSignature = signature(snapshot.info);
       if (cached?.root === root && cached.snapshotPath === snapshot.target && cached.snapshotSignature === snapshotSignature) {
+        await validateImplementation(cached.implementation);
         for (const source of cached.sources) {
           const current = await containedFile(root, source.path);
           if (current.target !== source.target || signature(current.info) !== source.signature) throw unavailable("workspace_snapshot_stale");
@@ -281,6 +301,7 @@ export function createWorkspaceLocalSnapshotLoader() {
       requireValue(envelope.schema === definition.schema && typeof envelope.payloadJson === "string" && SHA256.test(envelope.sha256));
       requireValue(createHash("sha256").update(envelope.payloadJson, "utf8").digest("hex") === envelope.sha256);
       const payload = JSON.parse(envelope.payloadJson);
+      await validateImplementation(payload.implementation);
       const dataset = projectDataset(payload.dataset, payload.generatedAt, audit, payload.reconciliation);
       validateAuthorityChecks(payload.authorityChecks, audit);
       requireValue(Array.isArray(payload.sources) && payload.sources.length > 0 && payload.sources.length <= 10000);
@@ -336,7 +357,7 @@ export function createWorkspaceLocalSnapshotLoader() {
       const afterSnapshot = await stat(snapshot.target, { bigint: true });
       if (signature(afterSnapshot) !== snapshotSignature) throw unavailable("workspace_snapshot_stale");
       const result = { dataset, items };
-      cached = { root, snapshotPath: snapshot.target, snapshotSignature, sources, directories, result };
+      cached = { root, snapshotPath: snapshot.target, snapshotSignature, sources, directories, result, implementation: payload.implementation };
       return structuredClone(result);
     } catch (error) {
       cached = null;
