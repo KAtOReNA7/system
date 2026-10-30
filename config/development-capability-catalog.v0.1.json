@@ -23,6 +23,7 @@
         { "role": "licensing-master-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/授权汇总台账.xlsx" },
         { "role": "licensing-dashboard-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/授权关系仪表板.xlsx" },
         { "role": "pending-work-mapping", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/m1-master-data-private/mapping-candidate/M1-formal-mapping-version-candidate-v0.1-detail-payload.json" },
+        { "role": "user-confirmed-classification-foundation", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/private-output/m2-readiness/M2-classification-tag-final-foundation-table-cn-v1.xlsx" },
         { "role": "workspace-readonly-snapshot", "kind": "file", "artifactClass": "PRIVATE_DERIVED_CACHE", "path": "data/private-output/workspace/current.json" }
       ],
       "canonicalValidationCommands": ["npm run workspace:prepare:local"],

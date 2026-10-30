@@ -52,6 +52,7 @@ def digest(path):
 
 
 def source_metadata(root, relative):
+    root = Path(root).resolve(strict=True)
     path = root / relative
     if not path.is_file() or not path.resolve().is_relative_to(root):
         raise SnapshotError("SOURCE_MISSING_OR_OUTSIDE_ROOT")
@@ -60,6 +61,7 @@ def source_metadata(root, relative):
 
 
 def directory_metadata(root, relative):
+    root = Path(root).resolve(strict=True)
     path = root / relative
     if not path.is_dir() or not path.resolve().is_relative_to(root):
         raise SnapshotError("SOURCE_DIRECTORY_MISSING_OR_OUTSIDE_ROOT")
