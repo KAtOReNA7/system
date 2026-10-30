@@ -26,12 +26,13 @@ export default function App() {
       <span className="mode-badge" data-testid="data-mode">{modeLabel}</span>
     </header>
     <main id="main-content" ref={mainRef} tabIndex="-1">
+      {dataset?.kind === "RAW_LEDGER_AUDIT" && route.path !== "/research" && <section className="audit-banner section" role="status" data-testid="audit-banner"><h2>原始账单核对 / 对账尚未通过</h2><p>拆分账单与总账存在差异。此处仅供查看原始记录和核对资料，金额待核对，不用于正式财务汇总、预测或业务验收。</p><p className="small">总账侧未匹配 {dataset.reconciliation?.missingRowCount ?? "—"} 条；拆分侧多出 {dataset.reconciliation?.extraRowCount ?? "—"} 条。候选归并未应用。</p><p className="small">{Object.entries(dataset.reconciliation?.extraByMonth ?? {}).map(([month,count])=>month+"：拆分多出 "+count+" 条").join("；")}</p></section>}
       {route.path === "/" ? <Home dataset={dataset} research={research} /> :
         route.path === "/works" ? <Catalog params={route.params} dataset={dataset} /> :
           route.path.startsWith("/works/") ? <WorkDetail encodedId={route.path.slice(7)} back={route.params.get("back")} dataset={dataset} /> :
             route.path === "/research" ? <Research resource={research} /> :
               <section className="section state-panel"><h1>页面不存在</h1><a href="#/">返回工作台 ↗</a></section>}
     </main>
-    <Footer path={route.path}>{route.path === "/research" ? "公开历史研究 · 四周期分别判断 · 当前未启用生产。" : dataset?.syntheticOnly ? "作品与金额为合成演示，研究状态另行标注。" : dataset?.source === "local-reviewed-ledger-snapshot" ? "本地真实账单 · 只读浏览 · 数据治理状态分别标注。" : "正式只读接口 · 未接入字段留空。"}</Footer>
+    <Footer path={route.path}>{route.path === "/research" ? "公开历史研究 · 四周期分别判断 · 当前未启用生产。" : dataset?.syntheticOnly ? "作品与金额为合成演示，研究状态另行标注。" : dataset?.kind === "RAW_LEDGER_AUDIT" ? "原始账单待核对 · 不用于正式财务或模型。" : dataset?.source === "local-reviewed-ledger-snapshot" ? "本地真实账单 · 只读浏览 · 数据治理状态分别标注。" : "正式只读接口 · 未接入字段留空。"}</Footer>
   </div>;
 }

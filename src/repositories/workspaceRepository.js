@@ -142,7 +142,7 @@ export function createWorkspaceRepository(dependencies = {}) {
   const readWorks = dependencies.listWorks ?? listWorks;
   const readWork = dependencies.getWorkById ?? getWorkById;
   const loadSnapshot = dependencies.loadLocalSnapshot ?? createWorkspaceLocalSnapshotLoader();
-  const isLocalSnapshot = (config) => config.workspace?.source === "local_snapshot";
+  const isLocalSnapshot = (config) => ["local_snapshot", "local_audit"].includes(config.workspace?.source);
   async function allWorks(config) {
     const first = await readWorks(config, { page: 1, pageSize: 100 });
     const items = [...first.items];
@@ -162,6 +162,7 @@ export function createWorkspaceRepository(dependencies = {}) {
           return workspaceContext({
             ...FORMAL_DATASET,
             source: "local-reviewed-ledger-snapshot",
+            ...(config.workspace?.source === "local_audit" ? { kind: "RAW_LEDGER_AUDIT" } : {}),
             sourceStatus: "UNAVAILABLE",
             sourceStatusLabelZh: error.statusCode === 503 ? error.message : "本地只读资料暂不可用。",
             sourceErrorCode: error.statusCode === 503 ? error.code : "workspace_snapshot_invalid",

@@ -72,8 +72,8 @@ export function loadConfig(env = process.env) {
   }
 
   const workspaceSource = optionalValue(env.M1_WORKSPACE_SOURCE) ?? "database";
-  if (!["database", "local_snapshot"].includes(workspaceSource)) {
-    throw new ConfigError("invalid_workspace_source", "M1_WORKSPACE_SOURCE must be database or local_snapshot");
+  if (!["database", "local_snapshot", "local_audit"].includes(workspaceSource)) {
+    throw new ConfigError("invalid_workspace_source", "M1_WORKSPACE_SOURCE must be database, local_snapshot, or local_audit");
   }
   const workspaceSourceRoot = optionalValue(env.M1_WORKSPACE_SOURCE_ROOT) ?? REPOSITORY_ROOT;
   if (!isAbsolute(workspaceSourceRoot) || /^[\\/]{2}/.test(workspaceSourceRoot)) {

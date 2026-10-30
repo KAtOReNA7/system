@@ -71,6 +71,7 @@
   ],
   "restrictedPrefixes": [
     "workspace:prepare:local",
+    "workspace:audit:local",
     "doctor:capability",
     "develop:m2:",
     "m3:",

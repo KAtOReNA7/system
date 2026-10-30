@@ -6,8 +6,10 @@ import { fileURLToPath } from "node:url";
 import { AppError } from "../errors.js";
 
 const REPOSITORY_ROOT = fileURLToPath(new URL("../../", import.meta.url));
-const SNAPSHOT_PATH = "data/private-output/workspace/current.json";
-const SCHEMA = "workspace.local-readonly.v1";
+const SNAPSHOTS = Object.freeze({
+  local_snapshot: { path: "data/private-output/workspace/current.json", schema: "workspace.local-readonly.v1" },
+  local_audit: { path: "data/private-output/workspace/audit.json", schema: "workspace.local-audit.v1" }
+});
 const MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024;
 const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -204,20 +206,53 @@ function projectItem(item, dataset) {
   return result;
 }
 
-function projectDataset(dataset, generatedAt) {
-  requireValue(dataset?.mode === "formal" && dataset.source === "local-reviewed-ledger-snapshot" && dataset.syntheticOnly === false && dataset.notForFormalDecision === true && dataset.cashAuthorityVerified === true);
+function projectDataset(dataset, generatedAt, audit, reconciliation) {
+  requireValue(dataset?.mode === "formal" && dataset.source === "local-reviewed-ledger-snapshot" && dataset.syntheticOnly === false && dataset.notForFormalDecision === true);
+  if (audit) {
+    requireValue(dataset.kind === "RAW_LEDGER_AUDIT" && dataset.sourceStatus === "RECONCILIATION_REQUIRED" && dataset.cashAuthorityVerified === false);
+    requireValue(reconciliation && Number.isSafeInteger(reconciliation.missingRowCount) && reconciliation.missingRowCount >= 0 && Number.isSafeInteger(reconciliation.extraRowCount) && reconciliation.extraRowCount >= 0);
+    requireValue(reconciliation.missingRowCount > 0 || reconciliation.extraRowCount > 0);
+  } else {
+    requireValue(dataset.cashAuthorityVerified === true && dataset.kind !== "RAW_LEDGER_AUDIT" && (dataset.sourceStatus === undefined || dataset.sourceStatus === "READY"));
+  }
   requireValue(MONTH.test(dataset.cutoffMonth) && MONTH.test(dataset.cashPeriodStart) && MONTH.test(dataset.billMaxMonth));
   requireValue(dataset.cutoffMonth <= dataset.billMaxMonth);
   requireValue(typeof generatedAt === "string" && Number.isFinite(Date.parse(generatedAt)));
   const result = {
     mode: "formal", source: dataset.source, syntheticOnly: false, notForFormalDecision: true,
-    cashAuthorityVerified: true, sourceStatus: "READY", generatedAt,
+    cashAuthorityVerified: !audit, sourceStatus: audit ? "RECONCILIATION_REQUIRED" : "READY", generatedAt,
     cutoffMonth: dataset.cutoffMonth, cashPeriodStart: dataset.cashPeriodStart, billMaxMonth: dataset.billMaxMonth
   };
   for (const key of ["sourceLabelZh", "cashDefinitionLabelZh", "identityStatusLabelZh", "governanceStatusLabelZh", "completeBillMonthsDefinitionZh", "cashView"]) {
     if (Object.hasOwn(dataset, key)) result[key] = stringValue(dataset[key], { nullable: false });
   }
+  if (audit) {
+    result.kind = "RAW_LEDGER_AUDIT";
+    result.sourceLabelZh = "原始账单核对 · 未通过总账守恒";
+    result.sourceStatusLabelZh = "总账与拆分账单尚未一致，仅供原始资料核对，不构成已验证现金权威。";
+    result.cashDefinitionLabelZh = "待核对原始分成账单净额；未通过总账守恒，仅用于原始账单核对。";
+    result.reconciliation = { missingRowCount: reconciliation.missingRowCount, extraRowCount: reconciliation.extraRowCount };
+    for (const [key, expected] of [["extraByMonth", reconciliation.extraRowCount], ["missingByMonth", reconciliation.missingRowCount]]) {
+      if (Object.hasOwn(reconciliation, key)) {
+        const values = reconciliation[key];
+        requireValue(values && typeof values === "object" && !Array.isArray(values) && Object.keys(values).length <= 1200);
+        requireValue(Object.entries(values).every(([month, value]) => MONTH.test(month) && Number.isSafeInteger(value) && value >= 0));
+        requireValue(Object.values(values).reduce((sum, value) => sum + value, 0) === expected);
+        result.reconciliation[key] = { ...values };
+      }
+    }
+  }
   return result;
+}
+
+function validateAuthorityChecks(checks, audit) {
+  if (!audit) {
+    requireValue(AUTHORITY_CHECKS.every((key) => checks?.[key] === true));
+    return;
+  }
+  requireValue(["schemaEqual", "splitTypePure", "noSplitOverlap"].every((key) => checks?.[key] === true));
+  requireValue(checks.rowMultisetConserved === false);
+  requireValue(["amountConserved", "monthlyRowCountConserved", "monthlyAmountConserved"].every((key) => typeof checks[key] === "boolean" || checks[key] === "NOT_CHECKED"));
 }
 
 export function createWorkspaceLocalSnapshotLoader() {
@@ -226,8 +261,12 @@ export function createWorkspaceLocalSnapshotLoader() {
   async function read(config) {
     const configuredRoot = config.workspace?.sourceRoot ?? REPOSITORY_ROOT;
     try {
+      const source = config.workspace?.source ?? "local_snapshot";
+      const definition = SNAPSHOTS[source];
+      requireValue(Boolean(definition));
+      const audit = source === "local_audit";
       const root = await realpath(configuredRoot);
-      const snapshot = await containedFile(root, SNAPSHOT_PATH);
+      const snapshot = await containedFile(root, definition.path);
       requireValue(snapshot.info.size <= BigInt(MAX_SNAPSHOT_BYTES));
       const snapshotSignature = signature(snapshot.info);
       if (cached?.root === root && cached.snapshotPath === snapshot.target && cached.snapshotSignature === snapshotSignature) {
@@ -239,11 +278,11 @@ export function createWorkspaceLocalSnapshotLoader() {
         return structuredClone(cached.result);
       }
       const envelope = JSON.parse(await readFile(snapshot.target, "utf8"));
-      requireValue(envelope.schema === SCHEMA && typeof envelope.payloadJson === "string" && SHA256.test(envelope.sha256));
+      requireValue(envelope.schema === definition.schema && typeof envelope.payloadJson === "string" && SHA256.test(envelope.sha256));
       requireValue(createHash("sha256").update(envelope.payloadJson, "utf8").digest("hex") === envelope.sha256);
       const payload = JSON.parse(envelope.payloadJson);
-      const dataset = projectDataset(payload.dataset, payload.generatedAt);
-      requireValue(AUTHORITY_CHECKS.every((key) => payload.authorityChecks?.[key] === true));
+      const dataset = projectDataset(payload.dataset, payload.generatedAt, audit, payload.reconciliation);
+      validateAuthorityChecks(payload.authorityChecks, audit);
       requireValue(Array.isArray(payload.sources) && payload.sources.length > 0 && payload.sources.length <= 10000);
       requireValue(SOURCE_ROLES.every((role) => payload.sources.some((source) => source.role === role)));
       const sources = [];
@@ -273,6 +312,17 @@ export function createWorkspaceLocalSnapshotLoader() {
       }
       requireValue(Array.isArray(payload.items) && payload.items.length <= 100000);
       const items = payload.items.map((item) => projectItem(item, dataset));
+      if (audit) {
+        for (const item of items) {
+          item.dataStatus = "needs_review";
+          if (!item.qualityIssues.some((issue) => issue.code === "LEDGER_RECONCILIATION_REQUIRED")) {
+            item.qualityIssues.unshift({
+              code: "LEDGER_RECONCILIATION_REQUIRED", severity: "blocking", field: "cashAuthority", status: "unresolved",
+              messageZh: "总账与拆分账单未通过守恒核对；本页仅展示待核对原始事实，不得用于正式收入、模型或业务验收。"
+            });
+          }
+        }
+      }
       requireValue(new Set(items.map((item) => item.id)).size === items.length);
       for (const source of sources) {
         const current = await containedFile(root, source.path);

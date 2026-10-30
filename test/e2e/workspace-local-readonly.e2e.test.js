@@ -15,6 +15,7 @@ import { listenOnFetchSafePort } from "../helpers/listenOnFetchSafePort.js";
 // formal/local flags exercise the real-source UI branch; they do not certify any
 // real ledger, work, author, rights record or model result.
 const SOURCE_LABEL = "本地真实资料 · 只读";
+const AUDIT_LABEL = "原始账单核对 · 未通过总账守恒";
 const CATEGORY = "出版物 / 小说 / 中国当代小说";
 const digest = value => createHash("sha256").update(value).digest("hex");
 const percent = value => (value * 100).toFixed(2).replace("-", "−") + "%";
@@ -69,7 +70,24 @@ function syntheticWork(index) {
   };
 }
 
-async function prepareLocalApp() {
+async function saveSnapshot(root, payload, { mode = "local_snapshot", schema } = {}) {
+  const payloadJson = JSON.stringify(payload);
+  const filename = mode === "local_audit" ? "audit.json" : "current.json";
+  await writeFile(join(root, "data/private-output/workspace", filename), JSON.stringify({
+    schema: schema ?? (mode === "local_audit" ? "workspace.local-audit.v1" : "workspace.local-readonly.v1"),
+    payloadJson, sha256: digest(payloadJson)
+  }));
+}
+
+async function startLocalApp(root, mode = "local_snapshot") {
+  const config = loadConfig({ M1_APP_ENV: "test", M1_WORKSPACE_SOURCE: mode, M1_WORKSPACE_SOURCE_ROOT: root });
+  const failDatabase = () => { throw new Error("Synthetic local-source E2E must never access a database"); };
+  const server = http.createServer(createApp(config, { listWorks: failDatabase, getWorkById: failDatabase }));
+  servers.push(server);
+  return `http://127.0.0.1:${await listenOnFetchSafePort(server)}`;
+}
+
+async function prepareLocalApp({ mode = "local_snapshot", transform } = {}) {
   const root = await mkdtemp(join(tmpdir(), "workspace-local-e2e-"));
   roots.push(root);
   const sourceDirectory = "data/synthetic-authority";
@@ -106,17 +124,14 @@ async function prepareLocalApp() {
     sourceDirectories,
     items: Array.from({ length: 9 }, (_, index) => syntheticWork(index + 1))
   };
-  const payloadJson = JSON.stringify(payload);
-  await writeFile(join(root, "data/private-output/workspace/current.json"), JSON.stringify({ schema: "workspace.local-readonly.v1", payloadJson, sha256: digest(payloadJson) }));
-  const config = loadConfig({ M1_APP_ENV: "test", M1_WORKSPACE_SOURCE: "local_snapshot", M1_WORKSPACE_SOURCE_ROOT: root });
-  const failDatabase = () => { throw new Error("Synthetic local-source E2E must never access a database"); };
-  const server = http.createServer(createApp(config, { listWorks: failDatabase, getWorkById: failDatabase }));
-  servers.push(server);
-  const origin = `http://127.0.0.1:${await listenOnFetchSafePort(server)}`;
+  if (transform) transform(payload);
+  await saveSnapshot(root, payload, { mode });
+  const origin = await startLocalApp(root, mode);
   const response = await fetch(origin + "/api/workspace/works");
   assert.equal(response.status, 200, "Synthetic snapshot must satisfy the production loader contract");
-  assert.equal((await response.json()).pagination.total, 9);
-  return { root, origin, source: join(root, sources[0].path) };
+  const result = await response.json();
+  assert.equal(result.pagination.total, 9);
+  return { root, origin, source: join(root, sources[0].path), payload, sourceLabel: result.dataset.sourceLabelZh };
 }
 
 before(async () => {
@@ -138,7 +153,7 @@ after(async () => {
   }
 });
 
-async function withPage(run, { app = local, path = "/workspace/#/", width = 1440 } = {}) {
+async function withPage(run, { app = local, path = "/workspace/#/", width = 1440, waitForMode = true } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 900 } });
   const page = await context.newPage();
   page.setDefaultTimeout(10000);
@@ -160,7 +175,7 @@ async function withPage(run, { app = local, path = "/workspace/#/", width = 1440
   });
   try {
     assert.equal((await page.goto(app.origin + path, { waitUntil: "load" })).status(), 200, "Build the workspace before browser tests");
-    await page.getByTestId("data-mode").getByText(SOURCE_LABEL, { exact: true }).waitFor();
+    if (waitForMode) await page.getByTestId("data-mode").getByText(app.sourceLabel ?? SOURCE_LABEL, { exact: true }).waitFor();
     await run(page);
     assert.deepEqual(errors, [], "Navigation must not cause a runtime error");
     assert.deepEqual(external, [], "Local-source browsing must never request a remote resource");
@@ -333,4 +348,100 @@ test("changed synthetic source disables cached local works without substituting 
     await page.getByRole("link", { name: "查看研究结果 ↗", exact: true }).click();
     await expectPublicResearch(page);
   }, { app: stale, path: "/workspace/#/works" });
+});
+
+function markSyntheticAudit(payload) {
+  Object.assign(payload.dataset, {
+    kind: "RAW_LEDGER_AUDIT", sourceStatus: "RECONCILIATION_REQUIRED", cashAuthorityVerified: false,
+    sourceLabelZh: AUDIT_LABEL
+  });
+  payload.reconciliation = { missingRowCount: 0, extraRowCount: 3 };
+  Object.assign(payload.authorityChecks, {
+    rowMultisetConserved: false, amountConserved: "NOT_CHECKED", monthlyRowCountConserved: "NOT_CHECKED", monthlyAmountConserved: "NOT_CHECKED"
+  });
+}
+
+async function expectAuditBanner(page) {
+  const banner = page.getByTestId("audit-banner");
+  await banner.getByRole("heading", { name: "原始账单核对 / 对账尚未通过", exact: true }).waitFor();
+  assert.match(await banner.innerText(), /金额待核对.*不用于正式财务汇总、预测或业务验收/s);
+  assert.match(await banner.innerText(), /总账侧未匹配 0 条；拆分侧多出 3 条/);
+  assert.equal(await page.getByTestId("data-mode").innerText(), AUDIT_LABEL);
+}
+
+test("failed synthetic reconciliation stays rejected in strict mode and explicit audit browsing retains unverified warnings", async () => {
+  const audit = await prepareLocalApp({ mode: "local_audit", transform: markSyntheticAudit });
+  // Use identical records and failed checks in the strict envelope. Setting the
+  // strict dataset flags must not promote a failed conservation check to READY.
+  const strictPayload = structuredClone(audit.payload);
+  delete strictPayload.dataset.kind;
+  strictPayload.dataset.sourceStatus = "READY";
+  strictPayload.dataset.cashAuthorityVerified = true;
+  await saveSnapshot(audit.root, strictPayload);
+  const strictOrigin = await startLocalApp(audit.root);
+  const strictResponse = await fetch(strictOrigin + "/api/workspace/works?mode=fixture&fixture=1");
+  assert.equal(strictResponse.status, 503);
+  assert.equal((await strictResponse.json()).error.code, "workspace_snapshot_invalid");
+  const strictContext = await (await fetch(strictOrigin + "/api/workspace/context")).json();
+  assert.equal(strictContext.dataset.sourceStatus, "UNAVAILABLE");
+  assert.equal(strictContext.capabilities.cashAuthorityVerified, false);
+
+  await withPage(async page => {
+    const context = await (await page.request.get(audit.origin + "/api/workspace/context")).json();
+    assert.equal(context.dataset.kind, "RAW_LEDGER_AUDIT");
+    assert.equal(context.dataset.sourceStatus, "RECONCILIATION_REQUIRED");
+    assert.equal(context.dataset.cashAuthorityVerified, false);
+    assert.equal(context.capabilities.cashAuthorityVerified, false);
+    assert.equal(context.capabilities.writesAllowed, false);
+    assert.equal(context.capabilities.modelExecutionAllowed, false);
+    assert.equal(context.capabilities.productionForecastAvailable, false);
+    assert.deepEqual(context.dataset.reconciliation, { missingRowCount: 0, extraRowCount: 3 });
+    await page.locator(".stats-grid").waitFor();
+    await expectAuditBanner(page);
+    await page.getByRole("link", { name: "浏览作品库 ↗", exact: true }).click();
+    await waitForRows(page, ["910001", "910002", "910003", "910004", "910005", "910006"]);
+    await expectAuditBanner(page);
+    await page.locator(".works-table").getByRole("link", { name: "合同样例·负数与缺月", exact: true }).click();
+    await page.getByRole("heading", { name: "合同样例·负数与缺月", exact: true }).waitFor();
+    await expectAuditBanner(page);
+    assert.equal(await cashText(page.locator(".detail-summary-grid .number")), "650");
+    assert.match(await page.locator(".detail-summary-grid").innerText(), /原始分成记录.*待核对/s);
+    assert.match(await page.locator(".quality-issues").innerText(), /总账|守恒|核对/);
+    assert.ok((await page.locator(".prediction").allTextContents()).every(value => value.includes("尚未生成")));
+    const geometry = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
+    assert.ok(geometry.document <= geometry.viewport + 1, "Audit banner must also fit a 320px viewport");
+    await page.getByRole("navigation", { name: "主导航" }).getByRole("link", { name: /研究结果/ }).click();
+    await expectPublicResearch(page);
+    assert.equal(await page.getByTestId("data-mode").innerText(), AUDIT_LABEL);
+    const publicResponse = await page.request.get(audit.origin + "/api/m2/public/research-summary");
+    assert.deepEqual(await publicResponse.json(), research);
+  }, { app: audit, width: 320 });
+});
+
+test("audit schema mismatch never selects an otherwise valid strict snapshot", async () => {
+  const audit = await prepareLocalApp({ mode: "local_audit", transform: markSyntheticAudit });
+  const validStrict = structuredClone(audit.payload);
+  delete validStrict.dataset.kind;
+  delete validStrict.reconciliation;
+  validStrict.dataset.sourceStatus = "READY";
+  validStrict.dataset.cashAuthorityVerified = true;
+  validStrict.dataset.sourceLabelZh = SOURCE_LABEL;
+  for (const key of Object.keys(validStrict.authorityChecks)) validStrict.authorityChecks[key] = true;
+  await saveSnapshot(audit.root, validStrict);
+  const strictOrigin = await startLocalApp(audit.root);
+  assert.equal((await fetch(strictOrigin + "/api/workspace/works")).status, 200, "The strict file exists and is valid, so failure proves audit does not fall back to it");
+  await saveSnapshot(audit.root, audit.payload, { mode: "local_audit", schema: "workspace.local-readonly.v1" });
+  const response = await fetch(audit.origin + "/api/workspace/works?mode=local_snapshot");
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error.code, "workspace_snapshot_invalid");
+  const context = await (await fetch(audit.origin + "/api/workspace/context")).json();
+  assert.equal(context.dataset.sourceStatus, "UNAVAILABLE");
+  assert.equal(context.capabilities.cashAuthorityVerified, false);
+  await withPage(async page => {
+    await page.getByRole("heading", { name: "本地真实数据暂不可用", exact: true }).waitFor();
+    assert.equal(await page.locator(".works-table").count(), 0);
+    assert.doesNotMatch(await page.locator("body").innerText(), /合同样例·负数与缺月|DEMO-W001|海边来信/);
+    await page.getByRole("link", { name: "查看研究结果 ↗", exact: true }).click();
+    await expectPublicResearch(page);
+  }, { app: audit, path: "/workspace/#/works", waitForMode: false });
 });

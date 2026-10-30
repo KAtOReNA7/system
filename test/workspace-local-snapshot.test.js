@@ -104,6 +104,80 @@ async function withApp(app, callback) {
   }
 }
 
+function auditPayload(payload) {
+  const value = structuredClone(payload);
+  Object.assign(value.dataset, { kind: "RAW_LEDGER_AUDIT", sourceStatus: "RECONCILIATION_REQUIRED", cashAuthorityVerified: false });
+  Object.assign(value.authorityChecks, { rowMultisetConserved: false, amountConserved: "NOT_CHECKED", monthlyRowCountConserved: false, monthlyAmountConserved: "NOT_CHECKED" });
+  value.reconciliation = { missingRowCount: 0, extraRowCount: 2, extraByMonth: { "2026-05": 2 }, missingByMonth: {} };
+  return value;
+}
+
+async function saveAudit(root, payload, schema = "workspace.local-audit.v1") {
+  const payloadJson = JSON.stringify(payload);
+  await writeFile(join(root, "data/private-output/workspace/audit.json"), JSON.stringify({ schema, payloadJson, sha256: digest(payloadJson) }));
+}
+
+test("an unreconciled sample remains rejected by strict mode and is visible only in explicit raw audit mode", async (t) => {
+  const fixture = await prepare(t);
+  const strictFailed = structuredClone(fixture.payload);
+  strictFailed.authorityChecks.rowMultisetConserved = false;
+  await fixture.save(strictFailed);
+  await assert.rejects(createWorkspaceLocalSnapshotLoader()(fixture.config), { code: "workspace_snapshot_invalid" });
+  const audit = auditPayload(fixture.payload);
+  await saveAudit(fixture.root, audit);
+  // An audit artifact must not make strict mode usable or trigger a fallback.
+  await assert.rejects(createWorkspaceLocalSnapshotLoader()(fixture.config), { code: "workspace_snapshot_invalid" });
+  const config = loadConfig({ M1_APP_ENV: "test", M1_WORKSPACE_SOURCE: "local_audit", M1_WORKSPACE_SOURCE_ROOT: fixture.root });
+  const beforeSource = await readFile(fixture.source);
+  await withApp(createApp(config, { listWorks: () => { throw new Error("database fallback forbidden"); }, getWorkById: () => { throw new Error("database fallback forbidden"); } }), async (request) => {
+    const context = await request("/api/workspace/context?fixture=1&mode=database");
+    assert.equal(context.body.dataset.kind, "RAW_LEDGER_AUDIT");
+    assert.equal(context.body.dataset.sourceStatus, "RECONCILIATION_REQUIRED");
+    assert.equal(context.body.capabilities.cashAuthorityVerified, false);
+    assert.equal(context.body.capabilities.modelExecutionAllowed, false);
+    assert.deepEqual(context.body.dataset.reconciliation, audit.reconciliation);
+    const list = await request("/api/workspace/works");
+    assert.equal(list.status, 200);
+    assert.ok(list.body.items.every((item) => item.dataStatus === "needs_review" && item.qualityIssues.some((issue) => issue.code === "LEDGER_RECONCILIATION_REQUIRED")));
+    const detail = await request("/api/workspace/works/102");
+    assert.equal(detail.body.item.salesShareCash12Months, 950);
+    assert.equal(detail.body.item.buyoutAudit.cash12Months, 6000);
+    assert.ok(detail.body.item.predictions.every((prediction) => prediction.pointEstimate === null));
+  });
+  assert.deepEqual(await readFile(fixture.source), beforeSource);
+});
+
+test("audit mode rejects forged readiness, failed preconditions, missing sources, and incompatible schemas", async (t) => {
+  const fixture = await prepare(t);
+  const config = { ...fixture.config, workspace: { ...fixture.config.workspace, source: "local_audit" } };
+  const base = auditPayload(fixture.payload);
+  const load = createWorkspaceLocalSnapshotLoader();
+  for (const mutate of [
+    (payload) => { payload.dataset.cashAuthorityVerified = true; },
+    (payload) => { payload.dataset.sourceStatus = "READY"; },
+    (payload) => { delete payload.dataset.kind; },
+    (payload) => { payload.authorityChecks.schemaEqual = false; },
+    (payload) => { payload.authorityChecks.splitTypePure = false; },
+    (payload) => { payload.authorityChecks.noSplitOverlap = false; },
+    (payload) => { payload.authorityChecks.rowMultisetConserved = true; },
+    (payload) => { payload.reconciliation = { missingRowCount: 0, extraRowCount: 0 }; },
+    (payload) => { payload.reconciliation.extraByMonth = { "2026-05": 1 }; },
+    (payload) => { payload.items[0].salesShareCash12Months = "950"; }
+  ]) {
+    const payload = structuredClone(base);
+    mutate(payload);
+    await saveAudit(fixture.root, payload);
+    await assert.rejects(load(config), { code: "workspace_snapshot_invalid" });
+  }
+  await saveAudit(fixture.root, base, "workspace.local-readonly.v1");
+  await assert.rejects(load(config), { code: "workspace_snapshot_invalid" });
+  await fixture.save(base);
+  await assert.rejects(load(fixture.config), { code: "workspace_snapshot_invalid" });
+  await saveAudit(fixture.root, base);
+  await rm(fixture.source);
+  await assert.rejects(load(config), { code: "workspace_snapshot_missing" });
+});
+
 test("local source projects reviewed fields without reading a database or generating forecasts", async (t) => {
   const { config } = await prepare(t);
   const failDatabase = () => { throw new Error("database must not be used"); };

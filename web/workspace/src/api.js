@@ -56,7 +56,7 @@ export function listHref(filters = {}) {
 export function detailHref(id, back = "#/works") {
   return "#/works/" + encodeURIComponent(id) + "?back=" + encodeURIComponent(back);
 }
-export const formatNumber = value => Number.isFinite(value) ? value.toLocaleString("zh-CN") : "—";
+export const formatNumber = value => Number.isFinite(value) ? value.toLocaleString("zh-CN", { maximumFractionDigits: 20 }) : "—";
 export const formatCash = value => Number.isFinite(value) ? "¥ " + formatNumber(value) : "—";
 export const formatPercent = (value, digits = 2) => Number.isFinite(value) ? (value * 100).toFixed(digits).replace("-", "−") + "%" : "—";
 export const formatMonth = value => value ? value.replace("-", ".") : "—";

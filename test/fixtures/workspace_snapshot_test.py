@@ -35,10 +35,13 @@ class WorkspaceSnapshotTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="workspace-synthetic-")
         self.root = Path(self.temporary.name)
-        for relative in [snapshot.PARTITION, snapshot.CHANNEL, snapshot.PRD]:
+        for relative in [snapshot.PARTITION, snapshot.CHANNEL, snapshot.PRD, snapshot.WORK_PRD, snapshot.CLASS_PRD, snapshot.TAXONOMY, snapshot.FOUNDATION_CONFIRMATION]:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes((ROOT / relative).read_bytes())
+        confirmation = json.loads((self.root / snapshot.FOUNDATION_CONFIRMATION).read_text(encoding="utf-8"))
+        confirmation["scope"]["workCount"] = 1
+        (self.root / snapshot.FOUNDATION_CONFIRMATION).write_text(json.dumps(confirmation), encoding="utf-8")
         contract = json.loads((self.root / snapshot.CHANNEL).read_text(encoding="utf-8"))
         contract["channelMaster"]["expectedRawPairCount"] = 2
         contract["channelMaster"]["expectedCanonicalChannelCount"] = 2
@@ -70,6 +73,12 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         workbook(self.root / "data/master-data/原创全库2.xlsx", ["作品ID", "作者笔名", "一级分类", "二级分类", "三级分类", "授权时间", "结束时间"], [["100", "测试作者", "测试一级", "测试二级", "测试三级", "2020-01-02", "2030-12-31"]])
         workbook(self.root / "data/master-data/授权汇总台账.xlsx", ["作品ID", "作者", "出版or原创", "我方版权到期时间"], [["100", "测试作者", "原创", "2030-12-31"]])
         workbook(self.root / "data/master-data/授权关系仪表板.xlsx", ["我方作品ID", "作者名称"], [["100", "测试作者"]])
+        foundation_headers = ["序号", "书名", "作品编号", "作者", "一级分类（最终采用）", "二级分类（最终采用）", "三级分类（最终采用）", "辅助标签（最终采用）", "备注"]
+        workbook(self.root / snapshot.FOUNDATION, foundation_headers, [[1, "测试甲", "100", "测试作者", "出版物", "小说", "外国小说", "无", ""]], "01_出版物")
+        book = load_workbook(self.root / snapshot.FOUNDATION)
+        book.create_sheet("02_网文").append(foundation_headers)
+        book.save(self.root / snapshot.FOUNDATION)
+        book.close()
 
     def tearDown(self):
         self.temporary.cleanup()
@@ -106,7 +115,7 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         self.assertEqual(set(items["100"]["businessForms"]), {"有声版权", "有声成品"})
         self.assertEqual(items["100"]["workName"], "测试甲")
         self.assertEqual(items["100"]["authorName"], "测试作者")
-        self.assertEqual(items["100"]["categoryPath"], ["测试一级", "测试二级", "测试三级"])
+        self.assertEqual(items["100"]["categoryPath"], ["出版物", "小说", "外国小说"])
         self.assertEqual(items["100"]["rightsEndDate"], "2030-12-31")
         self.assertTrue(any(row["code"] == "PENDING_MAPPING_NOT_APPLIED" for row in items["100"]["qualityIssues"]))
         self.assertIsNone(items["400"]["authorName"])
@@ -123,18 +132,25 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         self.assertTrue(all(row["amount"] is None for row in item["monthlyCash"]))
         self.assertTrue(all(row["reason"] == "buyout_outside_m2_forecast_scope" for row in item["predictions"]))
 
-    def test_conflicting_author_and_ambiguous_rights_stay_null(self):
+    def test_digital_rights_have_priority_over_other_sources_and_internal_conflicts_stay_null(self):
         workbook(self.root / "data/master-data/授权汇总台账.xlsx", ["作品ID", "作者", "我方版权到期时间"], [["100", "另一个测试作者", "2031年"]])
         item = next(row for row in self.prepare()["items"] if row["id"] == "100")
         self.assertIsNone(item["authorName"])
-        self.assertIsNone(item["rightsEndDate"])
+        self.assertEqual(item["rightsEndDate"], "2030-12-31")
         self.assertTrue(any(row["code"] == "MASTER_FIELD_CONFLICT" for row in item["qualityIssues"]))
+        self.assertTrue(any(row["code"] == "LOWER_PRIORITY_RIGHTS_DIFFER" for row in item["qualityIssues"]))
+        book = load_workbook(self.root / "data/master-data/数字版权台账.xlsx")
+        book.active.append(["Y100", "测试甲", "", "测试作者", "2020-01-02", "2032-12-31", ""])
+        book.save(self.root / "data/master-data/数字版权台账.xlsx")
+        book.close()
+        item = next(row for row in self.prepare()["items"] if row["id"] == "100")
+        self.assertIsNone(item["rightsEndDate"])
 
     def test_authority_checks_and_every_read_source_are_bound(self):
         payload = self.prepare()
         self.assertEqual(len(payload["authorityChecks"]), 7)
         self.assertTrue(all(payload["authorityChecks"].values()))
-        self.assertEqual(len(payload["sourceDirectories"]), 4)
+        self.assertEqual(len(payload["sourceDirectories"]), 5)
         required = {"total-ledger-authority", "sales-share-ledger-authority", "buyout-ledger-authority", "user-reviewed-channel-master"}
         self.assertTrue(required.issubset({row["role"] for row in payload["sources"]}))
         for source in payload["sources"]:
@@ -180,6 +196,44 @@ class WorkspaceSnapshotTests(unittest.TestCase):
         frame = pd.DataFrame([["2026-04", "1", "示例渠道", "音频", "invalid-work-id", "示例作品", 5]], columns=snapshot.REAL_BILL_COLUMNS)
         with self.assertRaisesRegex(snapshot.SnapshotError, "INVALID_WORK_ID"):
             snapshot.build_items({"salesShare": frame, "buyout": frame.iloc[0:0]}, {}, {}, {}, set(), "2026-04")
+
+    def test_explicit_audit_preserves_strict_cache_and_locates_extra_records(self):
+        self.prepare()
+        strict_before = (self.root / snapshot.OUTPUT).read_bytes()
+        source = self.root / "data/real-bills/渠道实销汇总 -分成.xlsx"
+        book = load_workbook(source)
+        book.active.append(["2026-05", "1", "示例甲渠道", "音频", "100", "测试甲", 17, "分成"])
+        extra_row = book.active.max_row
+        book.save(source)
+        book.close()
+        with self.assertRaises(Exception):
+            snapshot.prepare(self.root)
+        result = snapshot.prepare(self.root, audit_unreconciled=True)
+        self.assertEqual(result["status"], "AUDIT_READY")
+        self.assertEqual((self.root / snapshot.OUTPUT).read_bytes(), strict_before)
+        envelope = json.loads((self.root / snapshot.AUDIT_OUTPUT).read_text(encoding="utf-8"))
+        self.assertEqual(envelope["schema"], "workspace.local-audit.v1")
+        payload = json.loads(envelope["payloadJson"])
+        self.assertEqual(payload["reconciliation"], {"missingRowCount": 0, "extraRowCount": 1, "missingByMonth": {}, "extraByMonth": {"2026-05": 1}})
+        self.assertFalse(payload["dataset"]["cashAuthorityVerified"])
+        self.assertEqual(payload["dataset"]["kind"], "RAW_LEDGER_AUDIT")
+        self.assertFalse(payload["authorityChecks"]["amountConserved"])
+        self.assertTrue(all(row["dataStatus"] == "needs_review" for row in payload["items"]))
+        item = next(row for row in payload["items"] if row["id"] == "100")
+        self.assertEqual(item["salesShareCash12Months"], 80)
+        self.assertTrue(any(row["sourceLabel"].endswith(f"第{extra_row}行") for row in item["qualityIssues"]))
+
+    def test_audit_is_not_an_automatic_or_general_error_fallback(self):
+        with self.assertRaisesRegex(snapshot.SnapshotError, "AUDIT_REQUIRES_RECONCILIATION_DIFFERENCE"):
+            snapshot.prepare(self.root, audit_unreconciled=True)
+        source = self.root / "data/real-bills/渠道实销汇总 -分成.xlsx"
+        book = load_workbook(source)
+        book.active["H2"] = "买断"
+        book.save(source)
+        book.close()
+        with self.assertRaisesRegex(snapshot.SnapshotError, "AUDIT_SPLIT_TYPE_NOT_PURE"):
+            snapshot.prepare(self.root, audit_unreconciled=True)
+        self.assertFalse((self.root / snapshot.AUDIT_OUTPUT).exists())
 
 
 if __name__ == "__main__":

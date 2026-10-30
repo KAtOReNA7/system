@@ -9,8 +9,9 @@ import os
 import re
 import sys
 import tempfile
+import unicodedata
 import zipfile
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -20,7 +21,7 @@ sys.dont_write_bytecode = True
 for relative in ["tools/m2-calibration", "tools/m1-master-data-analysis", "scripts/m2-real-data", "scripts/m2-current"]:
     sys.path.insert(0, str(ROOT / relative))
 
-from human_ledger_partition import discover_partition_sources, validate_partition  # noqa: E402
+from human_ledger_partition import discover_partition_sources, validate_partition, _load_raw, _row_counter, _type_values, _monthly, _month_text, _amount_decimal, _clean_text  # noqa: E402
 from calibrate_cleaned_bills import REAL_BILL_COLUMNS, parse_month  # noqa: E402
 from work_id_rules import parse_raw_work_id  # noqa: E402
 from run_cleaned_ledger_minimal_backfill_v3 import read_shared_strings, read_sheet_rows, workbook_sheets, parse_date_value  # noqa: E402
@@ -29,10 +30,16 @@ from materialize_canonical_channel_cases import load_channel_master, header_inde
 PARTITION = "config/m2-current-human-ledger-partition.v0.1.json"
 CHANNEL = "config/m2-current-canonical-channel.v0.1.json"
 PRD = "docs/prd/10-data-foundation/bill-import.md"
+WORK_PRD = "docs/prd/10-data-foundation/work-master-data.md"
+CLASS_PRD = "docs/prd/10-data-foundation/classification-and-tags.md"
+TAXONOMY = "src/domain/oldProductEvaluation/classificationTaxonomy.v1.json"
+FOUNDATION = "data/private-output/m2-readiness/M2-classification-tag-final-foundation-table-cn-v1.xlsx"
+FOUNDATION_CONFIRMATION = "docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.json"
 MAPPING = "data/m1-master-data-private/mapping-candidate/M1-formal-mapping-version-candidate-v0.1-detail-payload.json"
 CHANNEL_BOOK = "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
 MASTER_BOOKS = ["数字版权台账.xlsx", "原创全库2.xlsx", "授权汇总台账.xlsx", "授权关系仪表板.xlsx"]
 OUTPUT = "data/private-output/workspace/current.json"
+AUDIT_OUTPUT = "data/private-output/workspace/audit.json"
 
 
 class SnapshotError(RuntimeError):
@@ -65,7 +72,7 @@ def directory_metadata(root, relative):
     path = root / relative
     if not path.is_dir() or not path.resolve().is_relative_to(root):
         raise SnapshotError("SOURCE_DIRECTORY_MISSING_OR_OUTSIDE_ROOT")
-    roles = {"data/master-data": "master-data-directory", "data/m1-master-data-private/mapping-candidate": "work-mapping-directory", "data/real-bills": "ledger-directory"}
+    roles = {"data/master-data": "master-data-directory", "data/m1-master-data-private/mapping-candidate": "work-mapping-directory", "data/real-bills": "ledger-directory", "data/private-output/m2-readiness": "classification-foundation-directory"}
     return {"path": relative, "role": roles.get(relative, "channel-master-directory"), "mtimeNs": str(path.stat().st_mtime_ns), "entries": sorted(entry.name for entry in path.iterdir())}
 
 
@@ -107,6 +114,7 @@ def read_master_fields(root):
     """Exact financial identity only; no name matching or product-line taxonomy guesses."""
     values = defaultdict(lambda: defaultdict(set))
     provenance = defaultdict(lambda: defaultdict(set))
+    digital_dates = defaultdict(lambda: defaultdict(set))
     aliases = {
         "authorName": ["作者署名", "作者笔名", "作者名称", "作者"],
         "classificationLevel1": ["一级分类"], "classificationLevel2": ["二级分类"], "classificationLevel3": ["三级分类"],
@@ -130,10 +138,55 @@ def read_master_fields(root):
                         if field.startswith("rights"):
                             value = exact_date(value)
                             if value is None:
-                                values[identity.standard_id][field].add("__UNRESOLVED_DATE__")
-                                continue
+                                value = "__UNRESOLVED_DATE__"
+                            if name == "数字版权台账.xlsx":
+                                digital_dates[identity.standard_id][field].add(value)
                         values[identity.standard_id][field].add(value)
                         provenance[identity.standard_id][field].add(relative + "#" + sheet["name"] + ":" + header)
+    for work_id, fields in values.items():
+        for field in ["rightsStartDate", "rightsEndDate"]:
+            authority = digital_dates[work_id][field]
+            if fields[field] - authority:
+                fields["lowerPriorityRightsMismatch"].add(field)
+            # Other source workbooks are not an approved operational completion version.
+            fields[field] = authority
+            provenance[work_id][field] = {source for source in provenance[work_id][field] if source.startswith("data/master-data/数字版权台账.xlsx#")}
+        for level in [1, 2, 3]:
+            fields[f"classificationLevel{level}"] = set()
+            provenance[work_id][f"classificationLevel{level}"] = set()
+    confirmed = json.loads((root / FOUNDATION_CONFIRMATION).read_text(encoding="utf-8"))
+    taxonomy = json.loads((root / TAXONOMY).read_text(encoding="utf-8"))["classificationTree"]
+    if confirmed.get("confirmation", {}).get("confirmed") is not True:
+        raise SnapshotError("CLASSIFICATION_FOUNDATION_NOT_CONFIRMED")
+    seen = set()
+    found_sheets = set()
+    for sheet in read_master_sheets(root / FOUNDATION):
+        if sheet["name"] not in ["01_出版物", "02_网文"]:
+            continue
+        found_sheets.add(sheet["name"])
+        headers = {unicodedata.normalize("NFKC", name) for name in sheet["headers"]}
+        required = {"作品编号", "一级分类(最终采用)", "二级分类(最终采用)", "三级分类(最终采用)"}
+        if not required.issubset(headers):
+            raise SnapshotError("CLASSIFICATION_FOUNDATION_HEADERS_DIFFER")
+        for raw_row in sheet["rows"]:
+            row = {unicodedata.normalize("NFKC", key): value for key, value in raw_row.items()}
+            if not any(clean(value) for value in row.values()):
+                continue
+            identity = parse_raw_work_id(clean(row.get("作品编号")))
+            if not identity.valid or identity.standard_id in seen:
+                raise SnapshotError("CLASSIFICATION_FOUNDATION_ID_INVALID_OR_DUPLICATED")
+            work_id = identity.standard_id
+            seen.add(work_id)
+            path = [clean(row.get(f"{level}级分类(最终采用)")) for level in ["一", "二", "三"]]
+            if path[0] not in taxonomy or path[1] not in taxonomy[path[0]] or path[2] not in taxonomy[path[0]][path[1]]:
+                values[work_id]["invalidConfirmedClassification"].add(tuple(path))
+                continue
+            for level, value in enumerate(path, 1):
+                field = f"classificationLevel{level}"
+                values[work_id][field] = {value}
+                provenance[work_id][field] = {FOUNDATION + "#" + sheet["name"]}
+    if len(found_sheets) != 2 or len(seen) != confirmed["scope"]["workCount"]:
+        raise SnapshotError("CLASSIFICATION_FOUNDATION_SCOPE_DIFFERS")
     return values, provenance
 
 
@@ -147,7 +200,7 @@ def read_master_sheets(path):
                 target = target[3:]
             rows = read_sheet_rows(archive, target, shared)
             headers = rows[0] if rows else []
-            yield {"name": sheet["name"], "rows": [{header: row[index] if index < len(row) else "" for index, header in enumerate(headers) if header} for row in rows[1:]]}
+            yield {"name": sheet["name"], "headers": headers, "rows": [{header: row[index] if index < len(row) else "" for index, header in enumerate(headers) if header} for row in rows[1:]]}
 
 
 def read_channels(root, config):
@@ -164,6 +217,61 @@ def read_channels(root, config):
     if evidence["confirmedRowCount"] != evidence["rawPairCount"]:
         raise SnapshotError("CHANNEL_AUTHORITY_NOT_CONFIRMED")
     return rows
+
+
+def read_unreconciled_audit(sources):
+    """Explicit audit profile: inspect actual discrepancies without weakening strict validation."""
+    frames = {key: _load_raw(path, REAL_BILL_COLUMNS) for key, path in zip(["totalLedger", "salesShare", "buyout"], sources.all())}
+    if _type_values(frames["salesShare"]) != {"分成"} or _type_values(frames["buyout"]) != {"买断"} or not _type_values(frames["totalLedger"]).issubset({"", "买断"}):
+        raise SnapshotError("AUDIT_SPLIT_TYPE_NOT_PURE")
+    for frame in frames.values():
+        for month, value in zip(frame["年月"], frame["实销金额"]):
+            parsed_month = parse_month(month)
+            if not parsed_month or not re.fullmatch(r"\d{4}-(?:0[1-9]|1[0-2])", parsed_month):
+                raise SnapshotError("INVALID_BILL_MONTH")
+            try:
+                amount = Decimal(str(value))
+            except (InvalidOperation, ValueError):
+                raise SnapshotError("INVALID_BILL_AMOUNT") from None
+            if not amount.is_finite():
+                raise SnapshotError("INVALID_BILL_AMOUNT")
+    counters = {key: _row_counter(frame, REAL_BILL_COLUMNS) for key, frame in frames.items()}
+    if counters["salesShare"].keys() & counters["buyout"].keys():
+        raise SnapshotError("AUDIT_SPLIT_OVERLAP")
+    combined = counters["salesShare"] + counters["buyout"]
+    missing, extra = counters["totalLedger"] - combined, combined - counters["totalLedger"]
+    reconciliation = {"missingRowCount": sum(missing.values()), "extraRowCount": sum(extra.values())}
+    if not any(reconciliation.values()):
+        raise SnapshotError("AUDIT_REQUIRES_RECONCILIATION_DIFFERENCE")
+    for key, counter in [("missingByMonth", missing), ("extraByMonth", extra)]:
+        counts = Counter()
+        for row, count in counter.items():
+            counts[row[0]] += count
+        reconciliation[key] = dict(sorted(counts.items()))
+    locations = defaultdict(list)
+    seen = Counter()
+    for key, path in [("salesShare", sources.sales_share), ("buyout", sources.buyout)]:
+        for position, values in enumerate(frames[key][REAL_BILL_COLUMNS].itertuples(index=False, name=None)):
+            row = tuple(_month_text(value) if column == "年月" else _amount_decimal(value) if column == "实销金额" else _clean_text(value) for column, value in zip(REAL_BILL_COLUMNS, values))
+            if row not in extra:
+                continue
+            seen[row] += 1
+            if seen[row] > counters["totalLedger"][row]:
+                identity = parse_raw_work_id(clean(row[4]))
+                if identity.valid:
+                    locations[identity.standard_id].append({"sourceLabel": f"{path.name} 第{position + 2}行", "month": row[0]})
+    reconciliation["extraLocationsByWork"] = dict(locations)
+    monthly = {key: _monthly(frame) for key, frame in frames.items()}
+    months = set().union(*(set(values) for values in monthly.values()))
+    def conserved(field, month):
+        cells = {key: values.get(month, {"rowCount": 0, "amount": Decimal(0)}) for key, values in monthly.items()}
+        return cells["totalLedger"][field] == cells["salesShare"][field] + cells["buyout"][field]
+    amounts = {key: sum((cell["amount"] for cell in values.values()), Decimal(0)) for key, values in monthly.items()}
+    checks = {"schemaEqual": True, "splitTypePure": True, "noSplitOverlap": True, "rowMultisetConserved": False,
+              "amountConserved": amounts["totalLedger"] == amounts["salesShare"] + amounts["buyout"],
+              "monthlyRowCountConserved": all(conserved("rowCount", month) for month in months),
+              "monthlyAmountConserved": all(conserved("amount", month) for month in months)}
+    return frames, checks, reconciliation
 
 
 def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cutoff):
@@ -222,6 +330,10 @@ def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cu
         total = sum((sales[month] for month in observed), Decimal(0)) if observed else None
         issues = list(work["issues"].values())
         fields, sources = {}, {}
+        if masters.get(work_id, {}).get("lowerPriorityRightsMismatch"):
+            issues.append(issue("LOWER_PRIORITY_RIGHTS_DIFFER", "其他资料的授权日期与数字版权台账不同；按PRD仅采用台账，同源冲突保留为空。", "rightsDates", "数字版权台账优先"))
+        if masters.get(work_id, {}).get("invalidConfirmedClassification"):
+            issues.append(issue("CLASSIFICATION_OUTSIDE_CONTROLLED_TREE", "人工基础表分类不在受控三级分类树内，未转换或回退到旧分类。", "category", "已确认分类基础表"))
         for field in ["authorName", "classificationLevel1", "classificationLevel2", "classificationLevel3", "workSource", "rightsStartDate", "rightsEndDate"]:
             choices = masters.get(work_id, {}).get(field, set())
             fields[field] = next(iter(choices)) if len(choices) == 1 and "__UNRESOLVED_DATE__" not in choices else None
@@ -265,7 +377,7 @@ def build_items(frames, masters, provenance, channel_master, pending_raw_ids, cu
     return items, bill_max
 
 
-def prepare(source_root):
+def prepare(source_root, audit_unreconciled=False):
     root = Path(source_root).resolve(strict=True)
     partition = json.loads((root / PARTITION).read_text(encoding="utf-8"))
     contract = json.loads((root / CHANNEL).read_text(encoding="utf-8"))
@@ -274,23 +386,36 @@ def prepare(source_root):
     if cutoff != "2026-04" or "最新已确认完整月份为 `2026-04`" not in prd or "2026-05" not in partition["incompleteMonths"]:
         raise SnapshotError("COMPLETE_MONTH_AUTHORITY_DIFFERS")
     ledger_sources = discover_partition_sources(root / "data", partition)
-    relatives = [PARTITION, CHANNEL, PRD, MAPPING, CHANNEL_BOOK, *[p.relative_to(root).as_posix() for p in ledger_sources.all()], *["data/master-data/" + name for name in MASTER_BOOKS]]
+    relatives = [PARTITION, CHANNEL, PRD, WORK_PRD, CLASS_PRD, TAXONOMY, FOUNDATION_CONFIRMATION, FOUNDATION, MAPPING, CHANNEL_BOOK, *[p.relative_to(root).as_posix() for p in ledger_sources.all()], *["data/master-data/" + name for name in MASTER_BOOKS]]
     before = [source_metadata(root, relative) for relative in relatives]
-    directory_paths = ["data/master-data", "data/m1-master-data-private/mapping-candidate", "data/real-bills", "data/private-output/outputs/channel-governance-20260726"]
+    directory_paths = ["data/master-data", "data/m1-master-data-private/mapping-candidate", "data/real-bills", "data/private-output/outputs/channel-governance-20260726", "data/private-output/m2-readiness"]
     directory_before = [directory_metadata(root, relative) for relative in directory_paths]
-    frames, evidence = validate_partition(ledger_sources, REAL_BILL_COLUMNS)
-    if len(evidence["checksPassed"]) != 7:
-        raise SnapshotError("LEDGER_PARTITION_NOT_VERIFIED")
+    reconciliation = None
+    if audit_unreconciled:
+        frames, authority_checks, reconciliation = read_unreconciled_audit(ledger_sources)
+    else:
+        frames, evidence = validate_partition(ledger_sources, REAL_BILL_COLUMNS)
+        if len(evidence["checksPassed"]) != 7:
+            raise SnapshotError("LEDGER_PARTITION_NOT_VERIFIED")
+        authority_checks = {key: True for key in ["schemaEqual", "splitTypePure", "noSplitOverlap", "rowMultisetConserved", "amountConserved", "monthlyRowCountConserved", "monthlyAmountConserved"]}
     masters, provenance = read_master_fields(root)
     channels = read_channels(root, contract)
     candidates = json.loads((root / MAPPING).read_text(encoding="utf-8"))
     pending = {clean(row.get("raw_work_id")) for row in candidates.get("effective_mapping_snapshot", [])}
     items, bill_max = build_items(frames, masters, provenance, channels, pending, cutoff)
+    if audit_unreconciled:
+        extra_locations = reconciliation.pop("extraLocationsByWork")
+        for item in items:
+            item["qualityIssues"].insert(0, issue("LEDGER_RECONCILIATION_REQUIRED", "三账本记录尚未对齐，当前为原始账单核对档案，金额不用于正式财务或评估。", "cash", "原始账单核对"))
+            item["dataStatus"] = "needs_review"
+            item["notices"].insert(0, "原始账单核对模式：逐行或金额守恒未通过，不代表已验证现金权威。")
+            for location in extra_locations.get(item["id"], []):
+                item["qualityIssues"].append(issue("SPLIT_RECORD_NOT_IN_TOTAL_LEDGER", f"{location['month']}的此条拆分账单记录未在总账中找到对应记录，请核对原文件。", "cash", location["sourceLabel"]))
     after = [source_metadata(root, relative) for relative in relatives]
     directory_after = [directory_metadata(root, relative) for relative in directory_paths]
     if before != after or directory_before != directory_after:
         raise SnapshotError("SOURCE_CHANGED_DURING_READ")
-    roles = {PARTITION: "ledger-partition-contract", CHANNEL: "canonical-channel-contract", PRD: "complete-month-authority", MAPPING: "pending-work-mapping", CHANNEL_BOOK: "user-reviewed-channel-master"}
+    roles = {PARTITION: "ledger-partition-contract", CHANNEL: "canonical-channel-contract", PRD: "complete-month-authority", WORK_PRD: "work-master-contract", CLASS_PRD: "classification-contract", TAXONOMY: "controlled-classification-tree", FOUNDATION_CONFIRMATION: "classification-confirmation", FOUNDATION: "user-confirmed-classification-foundation", MAPPING: "pending-work-mapping", CHANNEL_BOOK: "user-reviewed-channel-master"}
     for path, role in zip(ledger_sources.all(), ["total-ledger-authority", "sales-share-ledger-authority", "buyout-ledger-authority"]):
         roles[path.relative_to(root).as_posix()] = role
     after = [{**source, "role": roles.get(source["path"], "work-master-authority")} for source in after]
@@ -301,11 +426,16 @@ def prepare(source_root):
         "identityStatusLabelZh": "按财务ID规则归档，候选映射未应用", "governanceStatusLabelZh": "本地真实账单只读，不代表正式主数据治理完成",
         "completeBillMonthsDefinitionZh": "截至人工确认完整月，实际存在账单记录的不同月份数；不按跨度补月", "currency": None
     }
-    authority_checks = {key: True for key in ["schemaEqual", "splitTypePure", "noSplitOverlap", "rowMultisetConserved", "amountConserved", "monthlyRowCountConserved", "monthlyAmountConserved"]}
+    if audit_unreconciled:
+        dataset.update({"kind": "RAW_LEDGER_AUDIT", "sourceStatus": "RECONCILIATION_REQUIRED", "cashAuthorityVerified": False,
+                        "sourceLabelZh": "原始账单核对·只读", "cashDefinitionLabelZh": "原始分成账单记录，三账本尚未对齐，金额待核对，不用于正式财务或评估。近12月仅累加已记录月份，缺月不补零；单位沿用原账单，币种未提供。"})
     payload = {"generatedAt": datetime.now(timezone.utc).isoformat(), "dataset": dataset, "sources": after, "sourceDirectories": directory_after, "authorityChecks": authority_checks, "items": items}
+    if reconciliation is not None:
+        payload["reconciliation"] = reconciliation
     payload_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
-    envelope = {"schema": "workspace.local-readonly.v1", "payloadJson": payload_json, "sha256": hashlib.sha256(payload_json.encode("utf-8")).hexdigest()}
-    target = root / OUTPUT
+    envelope = {"schema": "workspace.local-audit.v1" if audit_unreconciled else "workspace.local-readonly.v1", "payloadJson": payload_json, "sha256": hashlib.sha256(payload_json.encode("utf-8")).hexdigest()}
+    output_path = AUDIT_OUTPUT if audit_unreconciled else OUTPUT
+    target = root / output_path
     if target.parent.resolve() != root / "data/private-output/workspace" or target.is_symlink():
         raise SnapshotError("OUTPUT_PATH_OUTSIDE_PRIVATE_DIRECTORY")
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -320,15 +450,16 @@ def prepare(source_root):
     finally:
         if temporary is not None and temporary.exists():
             temporary.unlink()
-    return {"status": "READY", "workCount": len(items), "sourceCount": len(after), "output": OUTPUT, "cashAuthorityVerified": True, "modelExecuted": False}
+    return {"status": "AUDIT_READY" if audit_unreconciled else "READY", "workCount": len(items), "sourceCount": len(after), "output": output_path, "cashAuthorityVerified": not audit_unreconciled, "modelExecuted": False}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, default=ROOT)
+    parser.add_argument("--audit-unreconciled", action="store_true", help="Create a separate raw-ledger audit file only when partition reconciliation fails.")
     args = parser.parse_args()
     try:
-        print(json.dumps(prepare(args.source_root), ensure_ascii=False))
+        print(json.dumps(prepare(args.source_root, audit_unreconciled=args.audit_unreconciled), ensure_ascii=False))
     except Exception as error:
         # Exceptions from spreadsheet libraries may contain private cells or absolute paths.
         print(json.dumps({"status": "FAILED", "code": str(error) if isinstance(error, SnapshotError) else "SOURCE_VALIDATION_OR_READ_FAILED", "previousSnapshotPreserved": True}))
