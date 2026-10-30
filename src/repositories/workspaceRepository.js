@@ -164,6 +164,8 @@ export function createWorkspaceRepository(dependencies = {}) {
             source: "local-reviewed-ledger-snapshot",
             ...(config.workspace?.source === "local_audit" ? { kind: "RAW_LEDGER_AUDIT" } : {}),
             sourceStatus: "UNAVAILABLE",
+            sourceLabelZh: config.workspace?.source === "local_audit" ? "原始账单核对 · 未就绪" : "本地真实数据 · 未就绪",
+            cashDefinitionLabelZh: "本地只读资料尚未准备或来源校验未通过；当前不展示现金。",
             sourceStatusLabelZh: error.statusCode === 503 ? error.message : "本地只读资料暂不可用。",
             sourceErrorCode: error.statusCode === 503 ? error.code : "workspace_snapshot_invalid",
             cashAuthorityVerified: false

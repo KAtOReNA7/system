@@ -8,6 +8,6 @@ test("local workspace preparation validates synthetic authority, cash coverage a
     env: { ...process.env, PYTHONDONTWRITEBYTECODE: "1", PYTHONIOENCODING: "utf-8" }
   });
   assert.equal(result.status, 0, [result.stdout, result.stderr].filter(Boolean).join("\n"));
-  assert.match(result.stderr.toString(), /Ran 10 tests/);
+  assert.match(result.stderr.toString(), /Ran 11 tests/);
   assert.match(result.stderr.toString(), /OK/);
 });

@@ -235,6 +235,16 @@ class WorkspaceSnapshotTests(unittest.TestCase):
             snapshot.prepare(self.root, audit_unreconciled=True)
         self.assertFalse((self.root / snapshot.AUDIT_OUTPUT).exists())
 
+    def test_uncontrolled_foundation_classification_cannot_fall_back_to_older_sources(self):
+        book = load_workbook(self.root / snapshot.FOUNDATION)
+        book["01_出版物"]["E2"] = "非受控一级分类"
+        book.save(self.root / snapshot.FOUNDATION)
+        book.close()
+        item = next(row for row in self.prepare()["items"] if row["id"] == "100")
+        self.assertIsNone(item["category"])
+        self.assertEqual(item["categoryPath"], [])
+        self.assertTrue(any(row["code"] == "CLASSIFICATION_OUTSIDE_CONTROLLED_TREE" for row in item["qualityIssues"]))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

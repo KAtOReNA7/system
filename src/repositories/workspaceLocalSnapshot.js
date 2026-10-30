@@ -315,7 +315,11 @@ export function createWorkspaceLocalSnapshotLoader() {
       if (audit) {
         for (const item of items) {
           item.dataStatus = "needs_review";
-          if (!item.qualityIssues.some((issue) => issue.code === "LEDGER_RECONCILIATION_REQUIRED")) {
+          const cashIssue = item.qualityIssues.find((issue) => issue.code === "LEDGER_RECONCILIATION_REQUIRED");
+          if (cashIssue) {
+            cashIssue.severity = "blocking";
+            cashIssue.status = "unresolved";
+          } else {
             item.qualityIssues.unshift({
               code: "LEDGER_RECONCILIATION_REQUIRED", severity: "blocking", field: "cashAuthority", status: "unresolved",
               messageZh: "总账与拆分账单未通过守恒核对；本页仅展示待核对原始事实，不得用于正式收入、模型或业务验收。"
