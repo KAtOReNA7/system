@@ -1,0 +1,25 @@
+@import "./noto-sans-sc.css";
+
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./BarlowCondensed-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./BarlowCondensed-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("./SpaceGrotesk-Variable.ttf") format("truetype");
+}

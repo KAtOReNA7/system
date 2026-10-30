@@ -29,11 +29,19 @@
         "ConfigError",
         "loadConfig"
       ]
+    },
+    {
+      "path": "src/http/staticWorkspace.js",
+      "requiredExports": [
+        "serveWorkspaceAsset"
+      ]
     }
   ],
   "packageEntrypoints": {
     "start": "src/server.js",
     "start:fixture": "src/fixtureServer.js",
-    "dev": "src/fixtureServer.js"
+    "dev": "src/fixtureServer.js",
+    "build:workspace": "vite.config.mjs",
+    "dev:workspace": "vite.config.mjs"
   }
 }

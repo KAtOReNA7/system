@@ -20,7 +20,7 @@
     "m2:v2:private-capability:restore": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/m2-v2-evidence-pilot/restore_development_private_capability_bundle.ps1",
     "db:check": "node src/cli/check-db.js",
     "lint": "node tools/node/check-syntax.mjs && node tools/node/check-package-scripts.mjs && node tools/node/check-command-lifecycle.mjs",
-    "build": "node tools/node/check-syntax.mjs && node tools/node/check-build.mjs",
+    "build": "node tools/node/check-syntax.mjs && node tools/node/check-build.mjs && npm run build:workspace",
     "test": "node tools/node/run-test-registry.mjs default",
     "test:unit": "node tools/node/run-test-registry.mjs unit",
     "test:current-contract": "node tools/node/run-test-registry.mjs current-contract",
@@ -329,12 +329,21 @@
     "m2:v2:v2b8:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs resume",
     "m2:v2:v2b8:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs verify",
     "m2:v2:v2b8:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs report",
-    "m2:v2:pr7:b8:readonly-proof": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b8_readonly_proof.mjs"
+    "m2:v2:pr7:b8:readonly-proof": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b8_readonly_proof.mjs",
+    "build:workspace": "vite build --config vite.config.mjs",
+    "dev:workspace": "vite --config vite.config.mjs",
+    "workspace:reconcile:local": "node scripts/run-codex-python.mjs scripts/workspace/reconcile_local_ledgers.py",
+    "workspace:prepare:local": "node scripts/run-codex-python.mjs scripts/workspace/prepare_local_snapshot.py",
+    "workspace:audit:local": "node scripts/run-codex-python.mjs scripts/workspace/prepare_local_snapshot.py --audit-unreconciled"
   },
   "dependencies": {
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "playwright": "^1.61.0"
+    "@vitejs/plugin-react": "6.1.2",
+    "playwright": "^1.61.0",
+    "vite": "8.3.5"
   }
 }

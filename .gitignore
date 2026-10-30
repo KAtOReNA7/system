@@ -15,6 +15,7 @@ _recovery/
 __pycache__/
 *.pyc
 node_modules/
+/public/workspace/
 coverage/
 test-results/
 npm-debug.log*

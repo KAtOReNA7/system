@@ -32,6 +32,8 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.deepEqual(
     catalog.capabilities.map((capability) => capability.id),
     [
+      "workspace-ledger-reconciliation",
+      "workspace-local-readonly",
       "core-dev",
       "m2-pr7-s1",
       "m2-v2-current-state",
@@ -75,6 +77,11 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+  const reconciliation = catalog.capabilities.find((capability) => capability.id === "workspace-ledger-reconciliation");
+  assert.deepEqual(reconciliation.requiredPrivateArtifacts.map((artifact) => artifact.role), ["total-ledger-authority", "sales-share-ledger-authority", "buyout-ledger-authority"]);
+  assert.ok(reconciliation.requiredPrivateArtifacts.every((artifact) => artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"));
+  assert.deepEqual(reconciliation.canonicalValidationCommands, ["npm run workspace:reconcile:local"]);
+  assert.equal(reconciliation.requiredPrivateArtifacts.some((artifact) => artifact.path.includes("private-output")), false);
 });
 
 test("capability inventory fails closed without explicit unconsumed execution authorization", () => {

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "workspace.assets.v1",
+  "retrievedAt": "2026-10-29",
+  "images": [
+    {
+      "file": "chrome-book.png",
+      "purpose": "Original chrome book concept for the workspace hero",
+      "source": "User-requested original system Figma v0.2 artwork, exported from Figma",
+      "sha256": "4d99cb0b6295218aaa576e94265431576509f985df1bf549f3d3582df8b84a1c",
+      "originalSourceByteMatch": true,
+      "dimensions": [1254, 1254]
+    },
+    {
+      "file": "ocean-letter.png",
+      "purpose": "Original fictional audiobook concept cover",
+      "source": "User-requested original system Figma v0.2 artwork, exported from Figma",
+      "sha256": "39a017b6d47c1ba426a1d644e0a022a7f62c7b03db2a934d302f23375cc58d1c",
+      "originalSourceByteMatch": true,
+      "dimensions": [1254, 1254]
+    }
+  ],
+  "fonts": [
+    {
+      "family": "Barlow Condensed",
+      "files": ["fonts/BarlowCondensed-SemiBold.ttf", "fonts/BarlowCondensed-BoldItalic.ttf"],
+      "weights": ["600 normal", "700 italic"],
+      "source": "https://github.com/google/fonts/tree/main/ofl/barlowcondensed",
+      "licenseFile": "fonts/OFL-BarlowCondensed.txt"
+    },
+    {
+      "family": "Space Grotesk",
+      "files": ["fonts/SpaceGrotesk-Variable.ttf"],
+      "weightRange": [300, 700],
+      "source": "https://github.com/google/fonts/tree/main/ofl/spacegrotesk",
+      "licenseFile": "fonts/OFL-SpaceGrotesk.txt"
+    },
+    {
+      "family": "Noto Sans SC",
+      "files": ["fonts/noto-sans-sc.css", "fonts/noto/*.woff2"],
+      "weightRange": [100, 900],
+      "sourcePackage": "@fontsource-variable/noto-sans-sc@5.3.1",
+      "source": "https://www.npmjs.com/package/@fontsource-variable/noto-sans-sc/v/5.3.1",
+      "localization": "Unmodified WOFF2 unicode subsets; CSS uses local URLs and family alias Noto Sans SC",
+      "subsetFileCount": 101,
+      "subsetTotalBytes": 4500544,
+      "licenseFile": "fonts/OFL-NotoSansSC.txt"
+    }
+  ]
+}
