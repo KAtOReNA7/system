@@ -1,6 +1,7 @@
 import React from "react";
 import { formatPercent, formatNumber } from "../api.js";
 import { Chapter, SourceNote, Badge, StatePanel } from "../components/ui.jsx";
+import { AcceptanceEvidence, FrozenResearchRoutes } from "../components/ResearchAcceptance.jsx";
 
 export default function Research({ resource }) {
   const data = resource.data;
@@ -34,6 +35,8 @@ export default function Research({ resource }) {
         <div className="gates-grid"><article><h3 className="eng-label">WORK TOTAL</h3><p className="chinese-title">作品总额</p><Badge>开发验收证据待补齐</Badge><p>四个周期均需误差、偏差、金额覆盖、逐起点稳定性和不确定性证据。</p></article>
           <article><h3 className="eng-label">WORK × CHANNEL</h3><p className="chinese-title">作品 × 渠道</p><Badge>{data.grainGates.workChannel.status === "PARTIAL_NOT_ACTIVE" ? "部分证据，未激活" : data.grainGates.workChannel.labelZh}</Badge><p>当前不能作为完整渠道能力使用；不能由部分渠道证据反推作品总额通过。</p></article></div>
       </section>
+      <AcceptanceEvidence data={data} />
+      <FrozenResearchRoutes data={data} />
       <section className="section last-review"><Chapter title="THE LAST REVIEW." subtitle="最近独立评价 / 头部保护尾段修正模型" aside={latest.model.id} />
         <div className="review-grid"><div><p className="number">{formatPercent(latest.relativeFva,4)}</p><p className="small muted">相对基线改善 / 唯一独立评价</p></div><div><h3>{latest.labelZh}。</h3><p className="small muted">{latest.origin} 起点 · 动态 Core80 {latest.workCount} 部作品 · {formatNumber(latest.bootstrap.iterations)} 次作品聚类重采样，95% 区间{latest.bootstrap.crossesZero ? "跨 0" : "不跨 0"}。</p><p className="small muted">不追加第二独立起点，不据此启用生产。</p></div></div>
         <div className="source-links">{sources.filter(source=>["current-state","contract"].includes(source.id)).map(source=><a key={source.id} href={source.href} target="_blank" rel="noreferrer">{source.id==="current-state" ? "状态索引 v"+version : source.title} ↗</a>)}

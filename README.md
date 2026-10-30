@@ -33,6 +33,7 @@
 ## 打开 XG 版业务工作台
 
 真实作品与账单的本地只读接入见 [真实资料工作台](docs/development/workspace-real-data.md)。
+研究页的四周期、双粒度验收证据及冻结路线边界见 [研究证据说明](docs/development/research-evidence.md)。
 使用人工拆分账单与本地台账，不要求连接共享数据库；资料治理和预测权限分别判断。
 
 ```bash

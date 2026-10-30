@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { projectAcceptanceEvidence, projectFrozenResearchRoutes } from "./publicResearchAcceptance.js";
 
 const ROOT = new URL("../../", import.meta.url);
 const SOURCE_DEFINITIONS = {
@@ -11,6 +12,14 @@ const SOURCE_DEFINITIONS = {
   independent: {
     title: "头部保护尾段修正模型唯一独立评价",
     path: "docs/analysis/m2-current/M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json"
+  },
+  "psc02-audit": {
+    title: "起点可见现金锚模型：源权威与执行完整性审计",
+    path: "docs/analysis/m2-current/M2-psc02-pr40-execution-completeness-and-source-authority-recovery-audit-v0.1.json"
+  },
+  "psc03-correction": {
+    title: "直接现金尺度模型：当前结果权威纠正",
+    path: "docs/analysis/m2-current/M2-psc03-result-authority-correction-v0.1.json"
   }
 };
 const POPULATION_ID = "ORIGIN_VISIBLE_DYNAMIC_CORE80";
@@ -61,7 +70,7 @@ async function readJson(path) {
 
 // Projection is explicit: no ledger rows, absolute cash totals, input digests, or runner state.
 // Exported separately so contracts can be tested without editing frozen authority files.
-export function projectPublicResearchSummary({ registry, contract, crossModel, independent }) {
+export function projectPublicResearchSummary({ registry, contract, crossModel, independent, psc02Audit, psc03Correction }) {
   requireValue(Array.isArray(registry.models) && Array.isArray(registry.experiments), "registry");
   const statePath = currentStatePath(registry);
   const baseline = modelIdentity(registry, registry.currentRoles.researchWorkBaseline);
@@ -69,6 +78,19 @@ export function projectPublicResearchSummary({ registry, contract, crossModel, i
   const campaign = only(registry.experiments.filter((item) => item.experimentId === CAMPAIGN_ID), "campaign");
   const comparisonGroup = only(registry.comparabilityGroups.filter((item) => item.comparableGroupId === COMPARABLE_GROUP_ID), "comparison_group");
   requireValue(comparisonGroup.comparisonClass === "STANDALONE_ONLY", "comparison_class");
+  requireValue(contract.populations?.primary?.populationId === "CORE80" &&
+    contract.businessUsability?.decisionPopulationId === "CORE80", "decision_population_consistency");
+  requireValue(crossModel.schema === "m2.cmx01.public_evaluation.v0.1" && crossModel.campaignId === "M2-CMX01", "campaign_identity");
+  requireValue(typeof contract.scope?.actualDefinitionId === "string" && contract.scope.actualDefinitionId.length > 0 &&
+    crossModel.authority?.actualDefinitionId === contract.scope.actualDefinitionId &&
+    comparisonGroup.actualDefinition === contract.scope.actualDefinitionId, "actual_definition_consistency");
+  requireValue(comparisonGroup.grain === "work_origin_horizon" &&
+    comparisonGroup.target === contract.scope.target &&
+    comparisonGroup.populationId === "cmx01-origin-visible-dynamic-core80-model-available" &&
+    comparisonGroup.evaluationFamily === "cmx01_historical_model_available_coverage_diagnostic" &&
+    comparisonGroup.asOfContract === "2020_2025_all_legal_monthly_origins_model_specific_coverage_origin_visible_dynamic_core80" &&
+    Array.isArray(comparisonGroup.horizons) && comparisonGroup.horizons.length === HORIZONS.length &&
+    HORIZONS.every((months) => comparisonGroup.horizons.filter((value) => value === months).length === 1), "comparison_basis_consistency");
   const contractHorizons = contract.businessUsability?.horizons;
   requireValue(Array.isArray(contractHorizons) && contractHorizons.length === HORIZONS.length, "horizon_contract");
   const available = crossModel.comparison?.modelAvailable;
@@ -80,6 +102,7 @@ export function projectPublicResearchSummary({ registry, contract, crossModel, i
     const row = only(rows.filter((item) => item.sliceId === String(months)), `baseline_h${months}`);
     const limit = only(contractHorizons.filter((item) => item.horizonMonths === months), `contract_h${months}`);
     const wape = finite(row.wape, "wape");
+    requireValue(wape >= 0, "wape");
     const signedBias = finite(row.signedBias, "signed_bias");
     const caseCount = count(row.caseCount, "case_count");
     const expectedCaseCount = count(row.expectedCaseCount, "expected_case_count");
@@ -133,7 +156,9 @@ export function projectPublicResearchSummary({ registry, contract, crossModel, i
       source("registry", SOURCE_DEFINITIONS.registry, registry.asOf),
       source("contract", SOURCE_DEFINITIONS.contract, contract.asOf),
       source("cross-model", SOURCE_DEFINITIONS["cross-model"], crossModel.asOf),
-      source("independent", SOURCE_DEFINITIONS.independent, independent.asOf)
+      source("independent", SOURCE_DEFINITIONS.independent, independent.asOf),
+      source("psc02-audit", SOURCE_DEFINITIONS["psc02-audit"], psc02Audit?.asOf),
+      source("psc03-correction", SOURCE_DEFINITIONS["psc03-correction"], psc03Correction?.asOf)
     ],
     roles: {
       researchBaseline: baseline, operationalFallback: fallback,
@@ -175,6 +200,8 @@ export function projectPublicResearchSummary({ registry, contract, crossModel, i
       evidenceStatus: "HISTORICAL_NUMERIC_COMPARISON_NOT_FULL_BUSINESS_ACCEPTANCE",
       labelZh: "同一研究基线的历史摘要与合同阈值对照", horizons
     },
+    acceptanceEvidence: projectAcceptanceEvidence({ horizons, contract, baseline }),
+    researchRoutes: projectFrozenResearchRoutes({ registry, independent, psc02Audit, psc03Correction }),
     latestIndependentEvaluation: {
       model: modelIdentity(registry, independent.model.stableModelId),
       status: independent.status,
@@ -210,11 +237,12 @@ export function projectPublicResearchSummary({ registry, contract, crossModel, i
 }
 
 export async function getPublicResearchSummary() {
-  const [registry, contract, crossModel, independent] = await Promise.all([
+  const [registry, contract, crossModel, independent, psc02Audit, psc03Correction] = await Promise.all([
     readJson(SOURCE_DEFINITIONS.registry.path), readJson(SOURCE_DEFINITIONS.contract.path),
-    readJson(SOURCE_DEFINITIONS["cross-model"].path), readJson(SOURCE_DEFINITIONS.independent.path)
+    readJson(SOURCE_DEFINITIONS["cross-model"].path), readJson(SOURCE_DEFINITIONS.independent.path),
+    readJson(SOURCE_DEFINITIONS["psc02-audit"].path), readJson(SOURCE_DEFINITIONS["psc03-correction"].path)
   ]);
-  return projectPublicResearchSummary({ registry, contract, crossModel, independent });
+  return projectPublicResearchSummary({ registry, contract, crossModel, independent, psc02Audit, psc03Correction });
 }
 
 export async function getPublicResearchSource(id) {

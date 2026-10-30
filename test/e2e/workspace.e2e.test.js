@@ -212,7 +212,9 @@ test("workspace research renders all four frozen horizons and opens locally read
     assert.match(evidence, /尚未形成前瞻验证/);
     assert.match(evidence, /不能替代收入金额覆盖率/);
     const sourceLinks = page.locator(".evidence-panel a[href^='/api/m2/public/research-sources/']");
-    assert.equal(await sourceLinks.count(), 5);
+    assert.equal(await sourceLinks.count(), 7);
+    assert.equal(await page.locator(".evidence-panel a[href='/api/m2/public/research-sources/psc02-audit']").count(), 1);
+    assert.equal(await page.locator(".evidence-panel a[href='/api/m2/public/research-sources/psc03-correction']").count(), 1);
     const [sourcePage] = await Promise.all([
       page.waitForEvent("popup"),
       sourceLinks.filter({ hasText: "模型登记表" }).click()
