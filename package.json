@@ -331,7 +331,8 @@
     "m2:v2:v2b8:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs report",
     "m2:v2:pr7:b8:readonly-proof": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b8_readonly_proof.mjs",
     "build:workspace": "vite build --config vite.config.mjs",
-    "dev:workspace": "vite --config vite.config.mjs"
+    "dev:workspace": "vite --config vite.config.mjs",
+    "workspace:prepare:local": "node scripts/run-codex-python.mjs scripts/workspace/prepare_local_snapshot.py"
   },
   "dependencies": {
     "pg": "^8.16.3",

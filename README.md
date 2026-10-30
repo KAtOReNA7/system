@@ -32,6 +32,9 @@
 
 ## 打开 XG 版业务工作台
 
+真实作品与账单的本地只读接入见 [真实资料工作台](docs/development/workspace-real-data.md)。
+使用人工拆分账单与本地台账，不要求连接共享数据库；资料治理和预测权限分别判断。
+
 ```bash
 npm ci
 npm run build

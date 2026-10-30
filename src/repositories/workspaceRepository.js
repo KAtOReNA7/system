@@ -1,5 +1,6 @@
 import { badRequest } from "../errors.js";
 import { listWorks, getWorkById } from "./workRepository.js";
+import { createWorkspaceLocalSnapshotLoader } from "./workspaceLocalSnapshot.js";
 
 export const WORKSPACE_DATA_STATUSES = Object.freeze(["complete", "needs_review", "unknown"]);
 export const WORKSPACE_BUSINESS_STATUSES = Object.freeze([
@@ -24,7 +25,7 @@ export function workspaceContext(dataset) {
       writesAllowed: false,
       modelExecutionAllowed: false,
       productionForecastAvailable: false,
-      cashAuthorityVerified: false
+      cashAuthorityVerified: dataset.cashAuthorityVerified === true
     }
   };
 }
@@ -76,15 +77,19 @@ function distribution(items, key) {
 
 export function workspaceOverview(items, dataset) {
   const knownCash = items.filter((item) => typeof item.salesShareCash12Months === "number" && Number.isFinite(item.salesShareCash12Months));
+  const knownBillMonths = items.filter((item) => Number.isSafeInteger(item.completeBillMonths));
+  const channelReviewAvailable = items.some((item) => Object.hasOwn(item, "reviewReason"));
   return {
     ...workspaceContext(dataset),
     summary: {
       workCount: items.length,
       dataCompleteCount: items.filter((item) => item.dataStatus === "complete").length,
-      completeBillWorkCount: dataset.mode === "fixture" ? items.filter((item) => item.completeBillMonths >= 3).length : null,
-      completeBillWorkDefinitionZh: "至少有 3 个完整账单月的作品数；不等于动态 Core80 人口或预测资格",
+      completeBillWorkCount: knownBillMonths.length ? knownBillMonths.filter((item) => item.completeBillMonths >= 3).length : null,
+      completeBillWorkDefinitionZh: dataset.completeBillMonthsDefinitionZh ?? "至少有 3 个完整账单月的作品数；不等于动态 Core80 人口或预测资格",
+      knownBillMonthsWorkCount: knownBillMonths.length,
+      unknownBillMonthsWorkCount: items.length - knownBillMonths.length,
       needsMasterDataCount: items.filter((item) => Object.values(item.completeness ?? {}).includes(true)).length,
-      channelReviewCount: dataset.mode === "fixture" ? items.filter((item) => item.reviewReason).length : null,
+      channelReviewCount: channelReviewAvailable ? items.filter((item) => item.reviewReason).length : null,
       needsReviewCount: items.filter((item) => item.dataStatus === "needs_review").length,
       insufficientHistoryCount: items.filter((item) => item.businessStatus === "insufficient_history").length,
       outsideScopeCount: items.filter((item) => item.businessStatus === "outside_scope").length,
@@ -136,6 +141,8 @@ function projectFormalWork(work) {
 export function createWorkspaceRepository(dependencies = {}) {
   const readWorks = dependencies.listWorks ?? listWorks;
   const readWork = dependencies.getWorkById ?? getWorkById;
+  const loadSnapshot = dependencies.loadLocalSnapshot ?? createWorkspaceLocalSnapshotLoader();
+  const isLocalSnapshot = (config) => config.workspace?.source === "local_snapshot";
   async function allWorks(config) {
     const first = await readWorks(config, { page: 1, pageSize: 100 });
     const items = [...first.items];
@@ -146,17 +153,45 @@ export function createWorkspaceRepository(dependencies = {}) {
     return items.map(projectFormalWork);
   }
   return {
-    async getWorkspaceContext() {
+    async getWorkspaceContext(config = {}) {
+      if (isLocalSnapshot(config)) {
+        try {
+          const snapshot = await loadSnapshot(config);
+          return workspaceContext(snapshot.dataset);
+        } catch (error) {
+          return workspaceContext({
+            ...FORMAL_DATASET,
+            source: "local-reviewed-ledger-snapshot",
+            sourceStatus: "UNAVAILABLE",
+            sourceStatusLabelZh: error.statusCode === 503 ? error.message : "本地只读资料暂不可用。",
+            sourceErrorCode: error.statusCode === 503 ? error.code : "workspace_snapshot_invalid",
+            cashAuthorityVerified: false
+          });
+        }
+      }
       return workspaceContext(FORMAL_DATASET);
     },
     async getWorkspaceOverview(config) {
+      if (isLocalSnapshot(config)) {
+        const snapshot = await loadSnapshot(config);
+        return workspaceOverview(snapshot.items, snapshot.dataset);
+      }
       return workspaceOverview(await allWorks(config), FORMAL_DATASET);
     },
     async listWorkspaceWorks(config, query) {
       parseWorkspaceFilters(query.searchParams);
+      if (isLocalSnapshot(config)) {
+        const snapshot = await loadSnapshot(config);
+        return workspaceList(snapshot.items, snapshot.dataset, query);
+      }
       return workspaceList(await allWorks(config), FORMAL_DATASET, query);
     },
     async getWorkspaceWorkById(config, id) {
+      if (isLocalSnapshot(config)) {
+        const snapshot = await loadSnapshot(config);
+        const work = snapshot.items.find((item) => item.id === id);
+        return work ? { ...workspaceContext(snapshot.dataset), item: { ...work, predictions: workspacePredictions(work) } } : null;
+      }
       const source = await readWork(config, id);
       if (!source) return null;
       const work = projectFormalWork(source);

@@ -32,6 +32,7 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.deepEqual(
     catalog.capabilities.map((capability) => capability.id),
     [
+      "workspace-local-readonly",
       "core-dev",
       "m2-pr7-s1",
       "m2-v2-current-state",

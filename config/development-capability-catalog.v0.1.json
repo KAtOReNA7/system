@@ -9,6 +9,26 @@
   },
   "capabilities": [
     {
+      "id": "workspace-local-readonly",
+      "description": "Prepare and browse a user-authorized local read-only work and bill snapshot. Does not activate imports, candidate mappings, models, database connections or production.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        { "role": "total-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -总.xlsx" },
+        { "role": "sales-share-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -分成.xlsx" },
+        { "role": "buyout-ledger-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/real-bills/渠道实销汇总 -买断.xlsx" },
+        { "role": "user-reviewed-channel-master", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx" },
+        { "role": "digital-rights-master-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/数字版权台账.xlsx" },
+        { "role": "original-work-master-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/原创全库2.xlsx" },
+        { "role": "licensing-master-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/授权汇总台账.xlsx" },
+        { "role": "licensing-dashboard-authority", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/master-data/授权关系仪表板.xlsx" },
+        { "role": "pending-work-mapping", "kind": "file", "artifactClass": "PRIVATE_SOURCE_AUTHORITY", "path": "data/m1-master-data-private/mapping-candidate/M1-formal-mapping-version-candidate-v0.1-detail-payload.json" },
+        { "role": "workspace-readonly-snapshot", "kind": "file", "artifactClass": "PRIVATE_DERIVED_CACHE", "path": "data/private-output/workspace/current.json" }
+      ],
+      "canonicalValidationCommands": ["npm run workspace:prepare:local"],
+      "recovery": "Restore only missing source ledgers, reviewed channel authority, original master workbooks and mapping candidate diagnostics from the user's private source root. Rebuild the workspace snapshot with workspace:prepare:local; missing or conflicted per-work fields stay null. Candidate work mappings are diagnostics only. Public checks and server health do not require this capability."
+    },
+    {
       "id": "core-dev",
       "description": "Clone, install, inspect, lint, build, run public tests, smoke-test, and start the local fixture application.",
       "requiredTools": [

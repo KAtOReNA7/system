@@ -1,4 +1,8 @@
+import { isAbsolute } from "node:path";
+import { fileURLToPath } from "node:url";
+
 const ALLOWED_APP_ENVS = new Set(["local", "test", "ci"]);
+const REPOSITORY_ROOT = fileURLToPath(new URL("../", import.meta.url));
 
 export class ConfigError extends Error {
   constructor(code, message) {
@@ -67,10 +71,20 @@ export function loadConfig(env = process.env) {
     );
   }
 
+  const workspaceSource = optionalValue(env.M1_WORKSPACE_SOURCE) ?? "database";
+  if (!["database", "local_snapshot"].includes(workspaceSource)) {
+    throw new ConfigError("invalid_workspace_source", "M1_WORKSPACE_SOURCE must be database or local_snapshot");
+  }
+  const workspaceSourceRoot = optionalValue(env.M1_WORKSPACE_SOURCE_ROOT) ?? REPOSITORY_ROOT;
+  if (!isAbsolute(workspaceSourceRoot) || /^[\\/]{2}/.test(workspaceSourceRoot)) {
+    throw new ConfigError("invalid_workspace_source_root", "M1_WORKSPACE_SOURCE_ROOT must be an absolute local directory");
+  }
+
   return {
     service: "m1-audiobook-evaluation",
     appEnv,
     port: parsePort(env.M1_HTTP_PORT),
+    workspace: { source: workspaceSource, sourceRoot: workspaceSourceRoot },
     database: {
       rwUrl: validateDatabaseUrl(env.M1_DATABASE_URL, "application_rw", "M1_DATABASE_URL"),
       readonlyUrl: validateDatabaseUrl(

@@ -18,7 +18,7 @@ export default function App() {
     mainRef.current?.focus({ preventScroll: true });
   }, [route.path, active]);
   const dataset = context.data?.dataset;
-  const modeLabel = context.loading ? "读取数据模式…" : context.error ? "数据模式不可用" : dataset?.syntheticOnly ? "合成演示 v0.2" : "正式数据 · 只读";
+  const modeLabel = context.loading ? "读取数据模式…" : context.error ? "数据模式不可用" : dataset?.syntheticOnly ? "合成演示 v0.2" : dataset?.sourceLabelZh ?? "正式数据 · 只读";
   return <div className="app">
     <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); mainRef.current?.focus(); }}>跳到主要内容</a>
     <header className="site-header"><a className="brand" href="#/" aria-label="SYSTEM 工作台">SYSTEM.</a><span className="brand-description">有声书业务系统</span>
@@ -32,6 +32,6 @@ export default function App() {
             route.path === "/research" ? <Research resource={research} /> :
               <section className="section state-panel"><h1>页面不存在</h1><a href="#/">返回工作台 ↗</a></section>}
     </main>
-    <Footer path={route.path}>{route.path === "/research" ? "公开历史研究 · 四周期分别判断 · 当前未启用生产。" : dataset?.syntheticOnly ? "作品与金额为合成演示，研究状态另行标注。" : "正式只读接口 · 未接入字段留空。"}</Footer>
+    <Footer path={route.path}>{route.path === "/research" ? "公开历史研究 · 四周期分别判断 · 当前未启用生产。" : dataset?.syntheticOnly ? "作品与金额为合成演示，研究状态另行标注。" : dataset?.source === "local-reviewed-ledger-snapshot" ? "本地真实账单 · 只读浏览 · 数据治理状态分别标注。" : "正式只读接口 · 未接入字段留空。"}</Footer>
   </div>;
 }

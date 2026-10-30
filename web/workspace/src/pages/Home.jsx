@@ -22,8 +22,8 @@ export default function Home({ dataset, research }) {
         {[
           ["作品总数", formatNumber(summary.workCount), actualDataset.syntheticOnly ? "演示目录" : "正式只读目录"],
           ["完整账单作品", formatNumber(summary.completeBillWorkCount), "至少 3 个完整月，不等于预测资格"],
-          ["待处理问题", Number.isFinite(summary.needsReviewCount) ? String(summary.needsReviewCount).padStart(2,"0") : "—", "按作品主数据与渠道状态核对"],
-          ["最近完整月", formatMonth(actualDataset.cutoffMonth), actualDataset.syntheticOnly ? "示例账单范围" : "待完整月权威接入"]
+          ["待核对作品", Number.isFinite(summary.needsReviewCount) ? String(summary.needsReviewCount).padStart(2,"0") : "—", "按作品计数，详见各档案的问题清单"],
+          ["最近完整月", formatMonth(actualDataset.cutoffMonth), actualDataset.syntheticOnly ? "示例账单范围" : actualDataset.cutoffMonth ? "账单最大月 " + formatMonth(actualDataset.billMaxMonth) : "待完整月权威接入"]
         ].map(([label,value,note]) => <div className="stat" key={label}><p>{label}</p><p className="number">{value}</p><p>{note}</p></div>)}
       </div>}
     </section>
@@ -31,7 +31,7 @@ export default function Home({ dataset, research }) {
       <Chapter title="NEXT IN LINE." subtitle="优先处理 / 从可执行的事项开始" />
       <div className="next-grid">
         <div className="task-list">
-          <a href="#/works" className="task"><span className="number-small muted">01</span><div><h3>检查作品主数据</h3><p>{Number.isFinite(summary?.needsMasterDataCount) ? summary.needsMasterDataCount + " 部作品存在主数据缺项" : "查看作品缺项，追踪待补全资料"}</p></div><Badge warning={summary?.needsMasterDataCount>0}>{summary?.needsMasterDataCount===0 ? "已完整" : "待核对"}</Badge></a>
+          <a href={listHref({dataStatus:"needs_review"})} className="task"><span className="number-small muted">01</span><div><h3>检查作品主数据</h3><p>{Number.isFinite(summary?.needsMasterDataCount) ? summary.needsMasterDataCount + " 部作品存在主数据缺项" : "查看作品缺项，追踪待补全资料"}</p></div><Badge warning={summary?.needsMasterDataCount>0}>{summary?.needsMasterDataCount===0 ? "已完整" : "待核对"}</Badge></a>
           <a href={listHref({businessStatus:"needs_review"})} className="task"><span className="number-small muted">02</span><div><h3>核对本月账单差异</h3><p>{Number.isFinite(summary?.channelReviewCount) ? summary.channelReviewCount + " 部作品的渠道信息待核对" : "查看需要核对的渠道与数据状态"}</p></div><Badge warning>待复核</Badge></a>
           <a href="#/research" className="task"><span className="number-small muted">03</span><div><h3>查看最新研究结论</h3><p>四个周期、两种粒度分别判断</p></div><Badge>只读</Badge></a>
         </div>

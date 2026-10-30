@@ -1,6 +1,6 @@
 import React from "react";
 import ocean from "../../assets/ocean-letter.png";
-import { detailHref, formatCash } from "../api.js";
+import { detailHref, formatCash, formatNumber } from "../api.js";
 
 export function Action({ href, children, variant = "primary", ...props }) {
   const className = "action action--" + variant;
@@ -12,8 +12,8 @@ export function Chapter({ title, subtitle, aside, children }) {
 }
 export function SourceNote({ dataset, children, isPublic = false }) {
   const fixture = dataset?.syntheticOnly === true;
-  return <p className="source-note"><span className="micro">{isPublic ? "[ PUBLIC ]" : fixture ? "[ DEMO ]" : "[ FORMAL ]"}</span>
-    <span>{children ?? (fixture ? "界面演示 · 作品、账单和金额均为合成样例；研究摘要另标公开来源。" : "正式只读接口 · 未接入字段保留为空；不自动使用演示数据。")}</span></p>;
+  return <p className="source-note"><span className="micro">{isPublic ? "[ PUBLIC ]" : fixture ? "[ DEMO ]" : dataset?.source === "local-reviewed-ledger-snapshot" ? "[ LOCAL ]" : "[ FORMAL ]"}</span>
+    <span>{children ?? (fixture ? "界面演示 · 作品、账单和金额均为合成样例；研究摘要另标公开来源。" : dataset?.source === "local-reviewed-ledger-snapshot" ? dataset.cashDefinitionLabelZh : "正式只读接口 · 未接入字段保留为空；不自动使用演示数据。")}</span></p>;
 }
 export function Badge({ children, warning = false }) {
   return <span className={"badge" + (warning ? " badge--warning" : "")}>{children}</span>;
@@ -23,9 +23,10 @@ export function StatePanel({ resource, title = "暂时无法读取数据", empty
   if (empty) return <div className="state-panel"><h3>没有符合条件的作品</h3><p>调整搜索词或筛选条件后再试。</p></div>;
   const isDatabase = resource?.error?.status === 503;
   const notFound = resource?.error?.status === 404;
+  const snapshot = resource?.error?.code?.startsWith("workspace_");
   return <div className="state-panel" role="alert"><p className="eng-label">{notFound ? "NOT FOUND" : "DATA UNAVAILABLE"}</p>
-    <h3>{notFound ? "没有找到这部作品" : isDatabase ? "正式数据尚未连接" : title}</h3>
-    <p>{isDatabase ? "数据库未配置或当前不可用，这不等同于空库。公开研究结果仍可独立查阅。" : notFound ? "作品可能不存在，请返回作品库重新选择。" : "请求没有完成，已保留当前页面和筛选条件。"}</p>
+    <h3>{notFound ? "没有找到这部作品" : snapshot ? "本地真实数据暂不可用" : isDatabase ? "正式数据尚未连接" : title}</h3>
+    <p>{snapshot ? "只读数据尚未准备、来源已变化或校验未通过。请更新本地数据后重新读取；研究结果仍可独立查阅。" : isDatabase ? "数据库未配置或当前不可用，这不等同于空库。公开研究结果仍可独立查阅。" : notFound ? "作品可能不存在，请返回作品库重新选择。" : "请求没有完成，已保留当前页面和筛选条件。"}</p>
     <div className="actions">{resource?.retry && <Action onClick={resource.retry} variant="secondary">重新读取</Action>}<Action href="#/research" variant="secondary">查看研究结果 ↗</Action></div>
   </div>;
 }
@@ -44,7 +45,7 @@ export function WorkTile({ work }) {
   return <a className="work-tile" href={detailHref(work.id)}>
     <Cover work={work} compact />
     <div className="work-tile-body"><span className="micro muted">{work.syntheticOnly ? "SYNTHETIC / DEMO" : "WORK / ARCHIVE"}</span>
-      <h3>{work.workName ?? work.id}</h3><p className="small muted">近 12 月分成现金</p><p className="number-small">{formatCash(work.salesShareCash12Months)}</p><span>查看详情 ↗</span></div>
+      <h3>{work.workName ?? work.id}</h3><p className="small muted">近 12 月{work.syntheticOnly ? "" : "已记录"}分成现金</p><p className="number-small">{work.syntheticOnly ? formatCash(work.salesShareCash12Months) : formatNumber(work.salesShareCash12Months)}</p><span>查看详情 ↗</span></div>
   </a>;
 }
 export function Footer({ children, path = "/" }) {

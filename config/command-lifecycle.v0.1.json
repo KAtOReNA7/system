@@ -70,6 +70,7 @@
     "verify:m2:"
   ],
   "restrictedPrefixes": [
+    "workspace:prepare:local",
     "doctor:capability",
     "develop:m2:",
     "m3:",

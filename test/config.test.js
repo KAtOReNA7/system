@@ -43,3 +43,11 @@ test("config accepts local development role boundaries", () => {
   assert.equal(config.appEnv, "local");
   assert.equal(config.port, 3100);
 });
+
+test("workspace source is explicitly configured and defaults to the database", () => {
+  assert.equal(loadConfig({}).workspace.source, "database");
+  assert.equal(loadConfig({ M1_WORKSPACE_SOURCE: "local_snapshot" }).workspace.source, "local_snapshot");
+  assert.throws(() => loadConfig({ M1_WORKSPACE_SOURCE: "fixture" }), /must be database or local_snapshot/);
+  assert.throws(() => loadConfig({ M1_WORKSPACE_SOURCE_ROOT: "../private" }), /absolute local directory/);
+  assert.throws(() => loadConfig({ M1_WORKSPACE_SOURCE_ROOT: "https://example.test/source" }), /absolute local directory/);
+});
